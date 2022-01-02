@@ -1,0 +1,103 @@
+
+<div class="navigation">
+    <a *ngIf="!isEdit" routerLink="/user/driver/list"><span><i class="mdi mdi-keyboard-backspace"></i> Driver</span></a>
+    <span *ngIf="isEdit">Driver <span><i class="mdi mdi-chevron-right"></i></span> Rajendra </span>
+    
+    <span></span>
+</div>
+<div class="page-header">
+    <h3 class="page-title">
+      Details
+    </h3>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+         <button class="btn btn-info" >Deactivate</button>
+         <button class="btn btn-info" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
+         <button class="btn btn-info" *ngIf="isEdit" (click)="toggleEditForm($event)">Save</button>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card card-table">
+        <div class="media">
+            <img class="mr-3 w-25 rounded-img" src="assets/images/faces/face12.jpg" alt="sample image">
+            <div class="media-body media-details">
+              <h4 class="mt-0">John Doe</h4>
+              <p><span class="active-dot"></span> Active</p>
+              <p class="media-desc">
+                  <span>DL-1420110012345</span>
+                  <span>0146</span>
+                  <span>HR 26DQ5551</span>
+              </p>
+            </div>
+            <div class="media-body chart-container">
+              <div>
+                <canvas baseChart [chartType]="'line'" [datasets]="lineChartData" [labels]="lineChartLabels" [options]="lineChartOptions" [colors]="lineChartColors"></canvas>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
+    <div class="col-sm-12">
+      <div class="card">
+        
+      <form id="contact" action="" method="post">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>First Name</label>
+              <span>:</span><input value="john" [disabled]="!isEdit" class="form-input" type="text" tabindex="1" required autofocus>
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <span>:</span><input value="chouhan" [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <span>:</span><input value="john@chouhan.com" [disabled]="!isEdit" class="form-input" type="email" tabindex="3" required>
+            </div>
+            <div class="form-group">
+              <label>Address</label>
+              <span>:</span><input value="Indore" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+            </div>
+            <div class="form-group">
+              <label>Joined Date</label>
+              <span>:</span><input value="2021-12-12" [disabled]="!isEdit" type="date" class="form-input"  tabindex="5" required>
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <span>:</span><input value="9876549345" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+            </div>
+          </div>
+            <div class="col-sm-6">
+              
+              <div class="form-group">
+                <label>Licence Number</label>
+                <span>:</span><input value="LN7604" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+              </div>
+              <div class="form-group">
+                <label>Vehicle Type</label>
+                <span>:</span><input value="Car" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+              </div>
+              <div class="form-group">
+                <label>Insurance Provider</label>
+                <span>:</span><input value="DHarmendra" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+              </div>
+              <div class="form-group">
+                <label>Policy Number</label>
+                <span>:</span><input value="PLN3567" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+              </div>
+              </div>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>

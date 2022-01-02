@@ -1,0 +1,70 @@
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+  <ul class="nav">
+    <li class="nav-item" [ngClass]="{ 'active': dashboard.isActive }">
+      <a class="nav-link" routerLink="/user/dashboard" routerLinkActive #dashboard="routerLinkActive">
+        <i class="menu-icon mdi mdi-home menu-icon"></i>
+        <span class="menu-title">Dashboard</span>
+        
+      </a>
+    </li>
+    <li class="nav-item" [ngClass]="{ 'active': dashboard01.isActive }">
+      <a class="nav-link" routerLink="/user/dashboard01" routerLinkActive #dashboard01="routerLinkActive">
+        <i class="menu-icon mdi mdi-home menu-icon"></i>
+        <span class="menu-title">Dashboard01</span>
+        
+      </a>
+    </li>
+    <li class="nav-item" [ngClass]="{ 'active': dashboard02.isActive }">
+      <a class="nav-link" routerLink="/user/dashboard02" routerLinkActive #dashboard02="routerLinkActive">
+        <i class="menu-icon mdi mdi-home menu-icon"></i>
+        <span class="menu-title">Dashboard02</span>
+        
+      </a>
+    </li>
+    <li class="nav-item" [ngClass]="{'active' : accordions.isActive }">
+      <a class="nav-link" (click)="uiBasicCollapsed = !uiBasicCollapsed" [attr.aria-expanded]="uiBasicCollapsed" aria-controls="ui-basic">
+        <i class="menu-icon mdi mdi-car"></i>
+        <span class="menu-title">Vehicles</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="ui-basic" [ngbCollapse]="!uiBasicCollapsed">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" routerLink="vehicle/list" routerLinkActive="active" #accordions="routerLinkActive">Vehicle List</a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item" [ngClass]="{ 'active': driverList.isActive }">
+      <a class="nav-link" (click)="samplePagesCollapsed = !samplePagesCollapsed"  [attr.aria-expanded]="samplePagesCollapsed" aria-controls="driver">
+        <i class="menu-icon mdi mdi-car"></i>
+        <span class="menu-title">Driver</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="driver" [ngbCollapse]="!samplePagesCollapsed">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" routerLink="/user/driver" routerLinkActive="active" #driverList="routerLinkActive"> Driver List </a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item" [ngClass]="{ 'active': charts.isActive }">
+      <a class="nav-link" routerLink="/charts" routerLinkActive #charts="routerLinkActive">
+        <i class="menu-icon mdi mdi-google-maps"></i>
+        <span class="menu-title">Places</span>
+        <i class="menu-arrow"></i>
+      </a>
+    </li>
+    <li class="nav-item" [ngClass]="{ 'active': tables.isActive }">
+      <a class="nav-link" routerLink="tables/basic-table1" routerLinkActive #tables="routerLinkActive">
+        <i class="menu-icon mdi mdi-account"></i>
+        <span class="menu-title">Trip</span>
+        <i class="menu-arrow"></i>
+      </a>
+    </li>
+    <li class="nav-item" [ngClass]="{ 'active': icons.isActive }">
+      <a class="nav-link" routerLink="icons/mdi0" routerLinkActive #icons="routerLinkActive">
+        <i class="menu-icon mdi mdi-alert"></i>
+        <span class="menu-title">Issues</span>
+        <i class="menu-arrow"></i>
+      </a>
+    </li>
+  </ul>
+</nav>

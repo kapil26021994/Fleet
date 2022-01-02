@@ -1,0 +1,164 @@
+
+<div class="page-header">
+  <h3 class="page-title">
+    Driver Management
+  </h3>
+  <nav aria-label="breadcrumb">
+    <ul class="breadcrumb" style="padding: 0;">
+      <li class="breadcrumb-item active" aria-current="page">
+       <button class="btn btn-info" (click)="toggleDialog($event)">add driver</button>
+      </li>
+    </ul> 
+  </nav>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-filter-options row">
+      <div class="col-md-6 col-sm-6">
+        <div class="table-search">
+          <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
+          <div>
+            <input type="string" placeholder="Search Driver Name">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-sm-6">
+      <div class="pagination-container">
+        1 - 4 of 4 
+        <span class="prev-next">
+          <label><i class="mdi mdi-chevron-left"></i></label>
+          <label><i class="mdi mdi-chevron-right"></i></label>
+        </span>
+      </div>
+    </div>
+    </div>
+    <div class="card card-table">
+  
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Sr. No.  <i class="mdi mdi-menu-down"></i> </th>
+            <th>Name <i class="mdi mdi-menu-down"></i> </th>
+            <th>Address <i class="mdi mdi-menu-down"></i> </th>
+            <th>Email <i class="mdi mdi-menu-down"></i> </th>
+            <th>Joined Date <i class="mdi mdi-menu-down"></i> </th>
+            <th>Phone No. <i class="mdi mdi-menu-down"></i> </th>
+            <th>Licence No. <i class="mdi mdi-menu-down"></i> </th>
+            <th>Vehicle Type <i class="mdi mdi-menu-down"></i> </th>
+            <th>Insurance Provider <i class="mdi mdi-menu-down"></i> </th>
+            <th>Policy No. <i class="mdi mdi-menu-down"></i> </th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <td>1</td>
+              <td><a routerLink="/user/driver/edit">Rajendra</a></td>
+              <td>Pune</td>
+              <td>raj@gmail.com</td>
+              <td>02-01-2021</td>
+              <td>9745673219</td>
+              <td>342165</td>
+              <td>Car</td>
+              <td>Indore</td>
+              <td>881903</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Ashok</td>
+              <td>Indore</td>
+              <td>ashok@gmail.com</td>
+              <td>02-01-2021</td>
+              <td>9745673219</td>
+              <td>342165</td>
+              <td>Car</td>
+              <td>Indore</td>
+              <td>881903</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Manoj</td>
+              <td>Pune</td>
+              <td>manoj@gmail.com</td>
+              <td>02-01-2021</td>
+              <td>9745673219</td>
+              <td>342165</td>
+              <td>Car</td>
+              <td>Indore</td>
+              <td>881903</td>
+            </tr>
+        </tbody>
+      </table>
+      
+    </div>
+  </div>
+</div>
+
+
+<!-- Add new driver form -->
+
+
+<div class="form-dialog" id="addDriver"> 
+  <div class="closeDailog" (click)="toggleDialog($event)"></div>
+  <div class="form-container">
+    <div class="heading">
+      <p>Add Driver</p>
+      <div class="float-right">
+          <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event)">Close</button>
+        <button class="btn btn-info">Save Driver</button>
+      </div>
+    </div>
+    <form id="contact" action="" method="post">
+      
+      <div class="form-group">
+        <label>First Name</label>
+        <input class="form-input" type="text" tabindex="1" required autofocus>
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input class="form-input" type="text" tabindex="2" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input class="form-input" type="email" tabindex="3" required>
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <input class="form-input"  type="text" tabindex="4" required>
+      </div>
+      <div class="form-group">
+        <label>Joined Date</label>
+        <input type="date" class="form-input"  tabindex="5" required>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="text" class="form-input"  tabindex="5" required>
+      </div>
+      <div class="form-group">
+        <label>Licence Number</label>
+        <input type="text" class="form-input"  tabindex="5" required>
+      </div>
+      <div class="form-group">
+        <label>Vehicle Type</label>
+        <input type="text" class="form-input"  tabindex="5" required>
+      </div>
+      <div class="form-group">
+        <label>Insurance Provider</label>
+        <input type="text" class="form-input"  tabindex="5" required>
+      </div>
+      <div class="form-group">
+        <label>Policy Number</label>
+        <input type="text" class="form-input"  tabindex="5" required>
+      </div>
+      <div class="form-group form-control-footer">
+        <div class="cancelBtn">
+          <a class="link-btn" (click)="toggleDialog($event)">Cancel</a>
+        </div>
+        <div>
+          <a class="link-btn">Reset</a>
+          <button class="btn btn-info">SAVE DRIVER</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
