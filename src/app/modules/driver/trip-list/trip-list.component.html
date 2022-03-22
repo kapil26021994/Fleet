@@ -1,0 +1,213 @@
+<div class="page-header">
+    <h3 class="page-title">
+      All Routes
+    </h3>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+         <button class="btn btn-info button-size" (click)="toggleDialog()"> + ADD NEW Route</button>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="table-filter-options row">
+        <div class="col-md-12 col-sm-12 col-md-12">
+          <form class="example-form" style="display: flex;" [formGroup]="routeListForm">
+            <table class="example-full-width" cellspacing="0"><tr>
+              <td>
+                <div class="table-search ">
+                  <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
+                  <div>
+                    <input type="string" placeholder="Search place name" formControlName="placeName">
+                  </div>
+                </div>
+            </td>
+            </tr></table>
+              </form>
+        </div>
+      </div>
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter #exporter="matTableExporter">
+        <!-- <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle() : null"
+                          [checked]="selection.hasValue() && isAllSelected()"
+                          [indeterminate]="selection.hasValue() && !isAllSelected()"
+                          [aria-label]="checkboxLabel()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                          (change)="$event ? selection.toggle(row) : null"
+                          [checked]="selection.isSelected(row)"
+                          [aria-label]="checkboxLabel(row)">
+            </mat-checkbox>
+          </td>
+        </ng-container> -->
+          <ng-container matColumnDef="createDateTime">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Created Date </th>
+            <td mat-cell *matCellDef="let element"> {{element.createDateTime | date:'MM/dd/yyyy'}} </td>
+          </ng-container>
+         <ng-container matColumnDef="startPoint">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Point</th>
+          <td mat-cell *matCellDef="let element" [matTooltip]="element.startPoint">
+            <div class="dotted-line">
+              {{element.startPoint}}
+          </div>  
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="endPoint">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>End Point</th>
+          <td mat-cell *matCellDef="let element" [matTooltip]="element.endpoint">
+            <div class="dotted-line">
+              {{element.endpoint}}
+          </div>  
+          </td>
+        </ng-container>
+          <ng-container matColumnDef="active">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <td mat-cell *matCellDef="let element"> 
+              <ng-container *ngIf="element.active">
+              <span class="dot"></span>Active 
+              </ng-container> 
+              <ng-container *ngIf="!element.active">
+                <span class="dot"></span>Inactive 
+                </ng-container> 
+           </td>
+          </ng-container>
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let row" style="width:20%">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item  title="View Contact" (click)="getCurrentTripDetail(row,exporter)">
+                <mat-icon>remove_red_eye</mat-icon>
+                <span>View</span>
+              </button>
+              <button mat-menu-item (click)="deleteTrip(row)">
+                <mat-icon>delete</mat-icon>
+                  <span>Delete</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+        <ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+              (click)="selection.toggle(row)">
+          </tr>
+        </ng-container>
+      </table>
+      <div *ngIf="isLoading"  class="circle-spinner">
+        <mat-progress-spinner 
+          color="primary" [diameter]="50"
+          mode="indeterminate">
+        </mat-progress-spinner>
+      </div>
+      <tr *ngIf="!dataSource">
+        <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
+          No Records Found!
+        </td>
+      </tr>
+      <ng-container *ngIf="tripList.length>0">
+        <app-download-content [data]="tripList" [exporterInstance]="exporter"></app-download-content>
+     </ng-container> 
+      <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
+      <div class="card card-table">
+      </div>
+    </div>
+  </div>
+  
+  
+  <!-- Add new Vehicle form -->
+  
+  
+  <div class="form-dialog" id="addVehicle"> 
+    <div class="closeDailog" (click)="toggleDialog()"></div>
+    <div class="form-container">
+      <div class="heading">
+        <p><b>Add Routes</b></p>
+        <div class="float-right">
+            <button class="btn btn-outline-info btn-custom" (click)="toggleDialog();resetData()">Close</button>
+          <!-- <button class="btn btn-info button-size" >Save Route</button> -->
+        </div>
+      </div>
+      <form (ngSubmit)="addNewTrip(f)" #f="ngForm">
+
+        <div class="form-group">
+          <label style="width: 161px !important">Select Vechicle</label>
+          <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
+            <mat-label >Select Vechicle</mat-label>
+            <mat-select name="contactMethod" #vehicleNumber="ngModel" [(ngModel)]="tripAddModel.vehicleNumber" name="vehicle" 
+            (ngModelChange)="updateDataViaKey($event,'vehicle')"
+              [ngClass]="{ 'is-invalid': f.submitted && vehicleNumber.invalid }" required>
+              <mat-option *ngFor="let vehicle of vehicleList" [value]="vehicle.vehicleNumber">{{vehicle.vehicleNumber}}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="f.submitted && vehicleNumber.invalid">
+              <div *ngIf="vehicleNumber.errors.required">Company is required</div>
+            </mat-error> 
+          </mat-form-field>
+        </div>
+        <div class="form-group">
+          <label style="width: 161px !important">Select Driver</label>
+          <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
+            <mat-label >Select Driver</mat-label>
+            <mat-select name="driver" #driver="ngModel" [(ngModel)]="tripAddModel.driver" 
+            (ngModelChange)="updateDataViaKey($event,'driver')"
+              [ngClass]="{ 'is-invalid': f.submitted && driver.invalid }" required>
+              <mat-option *ngFor="let driver of driverList" [value]="driver.firstName">{{driver.firstName}} </mat-option>
+            </mat-select>
+            <mat-error *ngIf="f.submitted && driver.invalid">
+              <div *ngIf="driver.errors.required">Company is required</div>
+            </mat-error> 
+          </mat-form-field>
+        </div>
+        <div class="form-group">
+          <label>Start Point</label>
+          <input  id="autocomplete" type="text" (keyup)="fetchLocationViaKey('autocomplete')" class="form-control" name="startPoint" [(ngModel)]="tripAddModel.startPoint" #startPoint="ngModel" 
+          placeholder="Enter Start Point" [ngClass]="{ 'is-invalid': f.submitted && startPoint.invalid }" required />
+          <div *ngIf="f.submitted && startPoint.invalid" class="invalid-feedback">
+              <div *ngIf="startPoint.errors.required">Start Point is required</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>End Point</label>
+          <input id="autocomplete1" type="text" (keyup)="fetchLocationViaKey('autocomplete1')" class="form-control" name="endPoint"
+           [(ngModel)]="tripAddModel.endPoint" #endPoint="ngModel" 
+          placeholder="Enter End Point" [ngClass]="{ 'is-invalid': f.submitted && endPoint.invalid }" required />
+          <div *ngIf="f.submitted && endPoint.invalid" class="invalid-feedback">
+              <div *ngIf="endPoint.errors.required">End Point is required</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Start Date</label>
+          <input type="date" class="form-control date-picker-position" name="startDate" [(ngModel)]="tripAddModel.startDate" #startDate="ngModel" 
+          placeholder="Enter Start Point" [ngClass]="{ 'is-invalid': f.submitted && startDate.invalid }" required />
+          <div *ngIf="f.submitted && startDate.invalid" class="invalid-feedback">
+              <div *ngIf="startDate.errors.required">Start Date is required</div>
+          </div>
+        </div>  
+        <div class="form-group">
+          <label>End Date</label>
+          <input type="date" class="form-control date-picker-position" name="endDate" [(ngModel)]="tripAddModel.endDate" #endDate="ngModel" 
+          placeholder="Enter Start Point" [ngClass]="{ 'is-invalid': f.submitted && endDate.invalid }" required />
+          <div *ngIf="f.submitted && endDate.invalid" class="invalid-feedback">
+              <div *ngIf="endDate.errors.required">End Date is required</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div id="googleMap" class="map-wrapper"></div>
+        </div>
+        <div class="form-group form-control-footer">
+          <button class="btn btn-outline-info btn-custom"  (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
+          <button class="btn  btn-outline-info btn-custom"  type="reset" (click)="f.reset()">Reset</button>
+          <div>
+            <button class="btn btn-info button-size">SAVE Route</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>

@@ -1,0 +1,92 @@
+
+<div class="navigation">
+    <a  routerLink="/user/sim/list"><span><i class="mdi mdi-keyboard-backspace"></i> SIM </span></a>
+    <span routerLink="/user/sim/list"> <span ><i class="mdi mdi-chevron-right"></i></span> {{currentSimDetail.imeiNumber}} </span>
+    <span></span>
+</div>
+<div class="page-header">
+    <h3 class="page-title">
+      Details
+    </h3>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+            <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
+         <button class="btn btn-info button-size" >Deactivate</button>
+         <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
+         <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateDriverInfo()">Save</button>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+  
+  <!-- <div class="row">
+    <div class="col-md-12">
+      <div class="card card-table">
+        <div class="media">
+            <img class="mr-3 w-25 rounded-img" src="assets/images/logo.png" alt="sample image">
+            <div class="media-body media-details">
+              <h4 class="mt-0">{{currentSimDetail.imeiNumber}}</h4>
+              <p *ngIf="currentSimDetail.active"><span class="active-dot" ></span> Active</p>
+              <p *ngIf="!currentSimDetail.active"><span class="active-dot" ></span> Deactive</p>
+            </div>
+            <div class="media-body chart-container">
+              <div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div> -->
+  
+
+  <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
+    <div class="col-sm-12">
+      <div class="card">
+        
+      <form id="contact" action="" method="post">
+        <div class="row">
+          <div class="col-sm-6">
+            <!-- <div class="form-group">
+              <label>Sr. No</label>
+              <span>:</span>
+              <input name="id" [(ngModel)]="currentSimDetail.id" [disabled]="!isEdit" class="form-input" type="text" tabindex="1" required autofocus>
+            </div> -->
+            <div class="form-group">
+              <label>IMEI Number</label>
+              <span>:</span>
+              <input name="imeiNumber"  [(ngModel)]="currentSimDetail.imeiNumber" [disabled]="!isEdit" class="form-input" type="text" tabindex="1" required autofocus>
+            </div>
+            <div class="form-group">
+              <label>Calling Number</label>
+              <span>:</span><input name="callingNumber"   [(ngModel)]="currentSimDetail.callingNumber" [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
+            </div>
+            <div class="form-group">
+              <label>SIM Provider</label>
+              <span>:</span><input name="simProvider"  [(ngModel)]="currentSimDetail.simProvider" [disabled]="!isEdit" class="form-input" type="email" tabindex="3" required>
+            </div>
+            <div class="form-group">
+              <label>ICCD Number</label>
+              <span>:</span><input name="iccdNumber" [(ngModel)]="currentSimDetail.iccdNumber" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+            </div>
+          </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>Purchase Date</label>
+                    <span>:</span><input name="purchaseDate" [(ngModel)]="currentSimDetail.purchaseDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
+                  </div>
+                <div class="form-group">
+                    <label>Recharge Date</label>
+                    <span>:</span><input name="rechargeStartDate" [(ngModel)]="currentSimDetail.rechargeStartDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
+                  </div>
+                <div class="form-group">
+                    <label>Recharge Expiry Date</label>
+                    <span>:</span><input name="rechargeExpiryDate" [(ngModel)]="currentSimDetail.rechargeExpiryDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
+                  </div>
+           
+              </div>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,77 @@
+@import '../../../../styles.scss';
+.example-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.example-full-width {
+  width: 100%;
+}
+
+.field-wrapper{
+  margin: 18px 2px 2px 7px;
+  width: 350px;
+  font-size: 13px;
+}
+
+.table-filter-options{
+  margin-top: -20px !important;
+}
+
+.form-control{
+  width: 100%;
+  border: 1px solid #CCC;
+  background: #FFF;
+  margin: 0 0 5px;
+  padding: 19px;
+  border: 1px solid #979797;
+  border-radius: 8px;
+  font-size: 13px;
+  max-height: 45px;
+}
+
+
+.form-group .col-sm-9{
+  margin-left: -42px !important;
+}
+
+.form-group{
+  margin-left:-16px !important;
+}
+
+.invalid-feedback{
+position: absolute !important;
+margin: 39px 0px 0px 120px !important;
+}
+
+.form-group{
+  margin-bottom: 18px !important;
+}
+
+
+select.form-control{
+  outline: 1px solid #979797 !important;
+  color: black !important
+}; 
+
+
+@media only screen and (max-width: 600px) {
+ 
+.form-container{
+  width: 100% !important;
+}
+}
+th, td {
+  overflow: hidden;
+  width:auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.app-permission  {
+  margin: -5px -5px -1px 30px !important;
+  width: 139% !important;
+  font-size: 12px !important;
+}

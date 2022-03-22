@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import{UserService} from 'src/app/core/services/user/user.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,9 +13,10 @@ export class DashboardComponent implements OnInit {
     document.querySelector('body').classList.toggle('removeProbanner');
   }
 
-  constructor() { }
+  constructor(public userService :UserService) { }
 
   ngOnInit() {
+    this.showAllVehicleTypeList();
   }
 
   date: Date = new Date();
@@ -164,4 +166,19 @@ export class DashboardComponent implements OnInit {
     }
   ];
 
+    /*
+      Author:Kapil Soni
+      Funcion:showAllVehicleTypeList
+      Summary:showAllVehicleTypeList for get vehicle list
+      Return list
+    */
+    showAllVehicleTypeList() {
+      this.userService.getMulipleAPIDataViaUrl('showAllVehicleType','showAllFuelType','company/showAllCompanyData').subscribe((data:any)=>{
+        if(data.length>0){
+          localStorage.setItem('vehicleTypeList',JSON.stringify(data[1]));
+          localStorage.setItem('fuelTypeList',JSON.stringify(data[0]));
+          localStorage.setItem('companyList',JSON.stringify(data[2]));
+        }
+      })
+    }
 }

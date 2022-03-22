@@ -1,0 +1,93 @@
+
+<div class="navigation">
+    <a  routerLink="/user/customer-support"><span><i class="mdi mdi-keyboard-backspace"></i>Customer Support Management</span></a>
+    <span routerLink="/user/customer-support"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
+    <span></span>
+</div>
+<div class="page-header">
+    <h3 class="page-title">
+      Details
+    </h3>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+            <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
+         <button class="btn btn-info button-size" >Deactivate</button>
+         <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
+         <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateGroupInfo()">Save</button>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+  <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
+    <div class="col-sm-12">
+      <div class="card">
+        
+      <form id="contact" action="" method="post">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>Select Company</label>
+              <span>:</span>
+              <mat-form-field fxFlex="40" class="field-wrapper app-permission" >
+                <mat-select disableOptionCentering [disabled]="!isEdit" name="contactMethod"  id="contactMethod" 
+                (ngModelChange)="updateDataViaKey($event,'')"  [(ngModel)]="currentUserDetail.company.companyName">
+                  <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+                <label>User</label>
+                <span>:</span>
+                <mat-form-field fxFlex="40" class="field-wrapper app-permission"  >
+                  <mat-label >Select User</mat-label>
+                  <mat-select disableOptionCentering  name="username" [(ngModel)]="username"   (ngModelChange)="updateDataViaKey($event,'user')">
+                    <mat-option *ngFor="let user of userList" [value]="user.username">{{user.username}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+            </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Problem Type</label>
+                <span>:</span>
+                <mat-form-field fxFlex="40" class="field-wrapper app-permission"  >
+                  <mat-select disableOptionCentering name="problemType" [(ngModel)]="currentUserDetail.problemType" name="problemType">
+                    <mat-option value="basic">Basic</mat-option>
+                    <mat-option value="advanced">Advanced</mat-option>
+                </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Email</label>
+                <span>:</span><input name="email"  [(ngModel)]="currentUserDetail.email" [disabled]="!isEdit" class="form-input" type="email" tabindex="3" required>
+              </div>
+            </div>
+             <div class="col-sm-6">
+                <div class="form-group">
+                  <label class="col-sm-3 col-form-label" style="margin:-17px 23px 0px -23px"> Number</label>
+                  <div class="input-group flex-nowrap input-label-container">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" id="addon-wrapping">+91</span>
+                    </div>
+                  <input style="height: 42px;" [disabled]="!isEdit" type="tel" name="phoneNumber"  class="form-control form-control-lg" placeholder="Enter Phone Number" maxlength="10"
+                   [(ngModel)]="currentUserDetail.contactNumber">  
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Subject</label>
+                  <span>:</span>
+                  <input type="text" name="subject"  class="form-control form-control-lg" placeholder="Enter subject" [(ngModel)]="currentUserDetail.subject">                
+                </div>
+              </div>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>

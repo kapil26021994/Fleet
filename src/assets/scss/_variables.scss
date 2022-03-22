@@ -46,7 +46,7 @@ $theme-colors: (
   success:         #1bcfb4,
   info:            #198ae3,
   warning:         #fed713,
-  danger:          #fe7c96,
+  danger:          red,
   light:           #f8f9fa,
   dark:            #3e4b5b
 );
@@ -56,8 +56,8 @@ $theme-gradient-colors: (
   secondary:       linear-gradient(to right, #e7ebf0, #868e96),
   success:         linear-gradient(to right, #84d9d2, #07cdae),
   info:            linear-gradient(to right, #90caf9, #047edf 99%),
-  warning:         linear-gradient(to right, #f6e384, #ffd500),
-  danger:          linear-gradient(to right, #ffbf96, #fe7096),
+  warning:         linear-gradient(to right, #f6e384, red),
+  danger:          linear-gradient(to right, #ffbf96, red),
   light:           linear-gradient(to bottom, #f4f4f4, #e4e4e9),
   dark:            linear-gradient(89deg, #5e7188, #3e4b5b)
 );

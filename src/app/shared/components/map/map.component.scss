@@ -1,0 +1,52 @@
+.map-wrapper{
+    height: 96%;
+    width: 108%;
+    margin-left: -36px !important;
+    margin-top: -27px;
+   }
+   .form-control {
+        background: transparent !important; 
+    }
+
+
+    .map-wrapper-live {
+        height: 147%;
+        min-width: 107%;
+        margin-left: -36px;
+        margin-top: -18px;
+    }
+    
+    input#session-date {
+        display: inline-block;
+        position: relative;
+    }
+    input#session-endDate {
+        display: inline-block;
+        position: relative;
+    }
+  
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        background: transparent;
+        bottom: 0;
+        color: transparent;
+        cursor: pointer;
+        height: auto;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: auto;
+    }
+    .button-wrapper{
+        margin: -4px 3px 0px 69px;
+        height: 35px
+    }
+
+    .spinner-wrapper{
+        float:right;
+    }
+
+    .example-input {
+        height: 50px;
+      }
+      

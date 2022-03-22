@@ -1,0 +1,36 @@
+.field-wrapper {
+    margin: -8px 0px 0px 0px !important;
+    width: 99% !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+}
+
+.checkbox-margin{
+   margin:  0px 76px 0px 0px !important;
+}
+
+select.form-control {
+    outline: 1px solid #979797 !important;
+      color: #000000 !important; 
+  }
+
+  .checkbox-inline{
+    width: 120px !important;
+  }
+  
+  .checkbox-container{
+    margin: -1px 0px 0px 21px;
+    display: inherit;
+  }
+
+.input-container{
+  position: absolute;
+  margin: 2px 0px 0px -120px !important;
+}
+
+.input-group-prepend{
+  margin:0px -10px 0px 56px !important;
+}
+.readonly-block {
+  pointer-events: none;
+}

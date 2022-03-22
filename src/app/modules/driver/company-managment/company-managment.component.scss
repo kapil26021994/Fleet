@@ -1,0 +1,70 @@
+@import '../../../../styles.scss';
+.example-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.example-full-width {
+  width: 100%;
+}
+
+
+select.form-control {
+  outline: 1px solid #979797 !important;
+    color: #000000 !important; 
+}
+
+.form-control{
+  width:  113%;
+  border: 1px solid #CCC;
+  background: #FFF;
+  margin: 0 0 5px;
+  padding: 19px;
+  border: 1px solid #979797;
+  border-radius: 8px;
+  font-size: 13px;
+  max-height: 45px;
+}
+
+
+.form-group .col-sm-9{
+  margin-left: -42px !important;
+}
+
+.form-group{
+  margin-left:-16px !important;
+}
+
+.invalid-feedback{
+position: absolute !important;
+margin: 4px 0px 0px 10px !important;
+}
+.form-group{
+  margin-bottom: 11px !important;
+}
+
+.link-btn {
+  font-size: 14px !important;
+  margin: 0px 52px !important;
+}
+
+
+.form-control-footer{
+  margin: 0px -7px 0px 54px !important;
+}
+.form-control-footer .btn-custom{
+  width: 44%;
+}
+
+.mat-table{
+  margin-left: -27px !important;
+}
+
+.form-control:disabled{
+  background-color:White !important;
+  }
+
+  .field-wrapper{
+    margin:2px -16px -4px 24px !important;
+  }

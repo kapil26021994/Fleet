@@ -5,7 +5,7 @@
       <div class="main-panel" [ngClass]="{ 'main-panel-only' : !showSidebar }">
         <div class="content-wrapper">
           <app-spinner *ngIf="isLoading"></app-spinner>
-          <div contentAnimate *ngIf="!isLoading" class="h-100">
+          <div contentAnimater *ngIf="!isLoading"  class="h-100">
             <router-outlet></router-outlet>
           </div>
         </div>

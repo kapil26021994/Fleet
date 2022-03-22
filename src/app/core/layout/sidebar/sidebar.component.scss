@@ -13,6 +13,7 @@
   -moz-transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
   -ms-transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
   height: 100%;
+ 
 
   .nav {
     overflow: hidden;
@@ -365,4 +366,8 @@
       right: 0;
     }
   }
+}
+
+.menu-title{
+  font-size: 13px !important;
 }

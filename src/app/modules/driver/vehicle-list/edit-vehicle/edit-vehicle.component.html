@@ -1,0 +1,181 @@
+
+<div class="navigation">
+    <a routerLink="/user/vehicle/list"><span><i class="mdi mdi-keyboard-backspace"></i> Vehicle</span></a>
+    <span *ngIf="isEdit"> <i class="mdi mdi-chevron-right" routerLink="/user/vehicle/list"></i> Edit Details </span>
+</div>
+<div class="page-header">
+    <h3 class="page-title">
+      Details
+    </h3>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+            <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
+         <button class="btn btn-info button-size">Deactivate</button>
+         <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
+         <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateInfo()">Save</button>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card card-table">
+        <div class="media">
+            <img class="mr-3 w-25 rounded-img" src="assets/images/logo.png" alt="sample image">
+            <form>
+              <div class="row" style="margin-left: -183px;">
+                <span>
+                  <b>Vehicle Manufacturing Company Name</b> : 
+                </span>
+                <span class="text-wrapper">
+                  {{currentVehicleDetail.vehicleManufacturingCompanyName}}
+                </span>
+              </div>
+              <div class="row">
+                <span>
+                  <b>Vehicle No</b> : 
+                </span>
+                <span class="text-wrapper">
+                  {{currentVehicleDetail.vehicleNumber}}
+                </span>
+              </div>
+              <div class="row">
+                <span><b>Model Name</b>    : </span>
+                <span class="text-wrapper">
+                  {{currentVehicleDetail.modelName}}
+                </span>
+              </div>
+              <div class="row">
+                <span>
+                  <b>Vehicle Type</b>   : 
+                </span>
+                <span class="text-wrapper">
+                  {{currentVehicleDetail.vehicleType}}
+                </span>
+                <!-- <div class="form-group">
+                  <label>Vehicle Type</label>
+                  <span>:</span>
+                  <mat-form-field   fxFlex="40" class="field-wrapper-filter app-permission" >
+                    <mat-label >Vehicle Type</mat-label>
+                    <mat-select [disabled]="!isEdit" name="fuelType"  [(ngModel)]="currentVehicleDetail.vehicleType">
+                    <mat-option *ngFor="let vehicle of vehicleList" [value]="vehicle.vehicleType"> {{ vehicle.vehicleType}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  </div> -->
+              </div>
+              <div class="row">
+                <span>
+                  <b>Purchasing Year  : </b>  
+                </span>
+                <span class="text-wrapper">
+                   {{currentVehicleDetail.purchaseYear}}
+                </span>
+              </div>
+            </form>
+          </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
+    <div class="col-sm-12">
+      <div class="card">
+        
+      <form id="contact" action="" method="post">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>Company Name</label>
+              <span>:</span> <input name="companyName"  readonly [(ngModel)]="currentVehicleDetail.company.companyName" [disabled]="!isEdit" class="form-input" type="text" required 
+              placeholder="Enter Company Name" >
+            </div>
+            <div class="form-group">
+              <label>Vehicle Number</label>
+              <span>:</span>
+              <input name="vehicleNumber"  
+              placeholder="Enter Vehicle Number"  [(ngModel)]="currentVehicleDetail.vehicleNumber" 
+              [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
+            </div>
+            <div class="form-group">
+              <label>Vehicle Type</label>
+              <span>:</span>
+              <mat-form-field   fxFlex="40" class="field-wrapper-filter app-permission">
+                <mat-select [disabled]="!isEdit" name="vehicleType"  [(ngModel)]="currentVehicleDetail.vehicleType">
+                <mat-option *ngFor="let vehicle of vehicleList" [value]="vehicle.vehicleType"> {{ vehicle.vehicleType}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="form-group">
+              <label>Model Name</label>
+              <span>:</span><input name="modelName"  placeholder="Enter Model Name" [(ngModel)]="currentVehicleDetail.modelName" value="Indore" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+            </div>
+            <div class="form-group">
+              <label>Max Speed</label>
+              <span>:</span><input name="maxSpeed"  placeholder="Enter Max Speed"  [(ngModel)]="currentVehicleDetail.maxSpeed" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+            </div>
+            <div class="form-group">
+              <label> Fuel Type</label>
+                <span>:</span>
+                <mat-form-field   fxFlex="40" class="field-wrapper-filter app-permission">
+                  <mat-select [disabled]="!isEdit" name="fuelType"  [(ngModel)]="currentVehicleDetail.fuelType">
+                  <mat-option *ngFor="let fuel of fuelTypeList" [value]="fuel.fuelType"> {{ fuel.fuelType}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              <!-- <input name="fuelType"  placeholder="Enter Fuel Type"   [(ngModel)]="currentVehicleDetail.fuelType" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required> -->
+            </div>
+            <div class="form-group">
+              <label> Tank Capacity</label>
+              <span>:</span><input name="tankCapacity" placeholder="Tank Capacity" [(ngModel)]="currentVehicleDetail.tankCapacity" [(ngModel)]="currentVehicleDetail.tankCapacity" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+            </div>
+            <div class="form-group">
+              <label>Engine Number</label>
+              <span>:</span><input name="enginNumber"  placeholder="Enter Engine Number" [(ngModel)]="currentVehicleDetail.enginNumber"  [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+            </div>
+            <div class="form-group">
+              <label>Vehicle Manufacturing Company Name</label>
+              <span>:</span><input name="manufacturingCompany"  placeholder="Vehicle Manufacturing Company Name" 
+              [(ngModel)]="currentVehicleDetail.vehicleManufacturingCompanyName" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+            </div>
+          </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Purchase Year</label>
+                <span>:</span><input name="purchaseYear"  placeholder="Purchase Year"  [(ngModel)]="currentVehicleDetail.purchaseYear" [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
+              </div>
+              <div class="form-group">
+                <label>Idle Mileage</label>
+                <span>:</span><input name="idleMileage" placeholder="Idle Mileage"  [(ngModel)]="currentVehicleDetail.idleMileage" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+              </div>
+              <div class="form-group">
+                <label>Insurance Renewal Date</label>
+                <span>:</span><input type="date" name="insuranceRenewalDate" placeholder="Insurance Renewal Date"  [(ngModel)]="currentVehicleDetail.insuranceRenewalDate" [disabled]="!isEdit" class="form-input date-picker-position"  tabindex="5" required>
+              </div>
+              <div class="form-group">
+                <label>PUC Renewal Date</label>
+                <span>:</span><input type="date" name="pucRenewalDate"  placeholder="PUC Renewal Date" [(ngModel)]="currentVehicleDetail.pucRenewalDate " [disabled]="!isEdit" class="form-input date-picker-position"  tabindex="5" required>
+              </div>
+              <div class="form-group">
+                <label>Servicing Period</label>
+                <span>:</span><input name="servicingPeriod" placeholder="Servicing Period"  [(ngModel)]="currentVehicleDetail.servicingPeriod" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+              </div>
+              <div class="form-group">
+                <label>Last Servicing Date</label>
+                <span>:</span><input type="date"  name="lastServicingDate" placeholder="Last Servicing Date"   [(ngModel)]="currentVehicleDetail.lastServicingDate" [disabled]="!isEdit"  class="form-input date-picker-position"  tabindex="5" required>
+              </div>
+              <div class="form-group">
+                <label>Average Running Limit Per Day</label>
+                <span>:</span><input name="averageRunningLimitPerDay" placeholder="Average Running Limit Per Day"  [(ngModel)]="currentVehicleDetail.averageRunningLimitPerDay" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+              </div>
+              <div class="form-group">
+                <label>Chassis No</label>
+                <span>:</span><input name="chasisNumber"  placeholder="Chassis No" [(ngModel)]="currentVehicleDetail.chasisNumber"  [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+              </div>
+              </div>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>

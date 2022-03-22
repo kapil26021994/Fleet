@@ -1,9 +1,10 @@
 <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
   <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center" aria-expanded="false">
-    <a class="navbar-brand brand-logo" routerLink="/">Fleet 
-      <i class="mdi mdi-chevron-down"></i>
+    <i class="menu-icon mdi mdi-account user-icon-wrapper"></i>
+    <a class="text-wrapper" >{{currentUserData?.username}} </a>
+    <a  routerLink="/user/company">
+      <img  class="logo-wrapper" [src]="currentCompanyLogo != '' ? currentCompanyLogo : 'assets/images/logo.png' " alt="logo">
     </a>
-    <a class="navbar-brand" routerLink="/"><img src="assets/images/logo-mini.svg" alt="logo" /></a>
   </div>
   <div class="navbar-menu-wrapper d-flex align-items-stretch">
     <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize" (click)="toggleSidebar()">
@@ -63,8 +64,8 @@
           <h6 class="p-3 mb-0 text-center">See all notifications</h6>
         </div>
       </li>
-      <li class="nav-item nav-logout d-none d-lg-block">
-        <a class="btn btn-info btn-fw" href="javascript:;">
+      <li class="nav-item nav-logout d-none d-lg-block" (click)="logoutUser()"> 
+        <a class="btn btn-info btn-fw button-size" href="javascript:;">
           Logout 
           <i class="mdi mdi-logout"></i>
         </a>

@@ -1,0 +1,84 @@
+
+<div class="navigation">
+    <a  routerLink="/user/group"><span><i class="mdi mdi-keyboard-backspace"></i> Group</span></a>
+    <span routerLink="/user/group"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
+    <span></span>
+</div>
+<div class="page-header">
+    <h3 class="page-title">
+      Details
+    </h3>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+            <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
+         <button class="btn btn-info button-size" >Deactivate</button>
+         <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
+         <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateGroupInfo()">Save</button>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+  <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
+    <div class="col-sm-12">
+      <div class="card">
+        
+      <form id="contact" action="" method="post">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>Group Name</label>
+              <span>:</span><input name="groupName" [(ngModel)]="currentGroupDetail.groupName" [disabled]="!isEdit" class="form-input" type="text" tabindex="1" required>
+            </div>
+              <div class="form-group">
+                <label>Select Company</label>
+                <span>:</span>
+                <mat-form-field fxFlex="40" class="field-wrapper app-permission" >
+                  <mat-select [disabled]="!isEdit" name="contactMethod"  id="contactMethod"  [(ngModel)]="currentGroupDetail.company.companyName">
+                    <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+          </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>App Permission</label>
+                <span>:</span>
+                <!-- <mat-form-field fxFlex="40" class="field-wrapper app-permission">
+                    <mat-select  [(ngModel)]="currentGroupDetail.addPermissions"  [disabled]="!isEdit" placeholder="App Permission" multiple name="permission"> 
+                      <mat-option *ngFor="let permission of permissionList" [value]="permission">{{permission}}</mat-option>
+                    </mat-select>
+                  </mat-form-field> -->
+                  <!-- <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission">
+                    <mat-label>App Permission</mat-label>
+                    <mat-select  disableOptionCentering multiple [(ngModel)]="modelGroup" multiple #itemSelect="ngModel"  placeholder="Vehicle Type" name="permission">
+                      <mat-optgroup *ngFor="let permission of totalPermissionList" [label]="permission.pageName">
+                        <mat-option *ngFor="let permission_name of permission.addPermissions" [value]="permission_name" (onSelectionChange)="optionSelected($event,permission_name)">
+                          {{permission_name}}
+                        </mat-option>
+                      </mat-optgroup>
+                    </mat-select>
+                  </mat-form-field> -->
+                  <mat-form-field fxFlex="40" class="field-wrapper app-permission">
+                    <mat-select [(ngModel)]="modelGroup" [disabled]="!isEdit" #itemSelect="ngModel" name="permission"  multiple>
+                      <!-- Loop through each group via the groups array -->
+                      <mat-optgroup *ngFor="let group of totalPermissionList" [label]="group.name">
+                        <mat-option *ngFor="let item of group.items" [value]="item.value" 
+                        (onSelectionChange)="optionSelected($event,item.lable,group)">
+                          {{item.value}}
+                        </mat-option>
+                      </mat-optgroup>
+                    </mat-select>
+                  </mat-form-field>
+              </div>
+              <div class="form-group">
+                <label>Is Active</label>
+                <span>:</span>
+                <input  [(ngModel)]="isEditData" [disabled]="!isEdit" class="form-input checkbox-margin"  type="checkbox" name="isActive"> 
+              </div>
+              </div>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>

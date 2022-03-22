@@ -1,0 +1,203 @@
+<div class="page-header">
+  <h3 class="page-title">
+    User Group Management
+  </h3>
+  <nav aria-label="breadcrumb">
+    <ul class="breadcrumb" style="padding: 0;">
+      <li class="breadcrumb-item active" aria-current="page">
+       <button class="btn btn-info button-size" (click)="toggleDialog($event)" style="font-size:0.7rem !important"> + Add User Group</button>
+       <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
+      </li>
+    </ul> 
+  </nav>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-filter-options row">
+      <div class="col-md-12 col-sm-12 col-md-12">
+        <form class="example-form" style="display: flex;"  [formGroup]="filterForm">
+          <table class="example-full-width" cellspacing="0"><tr>
+            <td>
+            <div class="table-search">
+              <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
+              <div>
+                <input type="string" placeholder="Group  Name" formControlName="groupName">
+              </div>
+            </div>
+          </td>
+          <td>
+            <mat-form-field  fxFlex="40" class="field-wrapper">
+              <mat-select  disableOptionCentering formControlName="isActive" placeholder="Status" multiple>
+                <mat-option *ngFor="let status of statusList" [value]="status">{{status}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td>
+            <mat-form-field fxFlex="40" class="field-wrapper">
+              <mat-select disableOptionCentering formControlName="companyName" placeholder="Company Name" multiple>
+                <mat-option *ngFor="let company of companyList" [value]="company.companyName">
+                  {{company.companyName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          </tr></table>
+            </form>
+      </div>
+    </div>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableResponsive matTableExporter #exporter="matTableExporter">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [aria-label]="checkboxLabel()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+        <!-- Name Column -->
+        <ng-container matColumnDef="createDateTime">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Created Date </th>
+          <td mat-cell *matCellDef="let element"> {{element.createDateTime | date:'MM/dd/yyyy'}} </td>
+        </ng-container>
+      <!-- Name Column -->
+      <ng-container matColumnDef="groupName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.groupName}} </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let element"> 
+          <span class="dot" [ngClass]="element.isActive ==  'active' ? 'dot' : 'deactive-dot'"></span>{{element.isActive}} 
+       </td>
+      </ng-container>
+      <!-- Weight Column -->
+      <ng-container matColumnDef="companyName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Company Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.company?.companyName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef style="color: white;"> Actions </th>
+        <td mat-cell *matCellDef="let row" style="width:20%">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item  title="View Contact" (click)="getCurrentVehicleDetail(row)">
+              <mat-icon>remove_red_eye</mat-icon>
+              <span>View</span>
+            </button>
+            <button mat-menu-item (click)="deleteVehicle(row)">
+              <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+      <ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            (click)="selection.toggle(row)">
+        </tr>
+      </ng-container>
+    </table>
+    <div *ngIf="isLoading"  class="circle-spinner">
+      <mat-progress-spinner 
+        color="primary" [diameter]="50"
+        mode="indeterminate">
+      </mat-progress-spinner>
+    </div>
+    <tr *ngIf="!dataSource">
+      <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
+        No Records Found!
+      </td>
+    </tr>
+    <ng-container *ngIf="groupList.length>0">
+      <app-download-content [data]="groupList" [exporterInstance]="exporter"></app-download-content>
+   </ng-container> 
+    <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
+  </div>
+</div>
+
+<!-- Add new Vehicle form -->
+<div class="form-dialog" id="addGroup"> 
+  <div class="closeDailog" (click)="toggleDialog($event)"></div>
+  <div class="form-container">
+    <div class="heading">
+      <p> <b>User Group Management</b>  </p>
+      <div class="float-right">
+          <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event);resetData()">Close</button>
+        <!-- <button class="btn btn-info button-size">Save Vehicle</button> -->
+      </div>
+    </div>
+    <form (ngSubmit)="addVehicle(f)" #f="ngForm">
+      <div class="form-group">
+        <label style="width: 161px !important">Select Company</label>
+        <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
+          <mat-label >Select Company</mat-label>
+          <mat-select name="contactMethod"  id="contactMethod"  [(ngModel)]="groupAdd.companyName"  (ngModelChange)="updateDataViaKey($event,'company')"
+          #companyName="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && companyName.invalid }" required>
+            <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="f.submitted && companyName.invalid">
+            <div *ngIf="companyName.errors.required">Company is required</div>
+          </mat-error> 
+        </mat-form-field>
+      </div>
+      <div class="form-group">
+        <label >Group Name</label>
+          <input type="text" class="form-control" name="groupName" [(ngModel)]="groupAdd.groupName" #groupName="ngModel" 
+            placeholder="Enter Group Name" [ngClass]="{ 'is-invalid': f.submitted && groupName.invalid }" required />
+          <div *ngIf="f.submitted && groupName.invalid" class="invalid-feedback">
+              <div *ngIf="groupName.errors.required">Group Name is required</div>
+          </div>
+      </div>
+      <div class="form-group">
+        <label>App Permission</label>
+        <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission">
+          <mat-label>App Permission</mat-label>
+          <mat-select  disableOptionCentering multiple  [(ngModel)]="selectedPermission" placeholder="Vehicle Type" multiple name="permission"
+          #permission="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && permission.invalid }" required>
+            <mat-optgroup *ngFor="let permission of permissionList" [label]="permission.name">
+              <mat-option *ngFor="let permission_name of permission.items" [value]="permission_name.lable" 
+              (onSelectionChange)="optionSelected($event,permission_name.lable,permission)">
+                {{permission_name.lable}}
+              </mat-option>
+            </mat-optgroup>
+          </mat-select>
+          <mat-error *ngIf="f.submitted && permission.invalid">
+            <div *ngIf="permission.errors.required">permission is required</div>
+          </mat-error> 
+        </mat-form-field>
+        </div>
+      <div class="form-group">
+        <label>Active</label>
+        <input type="checkbox" name="isActive"  class="form-check"  [(ngModel)]="groupAdd.isActive">
+      </div>
+      <div class="form-group form-control-footer margin-top: 176px;">
+        <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
+        <button class="btn  btn-outline-info btn-custom" type="reset" (click)="f.reset()">Reset</button>
+        <div>
+          <button class="btn btn-info button-size" [disabled]="isLoadingData">
+            <ng-container *ngIf="!isLoadingData">
+              Save User Group
+            </ng-container>
+            <ng-container *ngIf="isLoadingData">
+              <span class="spinner-border spinner-border-sm"></span>
+                Loading..
+            </ng-container>
+          </button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>

@@ -1,0 +1,261 @@
+
+<div class="page-header">
+    <h3 class="page-title">
+      Device  Management
+    </h3>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+         <button class="btn btn-info button-size" (click)="toggleDialog($event);">Add New Device</button>
+         <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-12">
+      <div class="table-filter-options row">
+        <div class="col-md-12 col-sm-12 col-md-12">
+          <form class="example-form" style="display: flex;"  [formGroup]="deviceForm">
+          <table class="example-full-width" cellspacing="0"><tr>
+            <td>
+            <div class="table-search">
+              <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
+              <div>
+                <input type="string" placeholder="Search device Name" formControlName="deviceName">
+              </div>
+            </div>
+          </td>
+          <td>
+            <mat-form-field  fxFlex="40" class="field-wrapper">
+              <mat-select  formControlName="deviceType" placeholder="Device Type" multiple>
+                <mat-option *ngFor="let type of deviceTypeList" [value]="type">{{type}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td>
+            <mat-form-field  fxFlex="40" class="field-wrapper">
+              <mat-select  formControlName="isActive" placeholder="Driver Status" multiple>
+                <mat-option *ngFor="let status of statusList" [value]="status">{{status}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          </tr></table>
+            </form>
+        </div>
+       </div> 
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter #exporter="matTableExporter">
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle() : null"
+                          [checked]="selection.hasValue() && isAllSelected()"
+                          [indeterminate]="selection.hasValue() && !isAllSelected()"
+                          [aria-label]="checkboxLabel()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                          (change)="$event ? selection.toggle(row) : null"
+                          [checked]="selection.isSelected(row)"
+                          [aria-label]="checkboxLabel(row)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+      
+        <!-- Position Column -->
+        <!-- <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header >Sr. No. </th>
+          <td mat-cell *matCellDef="let element" > {{element.id}} </td>
+        </ng-container> -->
+      
+          <!-- Name Column -->
+          <ng-container matColumnDef="deviceName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Device Name</th>
+            <td mat-cell *matCellDef="let element"> {{element.deviceName }} </td>
+          </ng-container>
+        <!-- Name Column -->
+        <ng-container matColumnDef="deviceType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Device Type </th>
+          <td mat-cell *matCellDef="let element"> {{element.deviceType}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="assignedSim">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Assigned Sim </th>
+          <td mat-cell *matCellDef="let element"> {{element.assignSim.simProvider}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="isActive">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let element"> 
+            <span class="dot" [ngClass]="element.isActive ==  'active' ? 'dot' : 'deactive-dot'"></span>{{element.isActive}} 
+         </td>
+        </ng-container>
+      
+        <!-- Weight Column -->
+        <ng-container matColumnDef="issueDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Issue Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.issueDate | date:'MM/dd/yyyy'}} </td>
+        </ng-container>
+  
+         <!-- Weight Column -->
+         <ng-container matColumnDef="activationDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Activation Date </th>
+          <td mat-cell *matCellDef="let element"> {{element.activationDate | date:'MM/dd/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let row" style="width:20%">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item  title="View Contact" (click)="getCurrentSimCardDetail(row,exporter)">
+                <mat-icon>remove_red_eye</mat-icon>
+                <span>View</span>
+              </button>
+              <button mat-menu-item (click)="deleteSimCard(row)">
+                <mat-icon>delete</mat-icon>
+                  <span>Delete</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+        <ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+              (click)="selection.toggle(row)">
+          </tr>
+        </ng-container>
+      </table>
+      <div *ngIf="isLoading"  class="circle-spinner">
+        <mat-progress-spinner 
+          color="primary" [diameter]="50"
+          mode="indeterminate">
+        </mat-progress-spinner>
+      </div>
+      <tr *ngIf="!dataSource">
+        <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
+          No Records Found!
+        </td>
+      </tr>
+      <ng-container *ngIf="deviceManagmentList.length>0">
+        <app-download-content [data]="deviceManagmentList" [exporterInstance]="exporter"></app-download-content>
+     </ng-container> 
+      <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
+    </div>
+  </div>
+  <!-- Add new driver form -->
+  
+  <div class="form-dialog" id="addDriver"> 
+    <div class="closeDailog" (click)="toggleDialog($event)"></div>
+    <div class="form-container">
+      <div class="heading" >
+        <p class="button-size">+ Add New Device</p>
+        <div class="float-right">
+            <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event)">Close</button>
+          <!-- <button class="btn btn-info">Save Driver</button> -->
+        </div>
+      </div>
+      <form (ngSubmit)="addDriver(f)" #f="ngForm">
+      <div class="form-group">
+        <label>Assign Sim</label>
+        <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
+          <mat-label >Assign Sim</mat-label>
+          <mat-select name="contactMethod"  #sim="ngModel" [(ngModel)]="deviceManagmentAddModel.sim" name="sim" 
+          (ngModelChange)="updateDataViaKey($event,'device')"
+            [ngClass]="{ 'is-invalid': f.submitted && sim.invalid }" required>
+            <mat-option *ngFor="let sim of simCardList" [value]="sim.callingNumber">
+              {{sim.callingNumber}}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="f.submitted && sim.invalid">
+            <div *ngIf="sim.errors.required">Assign SIM  is required</div>
+          </mat-error> 
+        </mat-form-field>
+      </div>
+      <div class="form-group">
+        <label>Select Company</label>
+        <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
+          <mat-label >Company</mat-label>
+          <mat-select name="contactMethod"  id="contactMethod"  [(ngModel)]="deviceManagmentAddModel.companyName"  
+          #companyName="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && companyName.invalid }" required>
+            <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="f.submitted && sim.invalid">
+            <div *ngIf="sim.errors.required">Assign SIM  is required</div>
+          </mat-error> 
+        </mat-form-field>
+      </div>
+      <div class="form-group">
+        <label>Device Name </label>
+        <input type="text" class="form-control" name="deviceName" [(ngModel)]="deviceManagmentAddModel.deviceName" #deviceName="ngModel" 
+            placeholder="Enter Device Name" [ngClass]="{ 'is-invalid': f.submitted && deviceName.invalid }" required autofocus/>
+          <div *ngIf="f.submitted && deviceName.invalid" class="invalid-feedback">
+              <div *ngIf="deviceName.errors.required">Device Name is required</div>
+          </div>
+      </div>
+      <div class="form-group">
+        <label>Device IMEI </label>
+        <input type="text" class="form-control" name="deviceImei" [(ngModel)]="deviceManagmentAddModel.deviceImei" #deviceImei="ngModel" 
+            placeholder="Enter Device IMEI" [ngClass]="{ 'is-invalid': f.submitted && deviceImei.invalid }" required autofocus/>
+          <div *ngIf="f.submitted && deviceImei.invalid" class="invalid-feedback">
+              <div *ngIf="deviceImei.errors.required">Device IMEI is required</div>
+          </div>
+      </div>
+        <div class="form-group">
+            <label>Device Type </label>
+            <input type="text" class="form-control" name="deviceType" [(ngModel)]="deviceManagmentAddModel.deviceType" #deviceType="ngModel" 
+                placeholder="Enter Device Type " [ngClass]="{ 'is-invalid': f.submitted && deviceType.invalid }" required autofocus/>
+              <div *ngIf="f.submitted && deviceType.invalid" class="invalid-feedback">
+                  <div *ngIf="deviceType.errors.required">Device Type is required</div>
+              </div>
+          </div>
+        <div class="form-group">
+          <label>Stationary Latitude</label>
+          <input type="text" class="form-control" name="stationaryLat" [(ngModel)]="deviceManagmentAddModel.stationaryLat" #stationaryLat="ngModel" 
+          placeholder="Enter Calling Number" [ngClass]="{ 'is-invalid': f.submitted && stationaryLat.invalid }" required autofocus/>
+          <div *ngIf="f.submitted && stationaryLat.invalid" class="invalid-feedback">
+              <div *ngIf="stationaryLat.errors.required">Stationary Latitude is required</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Stationary Longitude</label>
+          <input type="email" name="stationaryLong"  class="form-control form-control-lg " placeholder="Enter Stationary Longitude"
+          [(ngModel)]="deviceManagmentAddModel.stationaryLong" #stationaryLong="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || stationaryLong.touched)  && stationaryLong.invalid}" 
+           required>                
+          <div *ngIf="f.submitted && stationaryLong.invalid" class="invalid-feedback">
+              <div *ngIf="stationaryLong.errors.required">Stationary Longitude is required</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Issue Date</label>
+          <input type="date" name="issueDate"  class="form-control form-control-lg date-picker-position" placeholder="Enter Issue Date"
+          [(ngModel)]="deviceManagmentAddModel.issueDate" #issueDate="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || issueDate.touched)  && issueDate.invalid}" 
+           required>                
+          <div *ngIf="f.submitted && issueDate.invalid" class="invalid-feedback">
+              <div *ngIf="issueDate.errors.required">Issue Date is required</div>
+          </div>
+        </div>
+        <div class="form-group">
+            <label>Activation Date</label>
+            <input type="date" name="activationDate"  class="form-control form-control-lg date-picker-position" placeholder="Enter Activation Date"
+            [(ngModel)]="deviceManagmentAddModel.activationDate" #activationDate="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || activationDate.touched)  && activationDate.invalid}" 
+             required>                
+            <div *ngIf="f.submitted && activationDate.invalid" class="invalid-feedback">
+                <div *ngIf="activationDate.errors.required">Activation Start Date is required</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Active</label>
+            <input type="checkbox" name="isActive"  class="form-check"  [(ngModel)]="deviceManagmentAddModel.isActive">
+          </div>
+        <div class="form-group form-control-footer">
+          <button class="btn btn-outline-info btn-custom"  (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
+          <button class="btn  btn-outline-info btn-custom"  type="reset" (click)="f.reset()">Reset</button>
+          <div>
+            <button class="btn btn-info button-size">SAVE Device</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>

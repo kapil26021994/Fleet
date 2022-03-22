@@ -23,6 +23,7 @@
     background: $navbar-bg;
     width: $sidebar-width-lg;
     height: $navbar-height;
+    // width: 243px !important;
 
     @media (max-width: 991px) {
       width: 55px;
@@ -387,4 +388,21 @@
       }
     }
   }
+}
+
+.image-logo {
+    height: 39px !important; 
+    width: 75% !important;
+}
+
+.text-wrapper{
+  color: white;
+    margin: auto auto 10px -43px !important;
+    font-size: 13px !important;
+    padding: 0.25rem 20px !important;
+}
+
+.logo-wrapper{
+    max-width: 26% !important;
+    margin-left: 43px !important;
 }

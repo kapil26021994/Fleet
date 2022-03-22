@@ -1,0 +1,91 @@
+
+<div class="navigation">
+    <a  routerLink="/user/company"><span><i class="mdi mdi-keyboard-backspace"></i>Company Management</span></a>
+    <span routerLink="/user/company"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
+    <span></span>
+</div>
+<div class="page-header">
+    <h3 class="page-title">
+      Details
+    </h3>
+    <ng-container>
+   </ng-container>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+          <!-- <button class="btn btn-info button-size button-size" id="deactivateBtn">Deactivate</button> -->
+         <button class="btn btn-info button-size button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
+         <button class="btn btn-info button-size button-size" *ngIf="isEdit" (click)="updateGroupInfo()">Save</button>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+  <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
+    <div class="col-sm-12">
+      <div class="card">
+        
+      <form id="contact" action="" method="post">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>Company Name</label>
+              <input name="companyName"   [(ngModel)]="currentUserDetail.companyName" [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <span>:</span><input name="email"  [(ngModel)]="currentUserDetail.companyEmail" [disabled]="!isEdit" class="form-input" type="email" tabindex="3" required>
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <span>:</span><input name="phoneNumber" maxlength="10" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==10) return false;" [(ngModel)]="currentUserDetail.companyContactNumber" 
+              [disabled]="!isEdit" type="number" class="form-input"  tabindex="5" required>
+            </div>
+            <div class="form-group">
+              <label>Address Line1</label>
+              <span>:</span><input name="address"  [(ngModel)]="currentUserDetail.addressLine1" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+            </div>
+            <div class="form-group">
+              <label>Address Line2</label>
+              <span>:</span><input name="address"  [(ngModel)]="currentUserDetail.addressLine2" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+            </div>
+            <div class="form-group">
+              <label>City</label>
+              <span>:</span><input name="city" id="companyDetailAutocomplete" (keyup)="getStateAndCountryName()"  [(ngModel)]="currentUserDetail.city" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+            </div>
+          </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>State</label>
+                <span>:</span><input name="state"  [(ngModel)]="currentUserDetail.state" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+              </div>
+              <div class="form-group">
+                <label>Country</label>
+                <span>:</span><input name="country"  [(ngModel)]="currentUserDetail.country" [disabled]="!isEdit" class="form-input" readonly  type="text" tabindex="4" required>
+              </div>
+              <div class="form-group">
+                <label>GST Number</label>
+                <span>:</span><input name="gstNumber"  [(ngModel)]="currentUserDetail.gstNumber" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+              </div>
+              <div class="form-group">
+                <label>pincode</label>
+                <span>:</span><input name="pincode"  [(ngModel)]="currentUserDetail.pincode" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+              </div>
+              <div class="form-group">
+                <label>Company Domain</label>
+                <span>:</span><input name="companyDomain"  [(ngModel)]="currentUserDetail.companyDomain" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+              </div>
+              <!-- <div class="form-group">
+                <label>Select Timezone</label>
+                <span>:</span><input name="selectTimezone"  [(ngModel)]="currentUserDetail.selectTimezone" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+              </div> -->
+              <div class="form-group">
+                <label>Is Active</label>
+                <span>:</span>
+                <input  [(ngModel)]="isEditData" [disabled]="!isEdit" class="form-input checkbox-margin"  type="checkbox" name="isActive"> 
+              </div>
+              </div>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>

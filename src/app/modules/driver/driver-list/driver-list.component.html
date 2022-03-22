@@ -6,7 +6,8 @@
   <nav aria-label="breadcrumb">
     <ul class="breadcrumb" style="padding: 0;">
       <li class="breadcrumb-item active" aria-current="page">
-       <button class="btn btn-info" (click)="toggleDialog($event)">add driver</button>
+       <button class="btn btn-info button-size" (click)="toggleDialog($event)"> + Add driver</button>
+       <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
       </li>
     </ul> 
   </nav>
@@ -15,82 +16,136 @@
 <div class="row">
   <div class="col-md-12">
     <div class="table-filter-options row">
-      <div class="col-md-6 col-sm-6">
-        <div class="table-search">
-          <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
-          <div>
-            <input type="string" placeholder="Search Driver Name">
-          </div>
-        </div>
+      <div class="col-md-12 col-sm-12 col-md-12">
+        <form class="example-form" style="display: flex;"  [formGroup]="driverFilterForm">
+          <table class="example-full-width" cellspacing="0"><tr>
+            <td>
+            <div class="table-search">
+              <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
+              <div>
+                <input type="string" placeholder="Search" formControlName="firstName">
+              </div>
+            </div>
+          </td>
+          <td>
+            <mat-form-field  fxFlex="40" class="field-wrapper">
+              <mat-select  formControlName="isActive" placeholder="Driver Status" multiple>
+                <mat-option *ngFor="let status of statusList" [value]="status">{{status}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <!-- <td>
+            <mat-form-field  fxFlex="40" class="field-wrapper">
+              <mat-select  formControlName="vehicleType" placeholder="Vehicle Type" multiple>
+                <mat-option *ngFor="let vehicle of vehicleList" [value]="vehicle.vehicleType">{{vehicle.vehicleType}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td> -->
+          </tr></table>
+            </form>
       </div>
-      <div class="col-md-6 col-sm-6">
-      <div class="pagination-container">
-        1 - 4 of 4 
-        <span class="prev-next">
-          <label><i class="mdi mdi-chevron-left"></i></label>
-          <label><i class="mdi mdi-chevron-right"></i></label>
-        </span>
-      </div>
     </div>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter #exporter="matTableExporter">
+      <!-- <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [aria-label]="checkboxLabel()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container> -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+          <td mat-cell *matCellDef="let element"> {{element.firstName}} {{element.lastName}} </td>
+        </ng-container>
+      <!-- Name Column -->
+      <!-- <ng-container matColumnDef="lastName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.lastName}} </td>
+      </ng-container> -->
+
+      <!-- Name Column -->
+      <!-- <ng-container matColumnDef="vehicleType">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Vehicle Type</th>
+        <td mat-cell *matCellDef="let element"> {{element.vehicleType}} </td>
+    </ng-container> -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+      <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="Number">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone Number</th>
+    <td mat-cell *matCellDef="let element"> {{element.phoneNumber}} </td>
+</ng-container>
+      <!-- Name Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let element"> 
+          <span class="dot" [ngClass]="element.isActive ==  'active' ? 'dot' : 'deactive-dot'"></span>{{element.isActive}} 
+       </td>
+      </ng-container>
+
+       <!-- Weight Column -->
+       <ng-container matColumnDef="joinedDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Joining Date </th>
+        <td mat-cell *matCellDef="let element"> {{element.joinedDate | date:'MM/dd/yyyy'}} </td>
+      </ng-container>
+    
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="licenceNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Licence Number </th>
+        <td mat-cell *matCellDef="let element"> {{element.licenceNumber}} </td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let row" style="width:20%">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item  title="View Contact" (click)="getCurrentDriverDetail(row,exporter)">
+              <mat-icon>remove_red_eye</mat-icon>
+              <span>View</span>
+            </button>
+            <button mat-menu-item (click)="deleteDriver(row)">
+              <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+      <ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            (click)="selection.toggle(row)">
+        </tr>
+      </ng-container>
+    </table>
+    <div *ngIf="isLoading"  class="circle-spinner">
+      <mat-progress-spinner 
+        color="primary" [diameter]="50"
+        mode="indeterminate">
+      </mat-progress-spinner>
     </div>
-    <div class="card card-table">
-  
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>Sr. No.  <i class="mdi mdi-menu-down"></i> </th>
-            <th>Name <i class="mdi mdi-menu-down"></i> </th>
-            <th>Address <i class="mdi mdi-menu-down"></i> </th>
-            <th>Email <i class="mdi mdi-menu-down"></i> </th>
-            <th>Joined Date <i class="mdi mdi-menu-down"></i> </th>
-            <th>Phone No. <i class="mdi mdi-menu-down"></i> </th>
-            <th>Licence No. <i class="mdi mdi-menu-down"></i> </th>
-            <th>Vehicle Type <i class="mdi mdi-menu-down"></i> </th>
-            <th>Insurance Provider <i class="mdi mdi-menu-down"></i> </th>
-            <th>Policy No. <i class="mdi mdi-menu-down"></i> </th>
-          </tr>
-        </thead>
-        <tbody>
-            <tr>
-              <td>1</td>
-              <td><a routerLink="/user/driver/edit">Rajendra</a></td>
-              <td>Pune</td>
-              <td>raj@gmail.com</td>
-              <td>02-01-2021</td>
-              <td>9745673219</td>
-              <td>342165</td>
-              <td>Car</td>
-              <td>Indore</td>
-              <td>881903</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Ashok</td>
-              <td>Indore</td>
-              <td>ashok@gmail.com</td>
-              <td>02-01-2021</td>
-              <td>9745673219</td>
-              <td>342165</td>
-              <td>Car</td>
-              <td>Indore</td>
-              <td>881903</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Manoj</td>
-              <td>Pune</td>
-              <td>manoj@gmail.com</td>
-              <td>02-01-2021</td>
-              <td>9745673219</td>
-              <td>342165</td>
-              <td>Car</td>
-              <td>Indore</td>
-              <td>881903</td>
-            </tr>
-        </tbody>
-      </table>
-      
-    </div>
+    <tr *ngIf="!dataSource">
+      <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
+        No Records Found!
+      </td>
+    </tr>
+    <ng-container *ngIf="driverList.length>0">
+      <app-download-content [data]="driverList" [exporterInstance]="exporter"></app-download-content>
+   </ng-container> 
+    <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
+
   </div>
 </div>
 
@@ -105,58 +160,117 @@
       <p>Add Driver</p>
       <div class="float-right">
           <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event)">Close</button>
-        <button class="btn btn-info">Save Driver</button>
       </div>
     </div>
-    <form id="contact" action="" method="post">
+    <form (ngSubmit)="addDriver(f)" #f="ngForm">
       
       <div class="form-group">
         <label>First Name</label>
-        <input class="form-input" type="text" tabindex="1" required autofocus>
+        <input type="text" class="form-control" name="firstName" [(ngModel)]="driverAddModel.firstName" #firstName="ngModel" 
+            placeholder="Enter Vehicle Name" [ngClass]="{ 'is-invalid': f.submitted && firstName.invalid }" required autofocus/>
+          <div *ngIf="f.submitted && firstName.invalid" class="invalid-feedback">
+              <div *ngIf="firstName.errors.required">First Name is required</div>
+          </div>
       </div>
       <div class="form-group">
         <label>Last Name</label>
-        <input class="form-input" type="text" tabindex="2" required>
+        <input type="text" class="form-control" name="lastName" [(ngModel)]="driverAddModel.lastName" #lastName="ngModel" 
+        placeholder="Enter Vehicle Name" [ngClass]="{ 'is-invalid': f.submitted && lastName.invalid }" required autofocus/>
+        <div *ngIf="f.submitted && lastName.invalid" class="invalid-feedback">
+            <div *ngIf="lastName.errors.required">Last Name is required</div>
+        </div>
       </div>
       <div class="form-group">
         <label>Email</label>
-        <input class="form-input" type="email" tabindex="3" required>
+        <input type="email" name="email"  class="form-control form-control-lg" placeholder="Enter Email"
+        [(ngModel)]="driverAddModel.email" #email="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || email.touched)  && email.invalid}" 
+        email required>                
+        <div *ngIf="f.submitted && email.invalid" class="invalid-feedback">
+            <div *ngIf="email.errors.required">Email is required</div>
+            <div *ngIf="email.errors.email">Must be a valid email address</div>
+        </div>
       </div>
       <div class="form-group">
         <label>Address</label>
-        <input class="form-input"  type="text" tabindex="4" required>
+        <input type="email" name="address"  class="form-control form-control-lg" placeholder="Enter address"
+        [(ngModel)]="driverAddModel.address" #address="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || address.touched)  && address.invalid}" 
+         required>                
+        <div *ngIf="f.submitted && address.invalid" class="invalid-feedback">
+            <div *ngIf="address.errors.required">Address is required</div>
+        </div>
       </div>
       <div class="form-group">
         <label>Joined Date</label>
-        <input type="date" class="form-input"  tabindex="5" required>
+        <input type="date" name="joinedDate"  class="form-control form-control-lg date-picker-position" placeholder="Enter address"
+        [(ngModel)]="driverAddModel.joinedDate" #joinedDate="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || joinedDate.touched)  && joinedDate.invalid}" 
+         required>                
+        <div *ngIf="f.submitted && joinedDate.invalid" class="invalid-feedback">
+            <div *ngIf="joinedDate.errors.required">Joined Date is required</div>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Phone Number</label>
-        <input type="text" class="form-input"  tabindex="5" required>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label"> Phone Number</label>
+        <div class="input-group flex-nowrap input-label-container">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="addon-wrapping">+91</span>
+          </div>
+        <input type="tel" name="phoneNumber"  class="form-control form-control-lg" placeholder="Enter Phone Number"
+          maxlength="10" [(ngModel)]="driverAddModel.phoneNumber" #phoneNumber="ngModel" 
+          [ngClass]="{ 'is-invalid': f.submitted && phoneNumber.invalid }" required>  
+             <div *ngIf="f.submitted && phoneNumber.invalid" class="invalid-feedback" >
+          <div *ngIf="phoneNumber.errors.required">Phone Number is required</div>
+        </div>
+        </div>
       </div>
       <div class="form-group">
         <label>Licence Number</label>
-        <input type="text" class="form-input"  tabindex="5" required>
+        <input type="text" name="licenceNumber"  class="form-control form-control-lg" placeholder="Enter Licence Number"
+        [(ngModel)]="driverAddModel.licenceNumber" #licenceNumber="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || licenceNumber.touched)  && licenceNumber.invalid}" 
+         required>                
+        <div *ngIf="f.submitted && licenceNumber.invalid" class="invalid-feedback">
+            <div *ngIf="licenceNumber.errors.required">Licence Number is required</div>
+        </div>
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label>Vehicle Type</label>
-        <input type="text" class="form-input"  tabindex="5" required>
-      </div>
+        <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper-filter app-permission" >
+          <mat-label >Fuel Type</mat-label>
+          <mat-select name="fuelType"  [(ngModel)]="driverAddModel.vehicleType"  
+          #vehicleType="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && vehicleType.invalid }" required>
+            <mat-option *ngFor="let vehicle of vehicleList" [value]="vehicle.vehicleType"> {{ vehicle.vehicleType}}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="f.submitted && vehicleType.invalid">
+            <div *ngIf="vehicleType.errors.required">Vehicle Type is required</div>
+          </mat-error> 
+        </mat-form-field>
+      </div> -->
       <div class="form-group">
         <label>Insurance Provider</label>
-        <input type="text" class="form-input"  tabindex="5" required>
+        <input type="text" name="insurenceProvider"  class="form-control form-control-lg" placeholder="Enter Insurance Provider"
+        [(ngModel)]="driverAddModel.insurenceProvider" #insurenceProvider="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || insurenceProvider.touched)  && insurenceProvider.invalid}" 
+         required>                
+        <div *ngIf="f.submitted && insurenceProvider.invalid" class="invalid-feedback">
+            <div *ngIf="insurenceProvider.errors.required">Insurance Provider is required</div>
+        </div>
       </div>
       <div class="form-group">
         <label>Policy Number</label>
-        <input type="text" class="form-input"  tabindex="5" required>
+        <input type="text" name="policyNumber"  class="form-control form-control-lg" placeholder="Enter Policy Number"
+        [(ngModel)]="driverAddModel.policyNumber" #policyNumber="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || policyNumber.touched)  && insurenceProvider.invalid}" 
+         required>                
+        <div *ngIf="f.submitted && policyNumber.invalid" class="invalid-feedback">
+            <div *ngIf="policyNumber.errors.required">Policy Number is required</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Active</label>
+        <input type="checkbox" name="isActive"  class="form-check"  [(ngModel)]="driverAddModel.isActive">
       </div>
       <div class="form-group form-control-footer">
-        <div class="cancelBtn">
-          <a class="link-btn" (click)="toggleDialog($event)">Cancel</a>
-        </div>
+        <button class="btn btn-outline-info btn-custom"  (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
+        <button class="btn  btn-outline-info btn-custom"  type="reset" (click)="f.reset()">Reset</button>
         <div>
-          <a class="link-btn">Reset</a>
-          <button class="btn btn-info">SAVE DRIVER</button>
+          <button class="btn btn-info button-size">Save Driver</button>
         </div>
       </div>
     </form>

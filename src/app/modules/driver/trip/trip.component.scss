@@ -1,0 +1,103 @@
+@import '../../../../styles.scss';
+.example-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.example-full-width {
+  width: 100%;
+}
+
+.field-wrapper{
+  margin: 3px 6px 4px 2px !important; 
+  width: 350px;
+  font-size: 13px;
+}
+
+.table-filter-options{
+  margin-top: -20px !important;
+}
+
+.form-control{
+  width: 100%;
+  border: 1px solid #CCC;
+  background: #FFF;
+  margin: 0 0 5px;
+  padding: 19px;
+  border: 1px solid #979797;
+  border-radius: 8px;
+  font-size: 13px;
+  max-height: 45px;
+}
+
+
+.form-group .col-sm-9{
+  margin-left: -42px !important;
+}
+
+.form-group{
+  margin-left:-16px !important;
+}
+
+.invalid-feedback{
+position: absolute !important;
+margin: 69px 5px 4px 6px !important
+}
+
+.form-group{
+  margin-bottom: 9px !important;
+}
+
+
+select.form-control{
+  outline: 1px solid #979797 !important;
+  color: black !important
+}; 
+
+
+@media only screen and (max-width: 600px) {
+ 
+.form-container{
+  width: 100% !important;
+}
+}
+th, td {
+  overflow: hidden;
+  width:auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-wrapper {
+  height: 533px !important;
+}
+
+.form-container   {
+  width: 81% !important;
+  margin: 0px -2px 0px 7px !important;
+} 
+
+.app-permission  {
+  //margin: -5px -5px -1px 30px !important;
+  width: 139% !important;
+  font-size: 12px !important;
+}
+
+.form-container .heading{
+  padding-bottom: 0px !important;
+}
+
+.new_location_input{
+  position: absolute;
+  margin: 26px 0px 4px 454px;
+  height: 37px;
+}
+
+.locaion_wrapper{
+  width: 43%;
+}
+
+.map_container_section{
+  margin-top: -122px
+}

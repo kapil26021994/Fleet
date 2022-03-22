@@ -1,0 +1,87 @@
+
+<div class="navigation">
+    <a *ngIf="!isEdit" routerLink="/user/device/list"><span><i class="mdi mdi-keyboard-backspace"></i> Device </span></a>
+    <span routerLink="/user/device/list"> <span ><i class="mdi mdi-chevron-right"></i></span> {{currentDeviceDetail.deviceName}} </span>
+    <span></span>
+</div>
+<div class="page-header">
+    <h3 class="page-title">
+      Details
+    </h3>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+            <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
+         <button class="btn btn-info button-size" >Deactivate</button>
+         <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
+         <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateDriverInfo()">Save</button>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card card-table">
+        <div class="media">
+            <img class="mr-3 w-25 rounded-img" src="assets/images/logo.png" alt="sample image">
+            <div class="media-body media-details">
+              <h4 class="mt-0">{{currentDeviceDetail.deviceName}}</h4>
+              <p *ngIf="currentDeviceDetail.active"><span class="active-dot" ></span> Active</p>
+              <p *ngIf="!currentDeviceDetail.active"><span class="active-dot" ></span> Deactive</p>
+            </div>
+            <div class="media-body chart-container">
+              <div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
+    <div class="col-sm-12">
+      <div class="card">
+        
+      <form id="contact" action="" method="post">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>Sr. No</label>
+              <span>:</span>
+              <input name="id" readonly [(ngModel)]="currentDeviceDetail.id" [disabled]="!isEdit" class="form-input" type="text" tabindex="1" required autofocus>
+            </div>
+            <div class="form-group">
+              <label>Device Name</label>
+              <span>:</span>
+              <input name="deviceName"  [(ngModel)]="currentDeviceDetail.deviceName" [disabled]="!isEdit" class="form-input" type="text" tabindex="1" required autofocus>
+            </div>
+            <div class="form-group">
+              <label>Device Type</label>
+              <span>:</span><input name="deviceType"   [(ngModel)]="currentDeviceDetail.deviceType" [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
+            </div>
+            <div class="form-group">
+              <label>Stationary Lat</label>
+              <span>:</span><input name="stationaryLat"  [(ngModel)]="currentDeviceDetail.stationaryLat" [disabled]="!isEdit" class="form-input" type="email" tabindex="3" required>
+            </div>
+          </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>Stationary Long </label>
+                    <span>:</span><input name="stationaryLong" [(ngModel)]="currentDeviceDetail.stationaryLong"  [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+                  </div>
+                <div class="form-group">
+                    <label>Issue Date</label>
+                    <span>:</span><input name="issueDate" [(ngModel)]="currentDeviceDetail.issueDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
+                  </div>
+              <div class="form-group">
+                <label>Activation Date</label>
+                <span>:</span><input name="activationDate" [(ngModel)]="currentDeviceDetail.activationDate" [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
+              </div>
+              </div>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>

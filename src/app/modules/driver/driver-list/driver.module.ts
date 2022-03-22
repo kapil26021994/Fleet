@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ChartsModule } from 'ng2-charts';
 import { DriverlistComponent } from './driver-list.component';
 import { EditDriverComponent } from './edit-driver/edit-driver.component';
-
+import{SharedModule} from '../../../shared/module/shared.module'
 const routes: Routes = [
   { path: '', redirectTo: 'list', pathMatch: 'full' },
   { path: 'list', component: DriverlistComponent },
@@ -16,7 +16,8 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    ChartsModule
+    ChartsModule,
+    SharedModule
   ]
 })
 export class DriverDemoModule { }

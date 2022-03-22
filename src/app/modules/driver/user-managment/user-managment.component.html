@@ -1,0 +1,284 @@
+<div class="page-header">
+  <h3 class="page-title">
+    User Management
+  </h3>
+  <nav aria-label="breadcrumb">
+    <ul class="breadcrumb" style="padding: 0;">
+      <li class="breadcrumb-item active" aria-current="page">
+       <button class="btn btn-info button-size" (click)="toggleDialog($event)" style="font-size:0.7rem !important"> + Add User</button>
+       <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
+      </li>
+    </ul> 
+  </nav>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-filter-options row">
+      <div class="col-md-12 col-sm-12 col-md-12">
+        <form class="example-form" style="display: flex;"  [formGroup]="filterForm">
+          <table class="example-full-width" cellspacing="0"><tr>
+            <td>
+            <div class="table-search">
+              <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
+              <div>
+                <input type="string" placeholder="Search" formControlName="username" >
+              </div>
+            </div>
+          </td>
+          <td>
+            <mat-form-field  fxFlex="40" class="field-wrapper">
+              <mat-select  formControlName="isActive" placeholder="Status" multiple>
+                <mat-option *ngFor="let status of statusList" [value]="status">{{status}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          </tr></table>
+            </form>
+      </div>
+    </div>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter #exporter="matTableExporter">
+      <!-- <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [aria-label]="checkboxLabel()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container> -->
+        <!-- Name Column -->
+        <ng-container matColumnDef="username">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Username </th>
+          <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+        </ng-container>
+      <!-- Name Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+        <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let element"> 
+          <span class="dot" [ngClass]="element.isActive ==  'active' ? 'dot' : 'deactive-dot'"></span>{{element.isActive}} 
+       </td>
+      </ng-container>
+      
+
+      <ng-container matColumnDef="phoneNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone</th>
+        <td mat-cell *matCellDef="let element"> 
+          {{element.phoneNumber}} 
+       </td>
+      </ng-container>
+      <!-- Weight Column -->
+      <ng-container matColumnDef="groupName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Group Name </th>
+        <td mat-cell *matCellDef="let element"> <span *ngIf="element.assignGroup">{{element.assignGroup.groupName}}</span> </td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef style="color: white;"> Actions </th>
+        <td mat-cell *matCellDef="let row" style="width:20%">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item  title="View Contact" (click)="getCurrentVehicleDetail(row,exporter)">
+              <mat-icon>remove_red_eye</mat-icon>
+              <span>View</span>
+            </button>
+            <button mat-menu-item (click)="deleteVehicle(row)">
+              <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+      <ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            (click)="selection.toggle(row)">
+        </tr>
+      </ng-container>
+    </table>
+    <div *ngIf="isLoading"  class="circle-spinner">
+      <mat-progress-spinner 
+        color="primary" [diameter]="50"
+        mode="indeterminate">
+      </mat-progress-spinner>
+    </div>
+    <tr *ngIf="!dataSource">
+      <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
+        No Records Found!
+      </td>
+    </tr>
+    <ng-container *ngIf="userList.length>0">
+      <app-download-content [data]="userList" [exporterInstance]="exporter"></app-download-content>
+   </ng-container> 
+    <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
+  </div>
+</div>
+
+<!-- Add new Vehicle form -->
+<div class="form-dialog" id="addVehicle"> 
+  <div class="closeDailog" (click)="toggleDialog($event)"></div>
+  <div class="form-container">
+    <div class="heading">
+      <p> <b>User Management</b>  </p>
+      <div class="float-right">
+          <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event);resetData()">Close</button>
+      </div>
+    </div>
+    <form  #f="ngForm">
+      <div class="form-group">
+        <label style="width: 161px !important">Select Company</label>
+        <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
+          <mat-label >Select Company</mat-label>
+          <mat-select name="contactMethod"  id="contactMethod"  [(ngModel)]="groupAdd.companyName"  (ngModelChange)="updateDataViaKey($event,'company')"
+          #companyName="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && companyName.invalid }" required>
+            <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="f.submitted && companyName.invalid">
+            <div *ngIf="companyName.errors.required">Company is required</div>
+          </mat-error> 
+        </mat-form-field>
+      </div>
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" class="form-control" name="firstName" [(ngModel)]="groupAdd.firstName" #firstName="ngModel" 
+          placeholder="Enter Vehicle Name" [ngClass]="{ 'is-invalid': f.submitted && firstName.invalid }" required autofocus/>
+        <div *ngIf="f.submitted && firstName.invalid" class="invalid-feedback">
+            <div *ngIf="firstName.errors.required">First Name is required</div>
+        </div>
+    </div>
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" class="form-control" name="lastName" [(ngModel)]="groupAdd.lastName" #lastName="ngModel" 
+      placeholder="Enter Vehicle Name" [ngClass]="{ 'is-invalid': f.submitted && lastName.invalid }" required autofocus/>
+      <div *ngIf="f.submitted && lastName.invalid" class="invalid-feedback">
+          <div *ngIf="lastName.errors.required">Last Name is required</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" name="email"  class="form-control form-control-lg" placeholder="Enter Email"
+      [(ngModel)]="groupAdd.email" #email="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || email.touched)  && email.invalid}" 
+      email required>                
+      <div *ngIf="f.submitted && email.invalid" class="invalid-feedback">
+          <div *ngIf="email.errors.required">Email is required</div>
+          <div *ngIf="email.errors.email">Must be a valid email address</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>User Name</label>
+      <input type="text" class="form-control" name="username" [(ngModel)]="groupAdd.username" #username="ngModel" 
+      placeholder="Enter User Name" [ngClass]="{ 'is-invalid': f.submitted && username.invalid }" required autofocus/>
+      <div *ngIf="f.submitted && username.invalid" class="invalid-feedback">
+          <div *ngIf="username.errors.required">User Name is required</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="username" >Password</label>
+        <input type="password" name="password" class="form-control form-control-lg" placeholder="Password" 
+        [(ngModel)]="groupAdd.password" #password="ngModel" [ngClass]="{ 'is-invalid': f.submitted && password.invalid }"  minlength="8" required>
+        <div *ngIf="f.submitted && password.invalid" class="invalid-feedback">
+            <div *ngIf="password.errors.required">Password is required</div>
+            <div *ngIf="password.errors.minlength">Password should be at least 8 characters long</div>
+        </div>
+      </div>
+    <div class="form-group">
+      <label>Address</label>
+      <input type="email" name="address"  class="form-control form-control-lg" placeholder="Enter address"
+      [(ngModel)]="groupAdd.address" #address="ngModel" [ngClass]="{ 'is-invalid': f.submitted && address.invalid }" 
+       required>                
+      <div *ngIf="f.submitted && address.invalid" class="invalid-feedback">
+          <div *ngIf="address.errors.required">Address is required</div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="col-sm-3 col-form-label" style="margin:-2px 8px 3px -16px"> Number</label>
+      <div class="input-group flex-nowrap input-label-container">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="addon-wrapping">+91</span>
+        </div>
+      <input type="tel" name="phoneNumber"  class="form-control form-control-lg" placeholder="Enter Phone Number"
+        maxlength="10" [(ngModel)]="groupAdd.phoneNumber" #phoneNumber="ngModel" 
+        [ngClass]="{ 'is-invalid': f.submitted && phoneNumber.invalid }" required>  
+           <div *ngIf="f.submitted && phoneNumber.invalid" class="invalid-feedback" style="margin-left:5px !important">
+        <div *ngIf="phoneNumber.errors.required">Phone Number is required</div>
+      </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label style="width: 161px !important">Assign Group</label>
+      <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
+        <mat-label >Assign Group</mat-label>
+        <mat-select disableOptionCentering name="contactMethod"  id="contactMethod"   [(ngModel)]="groupAdd.groupName"  (ngModelChange)="updateDataViaKey($event,'')"
+        #assignGroup="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && assignGroup.invalid }" required>
+          <mat-option *ngFor="let group of groupList" [value]="group.groupName">  {{ group.groupName }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="f.submitted && assignGroup.invalid">
+          <div *ngIf="assignGroup.errors.required">Group is required</div>
+        </mat-error> 
+      </mat-form-field>
+    </div>
+    <mat-progress-spinner class="spinner-container" *ngIf="isLoadingPermission"
+      color="primary" [diameter]="30"
+      mode="indeterminate">
+    </mat-progress-spinner>
+      <div class="form-group" *ngIf="!isLoadingPermission">
+        <label>App Permission</label>
+        <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission">
+          <mat-label>App Permission</mat-label>
+          <!-- <mat-select  disableOptionCentering multiple  [(ngModel)]="selectedPermission" placeholder="Vehicle Type" multiple name="permission"
+          #permission="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && permission.invalid }" required>
+            <mat-optgroup *ngFor="let permission of permissionList" [label]="permission.name">
+              <mat-option *ngFor="let permission_name of permission.items" [value]="permission_name.lable" 
+              (onSelectionChange)="optionSelected($event,permission_name.lable,permission)" >
+                {{permission_name.lable}}
+              </mat-option>
+            </mat-optgroup>
+          </mat-select> -->
+          <mat-select  disableOptionCentering multiple  [(ngModel)]="selectedPermission" placeholder="Vehicle Type" multiple name="permission">
+            <mat-optgroup *ngFor="let permission of permissionList" [label]="permission.name">
+              <mat-option *ngFor="let permission_name of permission.items" [value]="permission_name.lable" 
+              (onSelectionChange)="optionSelected($event,permission_name.lable,permission)" >
+                {{permission_name.lable}}
+              </mat-option>
+            </mat-optgroup>
+          </mat-select>
+          <!-- <mat-error *ngIf="f.submitted && permission.invalid">
+            <div *ngIf="permission.errors.required">permission is required</div>
+          </mat-error>  -->
+        </mat-form-field>
+        </div>
+      <div class="form-group">
+        <label>Active</label>
+        <input type="checkbox" name="isActive"  class="form-check"  [(ngModel)]="groupAdd.isActive">
+      </div>
+      <div class="form-group form-control-footer margin-top: 176px;">
+        <button class="btn btn-outline-info btn-custom"  (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
+        <button class="btn  btn-outline-info btn-custom"  type="reset" (click)="f.reset()">Reset</button>
+        <div>
+          <button class="btn btn-info button-size" [disabled]="isLoadingData" (click)="addVehicle(f)">
+            <ng-container *ngIf="!isLoadingData" >
+              Save
+            </ng-container>
+            <ng-container *ngIf="isLoadingData">
+              <span class="spinner-border spinner-border-sm"></span>
+                Loading..
+            </ng-container>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

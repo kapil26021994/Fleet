@@ -1,0 +1,106 @@
+
+<div class="navigation">
+    <a routerLink="/user/route"><span><i class="mdi mdi-keyboard-backspace"></i> Route</span></a>&nbsp;
+    <span routerLink="/user/route">Detail <span><i class="mdi mdi-chevron-right"></i></span> </span>
+    
+    <span></span>
+</div>
+<div class="page-header">
+    <h3 class="page-title">
+      Details
+    </h3>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+            <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
+          <button class="btn btn-info button-size" >Deactivate</button>
+         <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
+         <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateDriverInfo()">Save</button>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+<!--   
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card card-table">
+        <div class="media">
+            <img class="mr-3 w-25 rounded-img" src="assets/images/logo.png" alt="sample image">
+            <div class="media-body media-details">
+              <h5 class="mt-0">{{currentTripDetail.startPoint}} - {{currentTripDetail.endPoint}}</h5>
+              <p *ngIf="currentTripDetail.active">
+                <span class="active-dot"></span> Active
+              </p>
+              <p *ngIf="!currentTripDetail.active">
+                <span class="active-dot"></span>Inactive
+              </p>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div> -->
+  <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
+    <div class="col-sm-12">
+      <div class="card">
+      <form id="contact" action="" method="post">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>Vehicle</label>
+              <span>:</span>
+              <mat-form-field fxFlex="40" class="field-wrapper app-permission"  >
+                <mat-label >Select Vechicle</mat-label>
+                <mat-select disableOptionCentering name="contactMethod" [disabled]="!isEdit" #vehicleNumber="ngModel" [(ngModel)]="currentTripDetail.vehicleNumber" 
+                (ngModelChange)="updateDataViaKey($event,'vehicle')" name="vehicle">
+                  <mat-option *ngFor="let vehicle of vehicleList" [value]="vehicle.vehicleNumber">{{vehicle.vehicleNumber}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="col-sm-6">
+             <div class="form-group">
+              <label>Driver</label>
+              <span>:</span>
+              <mat-form-field fxFlex="40" class="field-wrapper app-permission">
+                <mat-label >Select Driver</mat-label>
+                <mat-select disableOptionCentering name="driver" [disabled]="!isEdit" #driver="ngModel" [(ngModel)]="currentTripDetail.firstName" 
+                (ngModelChange)="updateDataViaKey($event,'')" name="driver">
+                  <mat-option *ngFor="let driver of driverList" [value]="driver.firstName">{{driver.firstName}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>Start Point</label>
+              <span>:</span><input name="startPoint" id="startTrip" type="text" (keyup)="fetchStartLocation()" [(ngModel)]="currentTripDetail.startPoint" [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+             <div class="form-group">
+              <label>End Point</label>
+              <span>:</span><input name="endPoint" id="endTrip"  type="text" (keyup)="fetchEndLocation()" [(ngModel)]="currentTripDetail.endpoint" [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
+            </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Start Date</label>
+                <span>:</span><input name="createDateTime" [(ngModel)]="currentTripDetail.startDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
+              </div>
+              </div>
+              <div class="col-sm-6">
+              <div class="form-group">
+                <label>End Date</label>
+                <span>:</span><input name="updateDateTime" [(ngModel)]="currentTripDetail.endDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
+              </div>
+              </div>
+         </div>
+      </form>
+      </div>
+    </div>
+  </div>
+  <div id="tripDetailMap" class="map-wrapper"></div>

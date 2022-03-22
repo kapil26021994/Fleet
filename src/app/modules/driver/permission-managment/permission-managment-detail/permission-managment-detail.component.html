@@ -1,0 +1,63 @@
+
+<div class="navigation">
+    <a  routerLink="/user/permission"><span><i class="mdi mdi-keyboard-backspace"></i>Permission </span></a>
+    <span routerLink="/user/permission"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
+    <span></span>
+</div>
+<div class="page-header">
+    <h3 class="page-title">
+      Details
+    </h3>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+            <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
+         <button class="btn btn-info button-size" >Deactivate</button>
+         <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
+         <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateGroupInfo()">Save</button>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+  <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
+    <div class="col-sm-12">
+      <div class="card">
+        
+      <form id="contact" action="" method="post">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label>Select Page</label>
+              <span>:</span><input name="page_name" [(ngModel)]="currentUserDetail.name"  readonly class="form-input" type="page_name" required>
+<!-- 
+              <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
+                <mat-select disableOptionCentering name="contactMethod"  id="contactMethod"   [(ngModel)]="currentUserDetail.name"  
+                (ngModelChange)="selectPermission(permissionAdd.name)">
+                  <mat-option *ngFor="let page of pageList"  [value]="page.lableName">{{ page.lableName }}</mat-option>
+                </mat-select>
+              </mat-form-field> -->
+            </div>
+          </div>
+             <div class="col-sm-12">
+                <div class="form-group">
+                  <label> Permission</label>
+                  <mat-chip-list aria-label="Fish selection" style="margin-left: -27px;">
+                    <mat-chip *ngFor="let permission of currentUserDetail.items">{{permission.value}}</mat-chip>
+                  </mat-chip-list>
+                </div>
+              </div>
+
+              <section class="example-section" >
+                 <span class="checkbox-container" >
+                    <mat-checkbox color="primary" #checkbox *ngFor="let permission of permissionList" class="example-margin" 
+                    (change)="addOrRemoveNewPermission(checkbox.checked,permission)"
+                    [checked]="checkPermissionAddedOrNot(permission)">
+                      &nbsp;{{permission}}&nbsp;
+                    </mat-checkbox>
+                  </span>
+              </section>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>

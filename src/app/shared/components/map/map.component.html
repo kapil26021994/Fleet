@@ -1,0 +1,68 @@
+<ng-container *ngIf="!vehicleRoute">
+  <div class="page-header">
+    <h3 class="page-title">
+      Vehicle Management
+    </h3>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="table-filter-options row">
+        <div class="col-md-12 col-sm-12 col-md-12">
+          <form class="example-form" style="display: flex;">
+            <table class="example-full-width" cellspacing="0"><tr>
+              <td >
+                <mat-form-field class="field-wrapper">
+                  <mat-select disableOptionCentering placeholder="Select Map" [(ngModel)]="defaultMapType" name="mapType" (selectionChange)="updateMapType($event.value)">
+                      <mat-option value="Vehicle History" [disabled]="vehicleHistoryExist == undefined">Vehicle History</mat-option>
+                      <mat-option value="Vehicle Live Location" [disabled]="locationExist == undefined">Vehicle Live Location</mat-option>
+                      <mat-option value="Dashboard" [disabled]="locationExist == undefined">Dashboard</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </td>
+            <ng-container *ngIf="defaultMapType == 'Vehicle Live Location' || defaultMapType == 'Vehicle History'"> 
+              <td>
+                  <mat-form-field class="field-wrapper">
+                    <mat-select disableOptionCentering placeholder="Vehicle Type" (selectionChange)="applyFilter($event.value)">
+                      <mat-option *ngFor="let vehicle of vehicleListData" [value]="vehicle">{{vehicle.vehicleNumber}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+              </td> 
+              <ng-container *ngIf="defaultMapType == 'Vehicle History'"> 
+                <td>
+                  <input type="date"  id="session-date" class="form-control" name="startDate" [(ngModel)]="startDate" 
+                  (change)="setEndDataEvent($event)"
+                  placeholder="Select Start Date" style="width:120% !important"/>
+                </td>
+                <td>
+                  <input type="date"  [max]="getToday()" id="session-endDate"  (change)="setEndDataEvent($event)"  class="form-control" name="endDate" [(ngModel)]="endDate" 
+                 style="width: 99% !important;
+                  margin-left: 62px;"/>
+                </td>
+                </ng-container>
+            </ng-container>
+            <!-- <td>
+              <button class="btn btn-danger button-size button-wrapper" (click)="resetFilters()">Reset</button>
+            </td> -->
+            <td>
+              <div class="spinner-wrapper" *ngIf="isLoadingData">
+                <mat-progress-spinner
+                  color="primary" [diameter]="30"
+                  mode="indeterminate">
+                </mat-progress-spinner>
+              </div>  
+              </td>
+            </tr>
+            </table>
+            </form>
+        </div>
+    </div>
+    </div>
+    </div>
+  </ng-container>
+  <!-- <div class="circle-spinner">
+    <mat-progress-spinner 
+      color="primary" [diameter]="50"
+      mode="indeterminate">
+    </mat-progress-spinner>
+  </div> -->
+    <div id="googleMapDashboard" [ngClass]="!vehicleRoute ? 'map-wrapper' : 'map-wrapper-live'" ></div>

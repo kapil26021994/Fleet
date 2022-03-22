@@ -1,0 +1,11 @@
+<div class="export-container">
+  <button class="export" matTooltip="Export to csv" mat-mini-fab (click)="exporterInstance.exportTable('csv')">
+    <i class='fas fa-file-csv export-icon'></i>
+  </button>&nbsp;&nbsp;
+  <button class="export" matTooltip="Export to excel" mat-mini-fab (click)="exporterInstance.exportTable('excel')">
+    <i class='fas fa-file-excel export-icon'></i>
+  </button>&nbsp;&nbsp;
+  <button class="export" matTooltip="Export to excel" mat-mini-fab (click)="createPdf()">
+    <mat-icon class="export-icon">picture_as_pdf</mat-icon>
+  </button>
+  </div>
