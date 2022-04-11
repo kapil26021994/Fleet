@@ -1,11 +1,23 @@
-<div class="export-container">
-  <button class="export" matTooltip="Export to csv" mat-mini-fab (click)="exporterInstance.exportTable('csv')">
-    <i class='fas fa-file-csv export-icon'></i>
+<div class="export-container" *ngIf="!isReportUrl" >
+  <button class="export" matTooltip="Export to csv"
+   mat-mini-fab (click)="exporterInstance.exportTable('csv',{fileName:pageKey ? pageKey : ''})">
+  <i class="fa fa-file-excel-o icon-wrapper" aria-hidden="true"></i>
   </button>&nbsp;&nbsp;
-  <button class="export" matTooltip="Export to excel" mat-mini-fab (click)="exporterInstance.exportTable('excel')">
-    <i class='fas fa-file-excel export-icon'></i>
+  <button class="export" *ngIf="pageKey" matTooltip="Export to excel" mat-mini-fab (click)="exporterInstance.exportTable('excel',{fileName: pageKey ? pageKey : ''})">
+    <i class="fas fa-file-csv icon-wrapper" ></i>
   </button>&nbsp;&nbsp;
   <button class="export" matTooltip="Export to excel" mat-mini-fab (click)="createPdf()">
     <mat-icon class="export-icon">picture_as_pdf</mat-icon>
   </button>
   </div>
+  <div *ngIf="isReportUrl">
+      <button mat-menu-item  title="View Contact" (click)="exporterInstance.exportTable('excel')">
+        <span>Excel</span>
+      </button>
+      <button mat-menu-item (click)="createPdf()">
+          <span>PDF</span>
+      </button>
+      <button mat-menu-item (click)="exporterInstance.exportTable('csv')">
+        <span>CSV</span>
+      </button>
+    </div>

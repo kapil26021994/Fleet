@@ -46,7 +46,8 @@ public vehicleList : any= [];
 positionFilter = new FormControl()
 public isResetFormError = false;
 filteredValues =  {company: '',isActive:[],email:'',vehicle:''};
-public currentPageView :any;
+public currentPageView :any = [];
+public isAddPermission = false;
 
  // form group
  filterForm = new FormGroup({
@@ -68,8 +69,14 @@ get isActive() {
 
   ngOnInit() {
     this.vehicleTypeList =  JSON.parse(localStorage.getItem('vehicleTypeList'));
-    if(JSON.parse(localStorage.getItem('user-data')).assignGroup){
+    if(JSON.parse(localStorage.getItem('user-data')).assignGroup != null){
       this.currentPageView =JSON.parse(localStorage.getItem('user-data')).assignGroup.addPermissions.filter(x=>x.name == 'Alert Management');
+    }
+    if(JSON.parse(localStorage.getItem('user-data')).assignGroup != null){
+      this.currentPageView =JSON.parse(localStorage.getItem('user-data')).assignGroup.addPermissions.filter(x=>x.name == 'Alert Management');
+    }
+    if(this.currentPageView.length > 0 && this.currentPageView[0].items.length>0){
+      this.isAddPermission = this.currentPageView[0].items.indexOf('insert') == -1;
     }
     this.getAllUserList();
     this.getDriverAndVehicleList();
@@ -245,7 +252,7 @@ get isActive() {
         data: {
           message: 'Are you sure want to delete?',
           buttonText: {
-            ok: 'Save',
+            ok: 'Delete',
             cancel: 'No',
           },
         },

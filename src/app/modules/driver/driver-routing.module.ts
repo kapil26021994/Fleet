@@ -27,7 +27,8 @@ const routes: Routes = [
       { path: 'alert', loadChildren: () => import('./alert-managment/alert-managment.module').then(m => m.AlertManagmentModule) },
       { path: 'permission', loadChildren: () => import('./permission-managment/permission-managment.module').then(m => m.PermissionManagmentModule) },
       { path: 'customer-support', loadChildren: () => import('./customer-support/customer-support.module').then(m => m.CustomerSupportModule) },
-      { path: 'map', component:MapComponent}
+      { path: 'map', component:MapComponent},
+      { path: 'report', loadChildren: () => import('./user-report/user-report.module').then(m => m.UserReportModule)}
     ]
   }
 ];

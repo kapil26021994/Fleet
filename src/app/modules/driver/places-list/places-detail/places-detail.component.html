@@ -1,6 +1,6 @@
 
 <div class="navigation">
-    <a *ngIf="!isEdit" routerLink="/user/places"><span><i class="mdi mdi-keyboard-backspace"></i> Place</span></a>
+    <a  routerLink="/user/places"><span><i class="mdi mdi-keyboard-backspace"></i> Place</span></a>
     <span routerLink="/user/places"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
     <span></span>
 </div>
@@ -19,21 +19,6 @@
       </ul> 
     </nav>
   </div>
-<!--   
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card card-table">
-        <div class="media">
-            <img class="mr-3 w-25 rounded-img" src="assets/images/logo.png" alt="sample image">
-            <div class="media-body media-details">
-              <h4 class="mt-0">{{currentPlaceDetail?.address}}</h4>
-            </div>
-          </div>
-      </div>
-    </div>
-  </div> -->
-  
-
   <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
     <div class="col-sm-12">
       <div class="card">

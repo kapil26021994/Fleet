@@ -317,11 +317,13 @@ export class TripComponent implements OnInit {
             mapTypeId: google.maps.MapTypeId.ROADMAP,
           }
           self.directionsDisplay.setMap(self.currentRouteMapInstance);
+          let startLocation = self.tripAddModel.tripLatLong[0].address;
+          let endLocation = self.tripAddModel.tripLatLong[self.tripAddModel.tripLatLong.length - 1].address;
 
          //create the array for lat lng and generate polyline......
          self.selectedAddressList = new Array();
          for(var i=0;i<self.tripAddModel.tripLatLong.length;i++) {
-           if(self.tripAddModel.tripLatLong[i] != 'start' && self.tripAddModel.tripLatLong[i].stop_address != 'end') {
+           if(self.tripAddModel.tripLatLong[i].address != startLocation  && self.tripAddModel.tripLatLong[i].address != endLocation) {
              var first = 
                new google.maps.LatLng(Number(self.tripAddModel.tripLatLong[i].destiationLat), Number(self.tripAddModel.tripLatLong[i].destiationLng));
                self.selectedAddressList.push({
@@ -377,7 +379,7 @@ export class TripComponent implements OnInit {
         data: {
           message: 'Are you sure want to delete?',
           buttonText: {
-            ok: 'Save',
+            ok: 'Delete',
             cancel: 'No',
           },
         },
@@ -485,9 +487,9 @@ export class TripComponent implements OnInit {
         ],
       },
       circleOptions: {
-        fillColor: "#ffff00",
-        fillOpacity: 2,
-        strokeWeight: 5,
+        fillColor: "#FF0000",
+        fillOpacity: 0.2,
+        strokeWeight: 0.2,
         zIndex: 1,
       },
     });

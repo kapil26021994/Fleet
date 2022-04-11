@@ -4,6 +4,9 @@ import{UserService} from 'src/app/core/services/user/user.service'
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 import { Router} from '@angular/router';
 import{DataSharingService} from 'src/app/core/services/data-sharing.service';
+import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
+
 @Component({
   selector: 'app-sim-card-detail',
   templateUrl: './sim-card-detail.component.html',
@@ -18,6 +21,7 @@ export class SimCardDetailComponent implements OnInit {
   constructor(
     public userService :UserService,
     public dataShare :  DataSharingService,
+    public dialog:MatDialog,
     public auth:AuthenticationService,public router:Router) {
       this.dataShare.updatedData.subscribe((res: any) => { 
         if(res){ 
@@ -56,5 +60,35 @@ export class SimCardDetailComponent implements OnInit {
 
     toggleEditForm() {
       this.isEdit = this.isEdit?false:true;
+    }
+
+          /*
+      Author:Kapil Soni
+      Funcion:deleteDriver
+      Summary:deleteDriver for get delete driver
+      Return list
+    */
+    deleteSimCard(value){
+      const dialogRef = this.dialog.open(ConfirmationDialog, {
+        panelClass: 'custom-dialog-container',
+        data: {
+          message: 'Are you sure want to delete?',
+          buttonText: {
+            ok: 'Delete',
+            cancel: 'No',
+          },
+        },
+      });
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if(confirmed && this.currentSimDetail.id){
+          this.userService.deleteDataFromDb(this.currentSimDetail.id,'deleteSimCardByID').subscribe((data:any)=>{
+            if(data.message){
+              this.router.navigate(['/user/sim/']);
+            }
+          }, error => {
+            this.auth.errorToast(error.error.message);
+          })
+        }
+      });
     }
 }

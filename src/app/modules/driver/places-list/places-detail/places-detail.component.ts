@@ -72,7 +72,7 @@ public data =[];
         // MAP ATTRIBUTES.
         var mapAttr = {
             center: center,
-            zoom: 10,
+            zoom: 15,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             mapTypeControl: false,
             streetViewControl: false,
@@ -87,16 +87,19 @@ public data =[];
 
         this.placeMapDetailInstance = new google.maps.Map(document.getElementById("googlePlaceMap"), mapAttr);
         for(var i=0;i<this.currentPlaceDetail.geofence.length;i++){
+          if(this.currentPlaceDetail.geofence[i].type == 'Circle'){
+            this.currentPlaceDetail.geofence[i].type = 'circle';
+          }
           switch(this.currentPlaceDetail.geofence[i].type) {
-            case 'Circle':
+            case 'circle':
               this.circleInstance = new google.maps.Circle({
                 center: center,
                 map: this.placeMapDetailInstance,
                 radius: this.currentPlaceDetail.geofence[i].radius,
                 fillColor: '#FF0000',
-                fillOpacity: 0.5,
+                fillOpacity: 0.2,
                 strokeColor: "#FF0000",
-                strokeWeight: 1,
+                strokeWeight: 0.2,
                 draggable: true,
                 editable: true
               });
@@ -135,10 +138,10 @@ public data =[];
                 this.polygonInstance = new google.maps.Polygon({
                   paths: this.triangleCoords,
                   strokeColor: "#FF0000",
-                  strokeOpacity: 0.3,
-                  strokeWeight: 1,
+                  strokeOpacity: 0.2,
+                  strokeWeight: 2,
                   fillColor: "#FF0000",
-                  fillOpacity: 0.35,
+                  fillOpacity: 0.2,
                   draggable: true,
                   editable: true
                 });
@@ -175,7 +178,7 @@ public data =[];
                 path: this.triangleCoords,
                 geodesic: true,
                 strokeColor: "#FF0000",
-                strokeOpacity: 3.0,
+                strokeOpacity:0.2,
                 strokeWeight: 2,
                 draggable: true,
                 editable: true
@@ -254,9 +257,9 @@ public data =[];
         ],
       },
       circleOptions: {
-        fillColor: "#ffff00",
-        fillOpacity: 3,
-        strokeWeight: 5,
+        fillColor: "#FF0000",
+        fillOpacity: 0.2,
+        strokeWeight: 0.2,
         zIndex: 1,
       },
     });
@@ -266,21 +269,15 @@ public data =[];
     self.drawingToolInstance=drawingManager;
     self.drawingModeChangedEvent(self.drawingToolInstance);
 
-
-    google.maps.event.addListener(self.polygonInstance, 'dragend', function(evt){
-      console.log(evt.latLng.lat().toFixed(3));
-     });
-
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event:any) {
       var newShape = event.overlay;
       newShape.type = event.type;
       self.allOverlayList.push(event);
       self.selectedShape= newShape;
 
-      if(self.allOverlayList.length == 2){
-        self.deleteMarkr(newShape.type);
-      }
-
+      // if(self.allOverlayList.length == 2){
+      //   self.deleteMarkr(newShape.type);
+      // }
      // self.allOverlayList.push(event);
       if (event.type == 'circle') {
         var radius = event.overlay.getRadius();
@@ -330,6 +327,10 @@ public data =[];
         var start = bounds.getNorthEast();
         var end = bounds.getSouthWest();
         var center = bounds.getCenter();
+      }
+
+      if(self.allOverlayList.length == 2){
+        self.deleteMarkr(newShape.type);
       }
     });
   }

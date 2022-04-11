@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 import { Router } from '@angular/router';
+import{UserService} from 'src/app/core/services/user/user.service';
 declare var bootstrap: any;
 
 @Component({
@@ -11,7 +12,9 @@ declare var bootstrap: any;
 export class SidebarComponent implements OnInit {
   public  currentLink :any;
   public companyCount = 0;
+    
   public navItemList =[];
+  public reportTypeList =[];
   public sideMenuList :any =[];
   sideMenuListClone =   [
     {'lableName':'Dashboard','routerLink':'/user/dashboard','icon':'menu-icon mdi mdi-home menu-icon','active':true,'collapsed':false},
@@ -31,10 +34,11 @@ export class SidebarComponent implements OnInit {
     {'lableName':'customer-support','routerLink':'/user/customer-support','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Case List'}]}
   ]
 
-  constructor(public  auth:AuthenticationService,public router:Router) {}
+  constructor(public  auth:AuthenticationService,public router:Router,public userService:UserService) {}
 
   ngOnInit() {
-    this.initializeSideMenuList()
+    this.initializeSideMenuList();
+    this.getAllReportList();
     document.addEventListener("DOMContentLoaded", function(){
       document.querySelectorAll('.sidebar .nav-link').forEach(function(element){
         element.addEventListener('click', function (e) {
@@ -63,8 +67,8 @@ export class SidebarComponent implements OnInit {
   }
 
   initializeSideMenuList(){
-    let groupExist = JSON.parse(localStorage.getItem('user-data')).assignGroup;
-    if(groupExist == null){
+    let groupExist = JSON.parse(localStorage.getItem('user-data'));
+    if(groupExist.assignGroup == null){
       this.sideMenuList = [
           {'lableName':'Dashboard','routerLink':'/user/dashboard','icon':'menu-icon mdi mdi-home menu-icon','active':true,'collapsed':false},
           {'lableName':'Company','routerLink':'/user/company','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-domain menu-icon','list':[{'name':'Company List'}]},
@@ -80,34 +84,115 @@ export class SidebarComponent implements OnInit {
           {'lableName':'Map','routerLink':'/user/map','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-map-marker','list':[]},
           {'lableName':'Alert Management','routerLink':'/user/alert','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Alert List'}]},
           {'lableName':'Permission','routerLink':'/user/permission','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Permission List'}]},
-          {'lableName':'customer-support','routerLink':'/user/customer-support','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Case List'}]}
+          {'lableName':'customer-support','routerLink':'/user/customer-support','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Case List'}]},
+          {'lableName':'report','routerLink':'/user/report','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':''}]}
         ]
     }else{
-     for(let i=0;i<groupExist.addPermissions.length;i++){
-       var finalList =  this.sideMenuListClone.filter(x=>x.lableName == groupExist.addPermissions[i].name);
-       if(this.sideMenuList.length == 0){
-        this.sideMenuList = finalList;
-       }else{
-        this.sideMenuList =  this.sideMenuList.concat(finalList);
+     for(let i=0;i<groupExist.assignGroup.addPermissions.length;i++){
+       var finalList =  this.sideMenuListClone.filter(x=>x.lableName == groupExist.assignGroup.addPermissions[i].name);
+
+       if(groupExist.assignGroup.addPermissions[i].items.length>0){
+        if(this.sideMenuList.length == 0){
+          this.sideMenuList = finalList;
+         }else{
+          this.sideMenuList =  this.sideMenuList.concat(finalList);
+         }
        }
-       console.log(this.sideMenuList );
      }
+
+     for(let i=0;i<groupExist.addPermissions.length;i++){
+        var finalList =  this.sideMenuListClone.filter(x=>x.lableName == groupExist.addPermissions[i].name);
+        if(groupExist.assignGroup.addPermissions[i].items.length>0){
+          this.sideMenuList =  this.sideMenuList.concat(finalList);
+        }
+      }
     }
       localStorage.setItem('pageList',JSON.stringify(this.sideMenuList));
   }
-
-
   
-  currentMenuDetail(value){
+  currentMenuDetail(value,submenu){
     this.currentLink = value.routerLink;
     let index = this.sideMenuList.findIndex(x=>x.routerLink == value.routerLink);
-    this.sideMenuList[index].active = true;
-    this.sideMenuList[index].collapsed = value.collapsed;
+    if(index != 15){
+      this.sideMenuList[index].active = true;
+      this.sideMenuList[index].collapsed = value.collapsed;
+    }else{
+      let index_submenu = this.sideMenuList[index].list.findIndex(x=>x.name == submenu.name);
+      this.initializeRouterLinkInReport(this.sideMenuList[index].list);
+      if(index_submenu != -1){
+        //this.sideMenuList[index].list[index_submenu].active = true;
+        this.userService.sideMenuEmitter$.next(this.sideMenuList[index].list[index_submenu])
+      }
+    }
+    
     this.sideMenuList.forEach(data => {
       if(data.routerLink != this.currentLink){
         data.active = false;
         data.collapsed = false;
       }
+      // if(data.list && data.list.length>0){
+      //   data.list.forEach(data_item => {
+      //     if(data.routerLink != this.currentLink){
+      //       data_item.active = false;
+      //       data_item.collapsed = false;
+      //     }
+      //   });
+      // }
     });
   }
+
+     /*
+    Author:Kapil Soni
+    Funcion:getAllReportList
+    Summary:getAllReportList for get vehicle list
+    Return list
+  */
+    getAllReportList() {
+      this.userService.getDataByUrl('showAllReportType').subscribe((data:any)=>{
+        if(data.length>0){
+          data.forEach(report => {
+            report.name = report.reportType;
+          });
+          this.reportTypeList = data;
+          localStorage.setItem('reportType',JSON.stringify(this.reportTypeList));
+          let matchedReport = this.sideMenuList.find(x=>x.lableName == 'report');
+          if(matchedReport){
+            matchedReport.list = this.reportTypeList;
+          }
+          console.log(this.reportTypeList);
+        }
+      })
+    }
+
+    initializeRouterLinkInReport(data){
+      data.forEach(data_format => {
+        switch (data_format.reportType){
+          case 'Stoppage Report':
+            data_format.routerLink = '/user/report/stoppage-report';
+            break;
+          case 'Vehicle Raw Details Report':
+            data_format.routerLink = '/user/report/raw-Details';
+            break;
+          case 'Over Speed Report':
+            data_format.routerLink = '/user/report/speed-report';
+            break;
+          case 'Vehicle Performance Report':
+            data_format.routerLink = '/user/report/vehicle-performance';
+            break;
+          case 'Vehicle Log Report':
+            data_format.routerLink = '/user/report/vehicle-log';
+            break;
+          case 'Trip Summary Location Report':
+            data_format.routerLink = '/user/report/trip-summary';
+            break;
+          case 'Trip Summary Time Report':
+            data_format.routerLink = '/user/report/trip-summary-time';
+            break;
+          default:
+            data_format.routerLink = '/user/report/event-log';
+            break;
+          }
+      });
+      console.log(data);
+    }
 }

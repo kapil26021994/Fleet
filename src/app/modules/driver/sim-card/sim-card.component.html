@@ -185,38 +185,34 @@
         <div class="form-group">
           <label>SIM Provider</label>
           <input type="email" name="simProvider"  class="form-control form-control-lg" placeholder="Enter Sim Provider"
-          [(ngModel)]="simCartAddModel.simProvider" #simProvider="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || simProvider.touched)  && simProvider.invalid}" 
-           required>                
-          <div *ngIf="f.submitted && simProvider.invalid" class="invalid-feedback">
+          [(ngModel)]="simCartAddModel.simProvider" #simProvider="ngModel">                
+          <!-- <div *ngIf="f.submitted && simProvider.invalid" class="invalid-feedback">
               <div *ngIf="simProvider.errors.required">SIM Provider is required</div>
-          </div>
+          </div> -->
         </div>
         <div class="form-group">
           <label>Purchase Date</label>
-          <input type="date" name="joinedDate"  class="form-control form-control-lg date-picker-position" placeholder="Enter Purchase Date"
-          [(ngModel)]="simCartAddModel.purchaseDate" #purchaseDate="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || purchaseDate.touched)  && purchaseDate.invalid}" 
-           required>                
-          <div *ngIf="f.submitted && purchaseDate.invalid" class="invalid-feedback">
+          <input type="date" name="joinedDate" [max]="userService.getToday()" class="form-control form-control-lg date-picker-position" placeholder="Enter Purchase Date"
+          [(ngModel)]="simCartAddModel.purchaseDate" #purchaseDate="ngModel" >                
+          <!-- <div *ngIf="f.submitted && purchaseDate.invalid" class="invalid-feedback">
               <div *ngIf="purchaseDate.errors.required">Purchase Date is required</div>
-          </div>
+          </div> -->
         </div>
         <div class="form-group">
             <label>Recharge Start Date</label>
-            <input type="date" name="rechargeStartDate"  class="form-control form-control-lg date-picker-position" placeholder="Enter Recharge Start  Date"
-            [(ngModel)]="simCartAddModel.rechargeStartDate" #rechargeStartDate="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || rechargeStartDate.touched)  && rechargeStartDate.invalid}" 
-             required>                
-            <div *ngIf="f.submitted && rechargeStartDate.invalid" class="invalid-feedback">
+            <input type="date" name="rechargeStartDate" [max]="userService.getToday()" class="form-control form-control-lg date-picker-position" placeholder="Enter Recharge Start  Date"
+            [(ngModel)]="simCartAddModel.rechargeStartDate" #rechargeStartDate="ngModel">                
+            <!-- <div *ngIf="f.submitted && rechargeStartDate.invalid" class="invalid-feedback">
                 <div *ngIf="rechargeStartDate.errors.required">Recharge Start Date is required</div>
-            </div>
+            </div> -->
           </div>
           <div class="form-group">
             <label>Recharge Expiry Date</label>
-            <input type="date" name="rechargeExpiryDate"  class="form-control form-control-lg date-picker-position" placeholder="Enter Expiry Date"
-            [(ngModel)]="simCartAddModel.rechargeExpiryDate" #rechargeExpiryDate="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || rechargeExpiryDate.touched)  && rechargeExpiryDate.invalid}" 
-             required>                
-            <div *ngIf="f.submitted && rechargeExpiryDate.invalid" class="invalid-feedback">
+            <input type="date" name="rechargeExpiryDate" [max]="userService.getToday()"  class="form-control form-control-lg date-picker-position" placeholder="Enter Expiry Date"
+            [(ngModel)]="simCartAddModel.rechargeExpiryDate" #rechargeExpiryDate="ngModel">                
+            <!-- <div *ngIf="f.submitted && rechargeExpiryDate.invalid" class="invalid-feedback">
                 <div *ngIf="rechargeExpiryDate.errors.required">Recharge Expiry Date is required</div>
-            </div>
+            </div> -->
           </div>
           <div class="form-group">
             <label>Active</label>

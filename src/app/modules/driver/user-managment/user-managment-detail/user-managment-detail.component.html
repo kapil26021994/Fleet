@@ -11,8 +11,7 @@
     <nav aria-label="breadcrumb">
       <ul class="breadcrumb" style="padding: 0;">
         <li class="breadcrumb-item active" aria-current="page">
-            <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
-         <button class="btn btn-info button-size" >Deactivate</button>
+         <button class="btn btn-info button-size" (click)="delete()">Delete</button>
          <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
          <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateGroupInfo()">Save</button>
         </li>
@@ -26,10 +25,6 @@
       <form id="contact" action="" method="post">
         <div class="row">
           <div class="col-sm-6">
-            <!-- <div class="form-group">
-              <label>Select Company</label>
-              <input name="companyName"   [(ngModel)]="currentUserDetail.company.companyName" [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
-            </div> -->
             <div class="form-group">
               <label>Select Company</label>
               <span>:</span>
@@ -55,11 +50,8 @@
               <label>App Permission</label>
               <span>:</span>
               <mat-form-field fxFlex="40" class="field-wrapper app-permission">
-                  <!-- <mat-select  [(ngModel)]="currentUserDetail.addPermissions"  [disabled]="!isEdit" placeholder="App Permission" multiple name="permission"> 
-                    <mat-option *ngFor="let permission of permissionList" [value]="permission">{{permission}}</mat-option>
-                  </mat-select> -->
                   <mat-select  [(ngModel)]="modelGroup" #itemSelectPermission="ngModel" disableOptionCentering multiple  name="modelGroup">
-                    <mat-optgroup *ngFor="let permission of permissionList" [label]="permission.name">
+                    <mat-optgroup *ngFor="let permission of totalPermissionList" [label]="permission.name">
                       <mat-option *ngFor="let permission_name of permission.items" [value]="permission_name.lable" 
                       (onSelectionChange)="optionSelected($event,permission_name.lable,permission)" >
                         {{permission_name.lable}}
@@ -86,7 +78,8 @@
               <div class="form-group">
                 <label>Assign Group</label>
                 <mat-form-field fxFlex="40" class="field-wrapper app-permission">
-                  <mat-select  [(ngModel)]="currentUserDetail.assignGroup.groupName"  [disabled]="!isEdit" placeholder="App companyName" name="companyName"> 
+                  <mat-select  [(ngModel)]="currentUserDetail.groupName"  [disabled]="!isEdit" placeholder="App companyName" name="groupName"
+                  (ngModelChange)="updateDataViaKey($event)"> 
                     <mat-option *ngFor="let group of groupList" [value]="group.groupName"> {{group.groupName}}</mat-option>
                   </mat-select>
                 </mat-form-field>

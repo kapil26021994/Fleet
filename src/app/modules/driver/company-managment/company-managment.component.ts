@@ -22,7 +22,7 @@ declare var google;
 })
 export class CompanyManagmentComponent implements OnInit {
   vehicleAddForm : FormGroup;
-  displayedColumns: any[] = ['TotalVehicles','TotalUsers','TotalTrackers','companyEmail','companyName','companyContactNumber','isActive','action'];
+  displayedColumns: any[] = ['companyEmail','companyName','companyContactNumber','TotalVehicles','TotalUsers','TotalTrackers','isActive','action'];
   dataSource: MatTableDataSource<any>;
   selection = new SelectionModel(true, []);
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -218,7 +218,7 @@ get isActive() {
         data: {
           message: 'Are you sure want to delete?',
           buttonText: {
-            ok: 'Save',
+            ok: 'Delete',
             cancel: 'No',
           },
         },

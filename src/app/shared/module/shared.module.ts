@@ -30,6 +30,8 @@ import { MatTableExporterModule } from 'mat-table-exporter';
 import { ConfirmationDialog } from '../components/confirmation-dialog/confirmation-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
+import { DatePipe } from '@angular/common';
+
 
 
 @NgModule({
@@ -62,7 +64,7 @@ import { MatChipsModule } from '@angular/material/chips';
     MatTooltipModule,    
     MatChipsModule,
     ToastrModule.forRoot({
-      timeOut: 1000,
+      timeOut: 10000,
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
     }),
@@ -94,6 +96,7 @@ import { MatChipsModule } from '@angular/material/chips';
     MatNativeDateModule,   
     ReactiveFormsModule],
     providers: [
+      DatePipe,
      { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
     ]
 })

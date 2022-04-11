@@ -4,7 +4,8 @@ import{UserService} from 'src/app/core/services/user/user.service'
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 ;import{DataSharingService} from 'src/app/core/services/data-sharing.service';
 import { Router} from '@angular/router';
-import * as assert from 'assert';
+import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+ import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-edit-vehicle',
@@ -18,12 +19,9 @@ export class EditVehicleComponent implements OnInit {
   public data =[];
   public fuelTypeList =[];
 
-  constructor(public userService : UserService,public router :Router,public authService:AuthenticationService,public dataShare: DataSharingService) { 
-    this.dataShare.updatedData.subscribe((res: any) => { 
-      if(res){ 
-        this.exporterInstance = res;
-      }
-    })  
+  constructor(public userService : UserService,public router :Router,
+    public dialog :MatDialog,
+    public authService:AuthenticationService,public dataShare: DataSharingService) { 
   }
   public isEdit = false;
   public submitted = false;
@@ -56,7 +54,7 @@ export class EditVehicleComponent implements OnInit {
   }
 
   toggleEditForm() {
-    this.isEdit = this.isEdit?false:true;
+    this.isEdit = this.isEdit ? false : true;
   }
 
 
@@ -66,17 +64,17 @@ export class EditVehicleComponent implements OnInit {
     Summary:getAllVehicleList for get vehicle list
     Return list
   */
-    updateInfo() {
-      this.userService.updateData(this.currentVehicleDetail ,'updateVehicleInfo').subscribe((data:any)=>{
-        if(data.message){
-          this.toggleEditForm();
-          this.authService.successToast(data.message);
-          this.router.navigate(['/user/vehicle/']);
-        } 
-      },  error => {
-        this.authService.errorToast(error.error.message);
-      })
-    }
+  updateInfo() {
+    this.userService.updateData(this.currentVehicleDetail ,'updateVehicleInfo').subscribe((data:any)=>{
+      if(data.message){
+        this.toggleEditForm();
+        this.authService.successToast(data.message);
+        this.router.navigate(['/user/vehicle/']);
+      } 
+    },  error => {
+      this.authService.errorToast(error.error.message);
+    })
+  }
     
    /*
     Author:Kapil Soni
@@ -87,5 +85,36 @@ export class EditVehicleComponent implements OnInit {
   getAllVehicleList() {
       this.vehicleList  = JSON.parse(localStorage.getItem('vehicleTypeList'));
       this.fuelTypeList = JSON.parse(localStorage.getItem('fuelTypeList'));
+  }
+
+    /*
+    Author:Kapil Soni
+    Funcion:deleteVehicle
+    Summary:deleteVehicle for get delete vehicle  
+    Return list
+  */
+  deleteVehicle(value){
+    const dialogRef = this.dialog.open(ConfirmationDialog, {
+      panelClass: 'custom-dialog-container',
+      data: {
+        message: 'Are you sure want to delete?',
+        buttonText: {
+          ok: 'Delete',
+          cancel: 'No',
+        },
+      },
+    });
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if(confirmed && this.currentVehicleDetail.id){
+        this.userService.deleteDataFromDb(this.currentVehicleDetail.id,'deleteVehicleByID').subscribe((data:any)=>{
+          if(data.message){
+            this.router.navigate(['/user/vehicle/']);
+            this.authService.successToast(data.message);
+          }
+        }, error => {
+            this.authService.errorToast(error.error.message);
+        })
+      }
+    });
   }
 }

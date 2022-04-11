@@ -5,6 +5,7 @@ export class DriverTripListModel {
     vehicle:VehicleAdd;
     driver:DiverListModel;
     createDateTime: string;
+    id: string;
     updateDateTime:string;
     startPoint:string;
     endPoint:string;

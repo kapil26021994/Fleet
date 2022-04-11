@@ -4,6 +4,8 @@ import{DriverTripListModel} from 'src/app/core/models/driver/driver-trip-list.mo
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 import { Router } from '@angular/router';
 import{DataSharingService} from 'src/app/core/services/data-sharing.service';
+import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 declare var google;
 @Component({
@@ -38,7 +40,7 @@ export class TripDetailComponent implements OnInit {
   public addNewLocatonLng :any;
   public polylineList =[];
   constructor(public userService:UserService,public authService:AuthenticationService,
-    public router:Router,public dataShare:DataSharingService) { 
+    public router:Router,public dataShare:DataSharingService,public dialog:MatDialog) { 
     }
 
 
@@ -424,4 +426,35 @@ export class TripDetailComponent implements OnInit {
     addLocation(){
       this.drwaLineBetweenLocation();
     }
+
+        /*
+      Author:Kapil Soni
+      Funcion:deleteVehicle
+      Summary:deleteVehicle for get delete vehicle
+      Return list
+    */
+      deleteTrip(value){
+        const dialogRef = this.dialog.open(ConfirmationDialog, {
+          panelClass: 'custom-dialog-container',
+          data: {
+            message: 'Are you sure want to delete?',
+            buttonText: {
+              ok: 'Delete',
+              cancel: 'No',
+            },
+          },
+        });
+        dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+          if(confirmed && this.currentTripDetail.id){
+            this.userService.deleteDataFromDb(this.currentTripDetail.id,'deleteTripByID').subscribe((data:any)=>{
+              if(data.message){
+                this.authService.successToast(data.message);
+                this.router.navigate(['/user/trip/']);
+              }
+            }, error => {
+              this.authService.errorToast(error.error.message);
+            })
+          }
+        });
+      }
 }

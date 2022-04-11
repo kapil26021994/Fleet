@@ -21,7 +21,7 @@ import { match } from 'assert';
 })
 export class UserManagmentComponent implements OnInit {
   vehicleAddForm : FormGroup;
-  displayedColumns: any[] = ['username','email','isActive','phoneNumber','groupName','action'];
+  displayedColumns: any[] = ['name','username','email','isActive','phoneNumber','groupName','action'];
   dataSource: MatTableDataSource<any>;
   selection = new SelectionModel(true, []);
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -49,7 +49,7 @@ public selectedPermission =[];
   positionFilter = new FormControl()
   public isResetFormError = false;
   public isLoadingPermission = false;
-  filteredValues =  {username: '',isActive:[],email:''};
+  filteredValues =  {username: '',isActive:[],email:'',name:''};
 
  // form group
  filterForm = new FormGroup({
@@ -74,7 +74,7 @@ get isActive() {
     this.getAllUserList();
     this.getAllGroupList();
     this.getAllCompanyData();
-    //this.getAllMultpleDataViaURL();
+    this.getAllMultpleDataViaURL();
 
   }
 
@@ -167,13 +167,13 @@ get isActive() {
 
    /*
       Author:Kapil Soni
-      Funcion:getAllCompanyData
-      Summary:getAllCompanyData for get vehicle list
+      Funcion:addVehicle
+      Summary:addVehicle for save user..
       Return list
     */
     addVehicle(form:any){
       this.vehicleForm = form;
-      if(form.form.valid) {
+      if(form) {
         this.submitted = true;
         this.isLoadingData = true;
         if(this.groupAdd.isActive){
@@ -183,7 +183,7 @@ get isActive() {
         }
         delete (<any>this.groupAdd).companyName;
         this.groupAdd.roles = [{"id": 1,"name": "USER"}];
-        delete (<any>this.groupAdd).groupName;
+        //delete (<any>this.groupAdd).groupName;
         
         this.userService.storeDataToDb(<any>this.groupAdd,'subUser/signup').subscribe((data:any)=>{
           if(data.message){
@@ -273,7 +273,7 @@ get isActive() {
         data: {
           message: 'Are you sure want to delete?',
           buttonText: {
-            ok: 'Save',
+            ok: 'Delete',
             cancel: 'No',
           },
         },
@@ -307,6 +307,7 @@ get isActive() {
         this.filteredValues['username'] = positionValue;
         this.filteredValues['email'] = positionValue;
         this.filteredValues['phoneNumber'] = positionValue;
+        this.filteredValues['name'] = positionValue;
         this.dataSource.filter = JSON.stringify(this.filteredValues);
       });
       this.isActive.valueChanges.subscribe((positionValue) => {
@@ -331,7 +332,9 @@ get isActive() {
             const resultValue = isStatusAvailable &&
               (data.username.toString().trim().toLowerCase().indexOf(searchString.username != null ? searchString.username.toLowerCase() : '') !== -1 ||
               data.email.toString().trim().toLowerCase().indexOf(searchString.email != null ? searchString.email.toLowerCase() : '') !== -1 ||
-              data.phoneNumber.toString().trim().toLowerCase().indexOf(searchString.phoneNumber != null ? searchString.phoneNumber.toLowerCase() : '') !== -1);
+              data.phoneNumber.toString().trim().toLowerCase().indexOf(searchString.phoneNumber != null ? searchString.phoneNumber.toLowerCase() : '') !== -1 ||
+              data.firstName.toString().trim().toLowerCase().indexOf(searchString.name != null ? searchString.name.toLowerCase() : '') !== -1 ||
+              data.lastName.toString().trim().toLowerCase().indexOf(searchString.name != null ? searchString.name.toLowerCase() : '') !== -1);
             return resultValue;
           };
           this.dataSource.filter = JSON.stringify(this.filteredValues);
@@ -349,15 +352,15 @@ get isActive() {
   //   Summary:getAllMultpleDataViaURL for get vehicle list
   //   Return list
   // */
-  // getAllMultpleDataViaURL() {
-  //   this.userService.getMulipleAPIDataViaUrl('company/showAllCompanyData','showAllPermissionData','').subscribe((data:any)=>{
-  //     if(data[1].length > 0 && data[0].length > 0){
-  //       this.permissionList = data[0];
-  //     } 
-  //   },  error => {
-  //     this.authService.errorToast(error.error.message);
-  //   })
-  // }
+  getAllMultpleDataViaURL() {
+    this.userService.getMulipleAPIDataViaUrl('company/showAllCompanyData','showAllPermissionData','','').subscribe((data:any)=>{
+      if(data[1].length > 0 && data[0].length > 0){
+        this.permissionList = data[0];
+      } 
+    },  error => {
+      this.authService.errorToast(error.error.message);
+    })
+  }
 
   optionSelected(event,value,permission) {
     if(event.source._selected){
@@ -415,10 +418,13 @@ get isActive() {
       Return list
     */
     getPermissionListViaGroupId(id) {
+      this.getAllMultpleDataViaURL();
+      var list =[];
       this.userService.getDataByUrl('showUserGroupById/'+id).subscribe((data:any)=>{
         if(data.addPermissions.length>0){
-          this.permissionList = data.addPermissions;
+          list = this.permissionList.filter(entry1 => !data.addPermissions.some(entry2 => entry1.name === entry2.name));
           this.isLoadingPermission  = false;
+          this.permissionList = list;
         }else{
           this.isLoadingPermission  = false;
           this.permissionList =[];

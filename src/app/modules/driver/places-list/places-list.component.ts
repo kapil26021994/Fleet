@@ -233,9 +233,8 @@ get geoFence() {
           panelClass: 'custom-dialog-container',
           data: {
             message: 'Are you sure want to delete?',
-            isDelete:false,
             buttonText: {
-              ok: 'Save',
+              ok: 'Delete',
               cancel: 'No',
             },
           },
@@ -350,8 +349,8 @@ get geoFence() {
       },
       circleOptions: {
         fillColor: "#FF0000",
-        fillOpacity: 1,
-        strokeWeight: 3
+        fillOpacity: 0.2,
+        strokeWeight: 0.2
       },
     });
     drawingManager.setMap(this.placeMapInstance);
@@ -462,11 +461,12 @@ get geoFence() {
   deleteMarkr(type){
     const dialogRef = this.dialog.open(ConfirmationDialog, {
       panelClass: 'custom-dialog-container',
+      disableClose: true,
       data: {
         isDelete:true,
-        message: 'Are you sure want to delete?',
+        message: 'Previous shape will be erased',
         buttonText: {
-          ok: 'Delete'
+          ok: 'Erase'
         },
       },
     });

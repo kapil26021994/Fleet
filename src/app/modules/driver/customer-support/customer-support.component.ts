@@ -230,7 +230,7 @@ get isActive() {
         data: {
           message: 'Are you sure want to delete?',
           buttonText: {
-            ok: 'Save',
+            ok: 'Delete',
             cancel: 'No',
           },
         },
@@ -272,15 +272,6 @@ get isActive() {
       this.dataSource.filterPredicate = (data, filter: string): boolean => {
             let searchString = JSON.parse(filter);
             let isStatusAvailable = false;
-            // if(searchString.isActive &&  searchString.isActive.length) {
-            //   for (const d of searchString.isActive) {
-            //     if (data.isActive === d.toLowerCase()) {
-            //       isStatusAvailable = true;
-            //     }
-            //   }
-            // } else {
-            //   isStatusAvailable = true;
-            // }
             const resultValue =
               data.email.toString().trim().toLowerCase().indexOf(searchString.email != null ? searchString.email.toLowerCase() : '') !== -1 ||
               data.contactNumber.toString().trim().toLowerCase().indexOf(searchString.contactNumber != null ? searchString.contactNumber.toLowerCase() : '') !== -1 ||

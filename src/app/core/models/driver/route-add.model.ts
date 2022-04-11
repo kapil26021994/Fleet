@@ -10,6 +10,7 @@ export class RouteAddModel {
     endpoint:string;
     startDate:string;
     isActive:string;
+    routeName :string
     endDate:string;
     routeGeofence:any = [];
 }

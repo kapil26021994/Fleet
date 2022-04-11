@@ -12,26 +12,31 @@
   </nav>
 </div>
 
-<div class="row">
+<div *ngIf="isLoading" class="circle-spinner">
+  <mat-spinner [diameter]="50"></mat-spinner>
+</div>
+<ng-container *ngIf="!isLoading">
+<div class="row" *ngIf="dashboardDataList['customer'] && dashboardDataList['ticketRaised'] && dashboardDataList['vehicles'] &&
+dashboardDataList['kmsTracked']  && dashboardDataList['trackers'] && dashboardDataList['simCard'] && dashboardDataList['trips']">
   <div class="col-md-4 grid-margin stretch-card stretch-card-custom">
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">
           Customer
         </h4>
-        <button class="btn btn-outline-info btn-fw btn-custom">Live Today</button>
+        <button class="btn btn-outline-info btn-fw btn-custom" data-toggle="modal" data-target="#myModal"  (click)="generateGraphByKey('customer')">Graph</button>
         <div class="template-demo">
           <div class="card-details">
             <div>
-              <span class="primary-count">10,000</span>
+              <span class="primary-count">{{dashboardDataList['customer'].customerJoinThisMonth}}</span>
               <small>Join This Month</small>
             </div>
             <div>
-              <span class="warning-count">20,000</span>
+              <span class="warning-count">{{dashboardDataList['customer'].disconnectedCustomer}}</span>
               <small>Discontinued</small>
             </div>
             <div>
-              <span class="success-count">50,000</span>
+              <span class="success-count">{{dashboardDataList['customer'].totalCustomer}}</span>
               <small>Total</small>
             </div>
           </div>
@@ -45,19 +50,19 @@
         <h4 class="card-title">
           Vehicles
         </h4>
-        <button class="btn btn-outline-info btn-fw btn-custom">Live Today</button>
+        <button class="btn btn-outline-info btn-fw btn-custom" data-toggle="modal" data-target="#myModal" (click)="generateGraphByKey('vehicle')">Graph</button>
         <div class="template-demo">
           <div class="card-details">
             <div>
-              <span class="primary-count">15,000</span>
+              <span class="primary-count">{{dashboardDataList['vehicles'].vehicleJoinThisMonth}}</span>
               <small>Added This Month</small>
             </div>
             <div>
-              <span class="warning-count">10,000</span>
+              <span class="warning-count">{{dashboardDataList['vehicles'].disconnectedVehicle}}</span>
               <small>Discontinued</small>
             </div>
             <div>
-              <span class="success-count">50,000</span>
+              <span class="success-count">{{dashboardDataList['vehicles'].totalVehicle}}</span>
               <small>Total</small>
             </div>
           </div>
@@ -71,20 +76,20 @@
         <h4 class="card-title">
           KM's Tracked
         </h4>
-        <button class="btn btn-outline-info btn-fw btn-custom">Live Today</button>
+        <button class="btn btn-outline-info btn-fw btn-custom" data-toggle="modal" data-target="#myModal" (click)="generateGraphByKey('kmTracked')">Graph</button>
         <div class="template-demo">
           <div class="card-details">
             <div>
-              <span class="warning-count">11,500</span>
-              <small>Today</small>
+              <span class="warning-count">{{dashboardDataList['kmsTracked'].todaysKmsTracked}}</span>
+              <small>Todays Kms Tracked</small>
             </div>
             <div>
-              <span class="primary-count">55,232</span>
-              <small>This Month</small>
+              <span class="success-count">{{dashboardDataList['kmsTracked'].totalKmsTracked}}</span>
+              <small>Total Kms Tracked</small>
             </div>
             <div>
-              <span class="success-count">50,000</span>
-              <small>Total</small>
+              <span class="primary-count">{{dashboardDataList['kmsTracked'].kmsTrackedThisMonth}}</span>
+              <small>Kms Tracked Join This Month</small>
             </div>
           </div>
         </div>
@@ -98,23 +103,23 @@
         <h4 class="card-title">
           Trackers
         </h4>
-        <button class="btn btn-outline-info btn-fw btn-custom">Live Today</button>
+        <button class="btn btn-outline-info btn-fw btn-custom" data-toggle="modal" data-target="#myModal" (click)="generateGraphByKey('trackers')">Graph</button>
         <div class="template-demo">
-          <div class="card-details">
+          <div class="card-details" >
             <div>
-              <span class="warning-count">10,000</span>
+              <span class="warning-count">{{dashboardDataList['trackers'].trackersJoinThisMonth}}</span>
               <small>Issued This Month</small>
             </div>
             <div>
-              <span class="info-count">10,000</span>
+              <span class="info-count">{{dashboardDataList['trackers'].activeTrackers}}</span>
               <small>Active</small>
             </div>
             <div>
-              <span class="primary-count">11,000</span>
+              <span class="primary-count">{{dashboardDataList['trackers'].in_activeTrackers}}</span>
               <small>In-active</small>
             </div>
             <div>
-              <span class="success-count">50,000</span>
+              <span class="success-count">{{dashboardDataList['trackers'].totalTrackers}}</span>
               <small>Total</small>
             </div>
           </div>
@@ -129,27 +134,27 @@
         <h4 class="card-title">
           Sim Card
         </h4>
-        <button class="btn btn-outline-info btn-fw btn-custom">Live Today</button>
+        <button class="btn btn-outline-info btn-fw btn-custom" data-toggle="modal" data-target="#myModal" (click)="generateGraphByKey('simCard')">Graph</button>
         <div class="template-demo">
-          <div class="card-details">
+          <div class="card-details" >
             <div>
-              <span class="warning-count">10,000</span>
-              <small>Issued This Month</small>
+              <span class="warning-count">{{dashboardDataList['simCard'].in_activeSimCard}}</span>
+              <small>In-Active Sim Card</small>
             </div>
             <div>
-              <span class="info-count">10,000</span>
-              <small>Active</small>
+              <span class="success-count">{{dashboardDataList['simCard'].simCardJoinThisMonth}}</span>
+              <small>SIM Card Join This Month</small>
             </div>
             <div>
-              <span class="primary-count">11,000</span>
-              <small>In-active</small>
+              <span class="primary-count">{{dashboardDataList['simCard'].activeSimCard}}</span>
+              <small>Active Sim Card</small>
             </div>
             <div>
-              <span class="success-count">50,000</span>
-              <small>Total</small>
+              <span class="primary-count">{{dashboardDataList['simCard'].totalSimCard}}</span>
+              <small>Total Sim Card</small>
             </div>
           </div>
-        </div>
+         </div>
       </div>
     </div>
   </div>
@@ -160,24 +165,24 @@
         <h4 class="card-title">
           Trips
         </h4>
-        <button class="btn btn-outline-info btn-fw btn-custom">Live Today</button>
+        <button class="btn btn-outline-info btn-fw btn-custom" data-toggle="modal" data-target="#myModal" (click)="generateGraphByKey('trips')">Graph</button>
         <div class="template-demo">
           <div class="card-details">
             <div>
-              <span class="warning-count">50,000</span>
+              <span class="warning-count">{{dashboardDataList['trips'].TodaysTrips}}</span>
               <small>Today</small>
             </div>
             <div>
-              <span class="info-count">10,000</span>
+              <span class="info-count">{{dashboardDataList['trips'].TripsJoinThisMonth}}</span>
               <small>This Month</small>
             </div>
             <div>
-              <span class="success-count">50,000</span>
+              <span class="success-count">{{dashboardDataList['trips'].in_activeTrips}}</span>
               <small>In-active</small>
             </div>
             <div>
-              <span class="primary-count">90,000</span>
-              <small>Distance Travelled</small>
+              <span class="primary-count">{{dashboardDataList['trips'].allTripsTotalKMS}}</span>
+              <small>Total KMS</small>
             </div>
           </div>
         </div>
@@ -186,30 +191,34 @@
   </div>
 
 </div>
-<div class="row">
+<div class="row" *ngIf="dashboardDataList['vehicleLiveTracking'] && dashboardDataList['ticketRaised']">
   <div class="col-md-4 grid-margin stretch-card stretch-card-custom">
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">
           Ticket Raised
         </h4>
-        <button class="btn btn-outline-info btn-fw btn-custom">Live Today</button>
+        <button class="btn btn-outline-info btn-fw btn-custom" data-toggle="modal" data-target="#myModal" (click)="generateGraphByKey('ticket')">Graph</button>
         <div class="template-demo">
           <div class="card-details">
             <div>
-              <span class="warning-count">51,000</span>
+              <span class="warning-count">{{dashboardDataList['ticketRaised'].ticketRaisedThisMonth}}</span>
               <small>Newly Raised This Month</small>
             </div>
             <div>
-              <span class="info-count">11,000</span>
+              <span class="info-count">{{dashboardDataList['ticketRaised'].todaysTicketRaised}}</span>
+              <small>Todays Ticket Raised</small>
+            </div>
+            <div>
+              <span class="info-count">{{dashboardDataList['ticketRaised'].pendingTicketRaised}}</span>
               <small>Pending</small>
             </div>
             <div>
-              <span class="primary-count">10,000</span>
+              <span class="success-count">{{dashboardDataList['ticketRaised'].ResolvedTicketRaised}}</span>
               <small>Resolved</small>
             </div>
             <div>
-              <span class="success-count">56,000</span>
+              <span class="primary-count">{{dashboardDataList['ticketRaised'].totalTicketRaised}}</span>
               <small>Total</small>
             </div>
           </div>
@@ -223,36 +232,36 @@
         <h4 class="card-title" style="text-align: center;">
           Vehicle Live Tracking
         </h4>
-        <button class="btn btn-outline-info btn-fw btn-custom">Live Today</button>
+        <button class="btn btn-outline-info btn-fw btn-custom"  data-toggle="modal" data-target="#myModal" (click)="generateGraphByKey('liveTracking')">Graph</button>
         <div class="template-demo">
           <div class="card-details">
             <div>
-              <span class="warning-count">11,000</span>
-              <small>Vehicles <br> Running</small>
+              <span class="warning-count">{{dashboardDataList['vehicleLiveTracking'].VehiclesRunning}}</span>
+              <small>Running</small>
             </div>
             <div>
-              <span class="success-count">10,000</span>
-              <small>Vehicles <br> Stopped</small>
+              <span class="success-count">{{dashboardDataList['vehicleLiveTracking'].PowerSupplyOk}}</span>
+              <small>Power Supply</small>
             </div>
             <div>
-              <span class="success-count">10,000</span>
-              <small>Ignition <br> OFF</small>
+              <span class="primary-count">{{dashboardDataList['vehicleLiveTracking'].IgnitionOFF}}</span>
+              <small>Ignition OFF</small>
             </div>
             <div>
-              <span class="success-count">10,000</span>
-              <small>GPS Signal <br> Active</small>
+              <span class="primary-count">{{dashboardDataList['vehicleLiveTracking'].PowerSupplyCutOff}}</span>
+              <small>Cut Off</small>
             </div>
             <div>
-              <span class="success-count">10,000</span>
-              <small>GPS Signal <br> In-Active</small>
+              <span class="primary-count">{{dashboardDataList['vehicleLiveTracking'].GPSSignalInActive}}</span>
+              <small>GPS Signal In Active</small>
             </div>
             <div>
-              <span class="success-count">10,000</span>
-              <small>Power Supply<br> Cut Off</small>
+              <span class="primary-count">{{dashboardDataList['vehicleLiveTracking'].GPSSignalActive}}</span>
+              <small>GPS Signal Active</small>
             </div>
             <div>
-              <span class="success-count">50,000</span>
-              <small>Power Supply<br> Ok</small>
+              <span class="primary-count">{{dashboardDataList['vehicleLiveTracking'].VehiclesStopped}}</span>
+              <small>Vehicles Stopped</small>
             </div>
           </div>
         </div>
@@ -264,112 +273,142 @@
 <div class="row">
   <div class="col-md-12">
     <div class="table-filter-options row">
-      <div class="col-md-4">
-        <div class="table-search">
-          <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
-          <div>
-            <input type="string" placeholder="Search">
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-      <div class="location-filter">
-        location Entry Type
-        <i class="mdi mdi-arrow-down-drop-circle-outline"></i>
-      </div>
-    </div>
-      <div class="col-md-3">
-      <div class="location-filter">
-        Location Entry Time
-        <i class="mdi mdi-arrow-down-drop-circle-outline"></i>
-        <i></i>
-      </div>
-    </div>
-      <div class="col-md-2">
-      <div class="pagination-container">
-        1 - 4 of 4 
-        <span class="prev-next">
-          <label><i class="mdi mdi-chevron-left"></i></label>
-          <label><i class="mdi mdi-chevron-right"></i></label>
-        </span>
-      </div>
-    </div>
-    </div>
-    <div class="card"  style="overflow-y: scroll;">
-  
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>Time Stamp  <i class="mdi mdi-menu-down"></i> </th>
-            <th>Company <i class="mdi mdi-menu-down"></i> </th>
-            <th>Vehicle <i class="mdi mdi-menu-down"></i> </th>
-            <th>Driver <i class="mdi mdi-menu-down"></i> </th>
-            <th>Ignition <i class="mdi mdi-menu-down"></i> </th>
-            <th>Battery <i class="mdi mdi-menu-down"></i> </th>
-            <th>Power Supply <i class="mdi mdi-menu-down"></i> </th>
-
-            <th>Nearest Site/Location<i class="mdi mdi-menu-down"></i> </th>
-            <th>Speed<i class="mdi mdi-menu-down"></i> </th>
-            <th>GSM<i class="mdi mdi-menu-down"></i> </th>
-            <th>GPS<i class="mdi mdi-menu-down"></i> </th>
-            <th>Status<i class="mdi mdi-menu-down"></i> </th>
-            <th>IMEI<i class="mdi mdi-menu-down"></i> </th>
-          </tr>
-        </thead>
-        <tbody>
+      <div class="col-md-12 col-sm-12 col-md-12">
+        <form class="example-form" style="display: flex;" [formGroup]="dashboardFilterForm">
+          <table class="example-full-width" cellspacing="0">
             <tr>
-              <td>2021-10-23</td>
-              <td>Smartify World</td>
-              <td>MH03BB9917</td>
-              <td>Sham</td>
-              <td>ON/OFF</td>
-              <td>Connected</td>
-              <td>Active</td>
-
-              <td>Full Address	</td>
-              <td>Smartify World	</td>
-              <td>60Km/Hr	</td>
-              <td>Sham	</td>
-              <td>Yellow</td>
-              <td><button class="btn btn-outline-info btn-fw">Graph View</button></td>
+              <td>
+                <mat-form-field fxFlex="40" class="field-wrapper">
+                  <mat-select disableOptionCentering formControlName="companyName" placeholder="Company Name" name="companyName">
+                    <mat-option *ngFor="let company of companyList" [value]="company">
+                      {{company.companyName}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </td>
+              <td style="display: flex;margin:24px 0px  0px 19px;">
+                <button type="submit" class="btn btn-info  button-size" (click)="viewVehicleData()" [disabled]="isLoadingData">
+                  <ng-container *ngIf="!isLoadingData">
+                    View
+                  </ng-container>
+                  <ng-container *ngIf="isLoadingData">
+                      Loading..
+                  </ng-container>
+                </button>
+                <button class="btn btn-danger button-size" (click)="userService.resetFilter(dashboardFilterForm)">Reset</button>
+              </td>
+              <td>
+                <mat-form-field class="field-wrapper" fxFlex="40" style="margin-left: 35px !important;">
+                  <input matInput placeholder="Search" formControlName="searchTerm">
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field  fxFlex="40" class="field-wrapper">
+                  <mat-select disableOptionCentering formControlName="status" placeholder="Status" multiple placeholder="Status">
+                    <mat-option *ngFor="let status of statusList" [value]="status">{{status}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </td>
             </tr>
-            <tr>
-              <td>2021-10-23</td>
-              <td>Smartify World</td>
-              <td>MH03BB9917</td>
-              <td>Sham</td>
-              <td>ON/OFF</td>
-              <td>Connected</td>
-              <td>Active</td>
+        </table>
+      </form>
+    </div>
+    </div>
+    <div class="mat-elevation-z8">
 
-              
-              <td>Full Address	</td>
-              <td>Smartify World	</td>
-              <td>60Km/Hr	</td>
-              <td>Sham	</td>
-              <td>Yellow</td>
-              <td><button class="btn btn-outline-info btn-fw">Graph View</button></td>
-            </tr>
-            <tr>
-              <td>2021-10-23</td>
-              <td>Smartify World</td>
-              <td>MH03BB9917</td>
-              <td>Sham</td>
-              <td>ON</td>
-              <td>Connected</td>
-              <td>Active</td>
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter #exporter="matTableExporter" class="table-wrapper">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header >CompanyName </th>
+          <td mat-cell *matCellDef="let element"> {{element.companyName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="vname">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Vehicle Number</th>
+          <td mat-cell *matCellDef="let element"> {{element.vname}} </td>
+        </ng-container>
 
-              
-              <td>Full Address	</td>
-              <td>Smartify World	</td>
-              <td>60Km/Hr	</td>
-              <td>Sham	</td>
-              <td>Yellow</td>
-              <td><button class="btn btn-outline-info btn-fw">Graph View</button></td>
+        <ng-container matColumnDef="mobile">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone Number</th>
+          <td mat-cell *matCellDef="let element"> {{element.mobile}} </td>
+        </ng-container>
+        <ng-container matColumnDef="battery">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Battery</th>
+          <td mat-cell *matCellDef="let element"> {{element.battery}} </td>
+        </ng-container>
+        <ng-container matColumnDef="ignition">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Ignition</th>
+          <td mat-cell *matCellDef="let element"> {{element.ignition}} </td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.date | date}} </td>
+        </ng-container>
+        <ng-container matColumnDef="idleTime">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Idle Time</th>
+          <td mat-cell *matCellDef="let element"> {{element.idleTime}} </td>
+        </ng-container>
+        <ng-container matColumnDef="imei">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>IMEI</th>
+          <td mat-cell *matCellDef="let element"> {{element.imei}} </td>
+        </ng-container>
+        <ng-container matColumnDef="info">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Info</th>
+          <td mat-cell *matCellDef="let element"> {{element.info}} </td>
+        </ng-container>
+        <ng-container matColumnDef="specific">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Specific</th>
+          <td mat-cell *matCellDef="let element"> {{element.specific}} </td>
+        </ng-container>
+          <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+              <td mat-cell *matCellDef="let element"> 
+                <span class="dot" [ngClass]="element.status ==  'stop' ? 'deactive-dot' : 'dot'"></span>{{element.status}} 
+              </td>
+          </ng-container>
+          <ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                (click)="selection.toggle(row)">
             </tr>
-        </tbody>
+          </ng-container>
       </table>
-      
+      </div>  
+      <div *ngIf="isLoading"  class="circle-spinner">
+        <mat-progress-spinner 
+          color="primary" [diameter]="50"
+          mode="indeterminate">
+        </mat-progress-spinner>
+      </div>
+      <tr *ngIf="!dataSource">
+        <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
+          No Records Found!
+        </td>
+      </tr>
+    <mat-paginator  #paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
+  </div>
+</div>
+</ng-container>
+
+<!-- The Modal -->
+<div class="modal" id="myModal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+    
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
+        <button type="button" class="close" data-dismiss="modal" (click)="resetGraphData()">&times;</button>
+      </div>
+      <!-- <div *ngIf="isLoadingGraphData" class="circle-spinner">
+        <mat-spinner [diameter]="50"></mat-spinner>
+      </div> -->
+      <!-- Modal body -->
+      <div class="modal-body">
+        <canvas #barCanvas id="barCanvas"></canvas>
+      </div>
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="resetGraphData()">Close</button>
+      </div>
     </div>
   </div>
 </div>

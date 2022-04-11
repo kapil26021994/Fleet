@@ -1,9 +1,14 @@
 <mat-dialog-content>
-	<p>
+	<p style="inline-size: 329px;">
 		{{message}}
 	</p>
 </mat-dialog-content>
 <mat-dialog-actions align="center">
-	<button mat-raised-button color="primary" (click)="onConfirmClick()" tabindex="1">{{confirmButtonText}}</button>
-	<button mat-raised-button mat-dialog-close tabindex="-1">{{cancelButtonText}}</button>
+	<span *ngIf="!isBlockedUser">
+		<button mat-raised-button color="primary" (click)="onConfirmClick()" tabindex="1">{{confirmButtonText}}</button>
+		<button mat-raised-button mat-dialog-close tabindex="-1" *ngIf="isDelete == false">{{cancelButtonText}}</button>
+	</span>	
+	<span *ngIf="isBlockedUser">
+		<button mat-raised-button color="primary" (click)="onConfirmClick()" tabindex="1">OK</button>
+	</span>	
 </mat-dialog-actions>

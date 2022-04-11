@@ -4,6 +4,8 @@ import{CustomerSupportListModel} from 'src/app/core/models/driver/customer-suppo
 import { Router } from '@angular/router';
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 import{DataSharingService} from 'src/app/core/services/data-sharing.service';
+import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-customer-support-detail',
@@ -25,12 +27,8 @@ export class CustomerSupportDetailComponent implements OnInit {
       public userService:UserService,
       public authService:AuthenticationService,
       public dataShare:DataSharingService,
+      public dialog:MatDialog,
       public router :Router) { 
-        this.dataShare.updatedData.subscribe((res: any) => { 
-          if(res){ 
-            this.exporterInstance = res;
-          }
-        }) 
       }
 
   toggleEditForm() {
@@ -79,4 +77,36 @@ export class CustomerSupportDetailComponent implements OnInit {
         this.currentUserDetail.company = companyData;
       }
     }
+
+          /*
+      Author:Kapil Soni
+      Funcion:deleteVehicle
+      Summary:deleteVehicle for get delete vehicle
+      Return list
+    */
+    deleteTicket(value){
+      const dialogRef = this.dialog.open(ConfirmationDialog, {
+        panelClass: 'custom-dialog-container',
+        data: {
+          message: 'Are you sure want to delete?',
+          buttonText: {
+            ok: 'Delete',
+            cancel: 'No',
+          },
+        },
+      });
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if(confirmed && this.currentUserDetail.id){
+          this.userService.deleteDataFromDb(this.currentUserDetail.id,'deleteRaiseTicketByID').subscribe((data:any)=>{
+            if(data.message){
+              this.authService.successToast(data.message);
+              this.router.navigate(['/user/customer-support/']);
+            }
+          },  error => {
+            this.authService.errorToast(error.message);
+          })
+        }
+      });
+    }
+
 }

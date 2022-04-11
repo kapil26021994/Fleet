@@ -4,6 +4,8 @@ import{PermissionListModel} from 'src/app/core/models/driver/permission-list.mod
 import { Router } from '@angular/router';
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 import{DataSharingService} from 'src/app/core/services/data-sharing.service';
+import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-permission-managment-detail',
@@ -28,12 +30,8 @@ export class PermissioManagmentDetailComponent implements OnInit {
       public userService:UserService,
       public authService:AuthenticationService,
       public dataShare:DataSharingService,
+      public dialog:MatDialog,
       public router :Router) { 
-        this.dataShare.updatedData.subscribe((res: any) => { 
-          if(res){ 
-            this.exporterInstance = res;
-          }
-        }) 
       }
 
   toggleEditForm() {
@@ -96,11 +94,11 @@ export class PermissioManagmentDetailComponent implements OnInit {
         this.selectedPermissionList =[];
       }
       if(name != 'Map' && name != 'Dashboard'){
-        this.permissionList = ['insert','update','view','delete'];
+        this.permissionList = [name+' '+'insert',name+' '+'update',name+' '+'view',name+' '+'delete'];
       }else if(name == 'Map'){
         this.permissionList = ['Dashboard','Vehicle History','Vehicle Live Location'];
       }else{
-        this.permissionList = ['View'];
+        this.permissionList = [name+' '+'View'];
       }
     }
 
@@ -115,5 +113,37 @@ export class PermissioManagmentDetailComponent implements OnInit {
       } else{
         return false;
       }
+    }
+
+
+    /*
+      Author:Kapil Soni
+      Funcion:deleteVehicle
+      Summary:deleteVehicle for get delete vehicle
+      Return list
+    */
+     deletePermission(){
+      const dialogRef = this.dialog.open(ConfirmationDialog, {
+        panelClass: 'custom-dialog-container',
+        data: {
+          message: 'Are you sure want to delete?',
+          buttonText: {
+            ok: 'Delete',
+            cancel: 'No',
+          },
+        },
+      });
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if(confirmed && this.currentUserDetail.id){
+          this.userService.deleteDataFromDb(this.currentUserDetail.id,'deletePermissionByID').subscribe((data:any)=>{
+            if(data.message){
+              this.authService.successToast(data.message);
+              this.router.navigate(['/user/permission/']);
+            }
+          },  error => {
+            this.authService.errorToast(error.message);
+          })
+        }
+      });
     }
 }

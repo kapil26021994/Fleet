@@ -37,6 +37,7 @@ export class SimCardComponent implements OnInit {
   public callingNumberList = [];
   public imeiNumberList = [];
   public companyList = [];
+  public currentDate = new Date();
   public simCardFormData:any;
    filteredValues =  {simName:'',callingNumber:[], imeiNumber:[],imei:'',number:'',companyName:''};
 
@@ -142,7 +143,7 @@ export class SimCardComponent implements OnInit {
         data: {
           message: 'Are you sure want to delete?',
           buttonText: {
-            ok: 'Save',
+            ok: 'Delete',
             cancel: 'No',
           },
         },

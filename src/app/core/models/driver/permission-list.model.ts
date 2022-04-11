@@ -1,5 +1,5 @@
 export class PermissionListModel {
-    Id:string;
+    id:string;
     name: string;
     items:any = [];
 }

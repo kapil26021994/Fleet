@@ -4,6 +4,8 @@ import{TripListModel} from 'src/app/core/models/driver/trip-list.model';
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 import { Router } from '@angular/router';
 import{DataSharingService} from 'src/app/core/services/data-sharing.service';
+import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 declare var google;
 @Component({
@@ -32,7 +34,7 @@ export class TripDetailComponent implements OnInit {
   public allOverlayList = [];
   public tripIndex :any;
   constructor(public userService:UserService,public authService:AuthenticationService,
-    public router:Router,public dataShare:DataSharingService) { 
+    public router:Router,public dataShare:DataSharingService,public dialog:MatDialog) { 
     }
 
 
@@ -40,10 +42,10 @@ export class TripDetailComponent implements OnInit {
     if(history.state.data){
       this.currentTripDetail = history.state.data;
       this.data  = [history.state.data];
-      this.vehicleList  = history.state.vehicleList;
-      this.driverList  = history.state.driverList;
-      this.currentTripDetail.vehicleNumber = this.currentTripDetail.vehicle.vehicleNumber;
-      this.currentTripDetail.firstName = this.currentTripDetail.driver.firstName;
+      // this.vehicleList  = history.state.vehicleList;
+      // this.driverList  = history.state.driverList;
+      // this.currentTripDetail.vehicleNumber = this.currentTripDetail.vehicle.vehicleNumber;
+      // this.currentTripDetail.firstName = this.currentTripDetail.driver.firstName;
       localStorage.setItem('currentPageData',JSON.stringify(history.state.data))
       this.loadGoogleMap();
     }else{
@@ -90,9 +92,9 @@ export class TripDetailComponent implements OnInit {
               map: self.routeDetailMapInstance,
               radius: self.currentTripDetail.routeGeofence[i].radius,
               fillColor: '#FF0000',
-              fillOpacity: 0.5,
+              fillOpacity: 0.2,
               strokeColor: "#FF0000",
-              strokeWeight: 1,
+              strokeWeight: 0.2,
               draggable: true,
               editable: true
             });
@@ -134,7 +136,7 @@ export class TripDetailComponent implements OnInit {
                 strokeOpacity: 0.3,
                 strokeWeight: 1,
                 fillColor: "#FF0000",
-                fillOpacity: 0.35,
+                fillOpacity: 0.3,
                 draggable: true,
                 editable: true
               });
@@ -307,8 +309,8 @@ export class TripDetailComponent implements OnInit {
           circleOptions: {
             fillColor: '#FF0000',
             strokeColor: "#FF0000",
-            fillOpacity: 0.5,
-            strokeWeight: 5,
+            fillOpacity: 0.2,
+            strokeWeight: 2,
             zIndex: 1,
           },
         });
@@ -368,4 +370,35 @@ export class TripDetailComponent implements OnInit {
           }
         });
       }
+
+                 /*
+      Author:Kapil Soni
+      Funcion:deleteVehicle
+      Summary:deleteVehicle for get delete vehicle
+      Return list
+    */
+    deleteRoute(value){
+      const dialogRef = this.dialog.open(ConfirmationDialog, {
+        panelClass: 'custom-dialog-container',
+        data: {
+          message: 'Are you sure want to delete?',
+          buttonText: {
+            ok: 'Delete',
+            cancel: 'No',
+          },
+        },
+      });
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if(confirmed && this.currentTripDetail.id){
+          this.userService.deleteDataFromDb(this.currentTripDetail.id,'deleteRouteByID').subscribe((data:any)=>{
+            if(data.message){
+              this.authService.successToast(data.message);
+              this.router.navigate(['/user/route/']);
+            }
+          }, error => {
+            this.authService.errorToast(error.error.message);
+          })
+        }
+      });
+    }
 }

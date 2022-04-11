@@ -199,7 +199,7 @@ export class DriverlistComponent implements OnInit {
         data: {
           message: 'Are you sure want to delete?',
           buttonText: {
-            ok: 'Save',
+            ok: 'Delete',
             cancel: 'No',
           },
         },

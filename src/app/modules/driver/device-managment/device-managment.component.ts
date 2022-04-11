@@ -138,7 +138,7 @@ export class DeviceManagmentComponent implements OnInit {
         data: {
           message: 'Are you sure want to delete?',
           buttonText: {
-            ok: 'Save',
+            ok: 'Delete',
             cancel: 'No',
           },
         },
@@ -234,7 +234,7 @@ export class DeviceManagmentComponent implements OnInit {
     Return list
   */
     getAllSimList() {
-      this.userService.getDataByUrl('showAllSimCardData').subscribe((data:any)=>{
+      this.userService.getDataByUrl('showAllUnusedSimCard').subscribe((data:any)=>{
         if(data.length>0){
           this.simCardList = data;
         }
@@ -314,7 +314,7 @@ export class DeviceManagmentComponent implements OnInit {
       Return list
     */
       getAllMultpleDataViaURL() {
-        this.userService.getMulipleAPIDataViaUrl('company/showAllCompanyData','showAllPermissionData','').subscribe((data:any)=>{
+        this.userService.getMulipleAPIDataViaUrl('company/showAllCompanyData','showAllPermissionData','','').subscribe((data:any)=>{
           if(data[1].length > 0 && data[0].length > 0){
             this.companyList = data[1];
           }

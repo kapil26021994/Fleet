@@ -4,6 +4,8 @@ import{CompanyManagmentListModel} from 'src/app/core/models/driver/company-manag
 import { Router } from '@angular/router';
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 import{DataSharingService} from 'src/app/core/services/data-sharing.service';
+import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 declare var google;
 @Component({
@@ -23,14 +25,10 @@ export class CompanyManagmentDetailComponent implements OnInit {
 
   constructor(
       public userService:UserService,
+      public dialog:MatDialog,
       public authService:AuthenticationService,
       public router :Router,
       public dataShare:DataSharingService) { 
-        this.dataShare.updatedData.subscribe((res: any) => { 
-          if(res){ 
-            this.exporterInstance = res;
-          }
-        })  
       }
 
   toggleEditForm() {
@@ -75,14 +73,44 @@ export class CompanyManagmentDetailComponent implements OnInit {
     }
 
 
-    getStateAndCountryName(){
-      var self = this;
-      var  autocomplete = new google.maps.places.Autocomplete((document.getElementById('companyDetailAutocomplete')),{ types: ['geocode'] });
-        google.maps.event.addListener(autocomplete, 'place_changed', function() {
-          const place = autocomplete.getPlace().address_components;
-          self.currentUserDetail.state= place[2].short_name;
-          self.currentUserDetail.country = place[3].long_name;
-        });
-      }
+  getStateAndCountryName(){
+    var self = this;
+    var  autocomplete = new google.maps.places.Autocomplete((document.getElementById('companyDetailAutocomplete')),{ types: ['geocode'] });
+      google.maps.event.addListener(autocomplete, 'place_changed', function() {
+        const place = autocomplete.getPlace().address_components;
+        self.currentUserDetail.state= place[2].short_name;
+        self.currentUserDetail.country = place[3].long_name;
+      });
+    }
 
+    /*
+      Author:Kapil Soni
+      Funcion:deleteVehicle
+      Summary:deleteVehicle for get delete vehicle
+      Return list
+    */
+    deleteCompany(value){
+      const dialogRef = this.dialog.open(ConfirmationDialog, {
+        panelClass: 'custom-dialog-container',
+        data: {
+          message: 'Are you sure want to delete?',
+          buttonText: {
+            ok: 'Delete',
+            cancel: 'No',
+          },
+        },
+      });
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if(confirmed&& this.currentUserDetail.id) {
+          this.userService.deleteDataFromDb(this.currentUserDetail.id,'company/deleteCompanyByID').subscribe((data:any)=>{
+            if(data.message){
+              this.authService.successToast(data.message);
+              this.router.navigate(['/user/company/']);
+            }
+          },  error => {
+            this.authService.errorToast(error.message);
+          })
+        }
+      });
+    }
 }

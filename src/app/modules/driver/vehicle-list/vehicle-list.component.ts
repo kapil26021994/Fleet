@@ -19,7 +19,7 @@ import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialo
 })
 export class VehiclelistComponent implements OnInit {
   vehicleAddForm : FormGroup;
-  displayedColumns: any[] = ['insurance','puc','service_period','last_date','vehicleNumber','isActive', 'status','companyName','vehicleType','action'];
+  displayedColumns: any[] = ['companyName','vehicleNumber','vehicleType','vehicleDate','insurance','puc','service_period','last_date','isActive','action'];
   dataSource: MatTableDataSource<any>;
   selection = new SelectionModel(true, []);
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -43,8 +43,10 @@ public deviceList =[];
   vehicleNumberList = [];
   public vehicleTypeList = [];
   public pageList :any =[];
-  public currentPageView :any;
+  public vehicleTypeCloneList =[];
+  public currentPageView  :any =[];
 positionFilter = new FormControl();
+public isAddPermission : boolean =   false;
 filteredValues =  {insuranceRenewalDate:'',pucRenewalDate:'',servicingPeriod:'',lastServicingDate:'',companyName: '',vehicleNumber:[],vNumber:'',vType:'', isActive:[],companyDomain: '',vehicleType:[]};
 
  // form group
@@ -78,7 +80,15 @@ get companyName() {
     if(JSON.parse(localStorage.getItem('user-data')).assignGroup != null){
       this.currentPageView =JSON.parse(localStorage.getItem('user-data')).assignGroup.addPermissions.filter(x=>x.name == 'Vehicles');
     }
+    if(JSON.parse(localStorage.getItem('user-data')).assignGroup != null){
+      this.currentPageView =JSON.parse(localStorage.getItem('user-data')).assignGroup.addPermissions.filter(x=>x.name == 'Vehicles');
+    }
+    if(this.currentPageView.length > 0 && this.currentPageView[0].items.length>0){
+      this.isAddPermission = this.currentPageView[0].items.indexOf('insert') == -1;
+    }
+    
     this.vehicleTypeList =  JSON.parse(localStorage.getItem('vehicleTypeList'));
+    this.vehicleTypeCloneList = this.vehicleTypeList;
     this.fuelTypeList =  JSON.parse(localStorage.getItem('fuelTypeList'));
     this.getAllVehicleList();
     this.getAllDeviceList();
@@ -250,7 +260,7 @@ get companyName() {
         data: {
           message: 'Are you sure want to delete?',
           buttonText: {
-            ok: 'Save',
+            ok: 'Delete',
             cancel: 'No',
           },
         },
@@ -271,7 +281,6 @@ get companyName() {
         }
       });
     }
-
 
     getCurrentVehicleDetail(detail:any,exporter){
       this.dataShare.updatedData.next(exporter);
@@ -370,10 +379,17 @@ get companyName() {
     */
       getAllDeviceList() {
         this.isLoading = true;
-        this.userService.getDataByUrl('showAllDeviceData').subscribe((data:any)=>{
+        this.userService.getDataByUrl('showAllUnusedDeviceData').subscribe((data:any)=>{
           if(data.length>0){
             this.deviceList = data;
           }
         })
       }
+
+
+    search(value: string) { 
+      let filter = value.toLowerCase();
+     let list = this.vehicleTypeCloneList.filter(option => option.vehicleType.toLowerCase().startsWith(filter));
+      return this.vehicleTypeList= list;
+    }
 }

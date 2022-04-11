@@ -12,7 +12,7 @@
       <ul class="breadcrumb" style="padding: 0;">
         <li class="breadcrumb-item active" aria-current="page">
             <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
-         <button class="btn btn-info button-size" >Deactivate</button>
+         <button class="btn btn-info button-size" (click)="deletGroup()">Delete</button>
          <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
          <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateGroupInfo()">Save</button>
         </li>

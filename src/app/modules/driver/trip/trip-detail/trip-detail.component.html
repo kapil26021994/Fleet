@@ -12,7 +12,7 @@
     <nav aria-label="breadcrumb">
       <ul class="breadcrumb" style="padding: 0;">
         <li class="breadcrumb-item active" aria-current="page">
-          <button class="btn btn-info button-size" >Deactivate</button>
+          <button class="btn btn-info button-size" (click)="deleteTrip()">Delete</button>
          <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
          <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateDriverInfo()">Save</button>
         </li>

@@ -25,7 +25,7 @@
               </div>
             </div>
           </td>
-          <td>
+          <td > 
             <mat-form-field  fxFlex="40" class="field-wrapper">
               <mat-select  formControlName="isActive" placeholder="Status" multiple>
                 <mat-option *ngFor="let status of statusList" [value]="status">{{status}}</mat-option>
@@ -37,23 +37,11 @@
       </div>
     </div>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter #exporter="matTableExporter">
-      <!-- <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="selection.hasValue() && isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()"
-                        [aria-label]="checkboxLabel()">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(row) : null"
-                        [checked]="selection.isSelected(row)"
-                        [aria-label]="checkboxLabel(row)">
-          </mat-checkbox>
-        </td>
-      </ng-container> -->
-        <!-- Name Column -->
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.firstName}} {{element.lastName}}</td>
+      </ng-container>
         <ng-container matColumnDef="username">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Username </th>
           <td mat-cell *matCellDef="let element"> {{element.username}} </td>
@@ -131,7 +119,7 @@
   <div class="closeDailog" (click)="toggleDialog($event)"></div>
   <div class="form-container">
     <div class="heading">
-      <p> <b>User Management</b>  </p>
+      <p> <b>Add User</b>  </p>
       <div class="float-right">
           <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event);resetData()">Close</button>
       </div>
@@ -203,7 +191,7 @@
       </div>
     </div>
     <div class="form-group row">
-      <label class="col-sm-3 col-form-label" style="margin:-2px 8px 3px -16px"> Number</label>
+      <label class="col-sm-3 col-form-label" style="margin:-2px 8px 3px -16px">Phone  Number</label>
       <div class="input-group flex-nowrap input-label-container">
         <div class="input-group-prepend">
           <span class="input-group-text" id="addon-wrapping">+91</span>
@@ -221,13 +209,13 @@
       <label style="width: 161px !important">Assign Group</label>
       <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
         <mat-label >Assign Group</mat-label>
-        <mat-select disableOptionCentering name="contactMethod"  id="contactMethod"   [(ngModel)]="groupAdd.groupName"  (ngModelChange)="updateDataViaKey($event,'')"
-        #assignGroup="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && assignGroup.invalid }" required>
+        <mat-select disableOptionCentering name="contactMethod"  id="contactMethod"   [(ngModel)]="groupAdd.groupName" 
+         (ngModelChange)="updateDataViaKey($event,'')">
           <mat-option *ngFor="let group of groupList" [value]="group.groupName">  {{ group.groupName }}</mat-option>
         </mat-select>
-        <mat-error *ngIf="f.submitted && assignGroup.invalid">
+        <!-- <mat-error *ngIf="f.submitted && assignGroup.invalid">
           <div *ngIf="assignGroup.errors.required">Group is required</div>
-        </mat-error> 
+        </mat-error>  -->
       </mat-form-field>
     </div>
     <mat-progress-spinner class="spinner-container" *ngIf="isLoadingPermission"

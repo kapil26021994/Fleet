@@ -4,6 +4,8 @@ import{UserService} from 'src/app/core/services/user/user.service'
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 import { Router } from '@angular/router';
 import{DataSharingService} from 'src/app/core/services/data-sharing.service';
+import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-edit-driver',
@@ -16,6 +18,7 @@ export class EditDriverComponent implements OnInit {
   public data = [];
   constructor(
     public userService : UserService,
+    public dialog :MatDialog,
     public router :Router,
     public authService:AuthenticationService,
     public dataShare :DataSharingService) { 
@@ -26,40 +29,6 @@ export class EditDriverComponent implements OnInit {
     })  
   }
   public isEdit = false;
-  lineChartData = [{
-    label: '# of Votes',
-    data: [10, 19, 3, 5, 2, 3],
-    borderWidth: 1,
-    fill: false
-  }];
-
-  lineChartLabels = ["2013", "2014", "2014", "2015", "2016", "2017"];
-
-  lineChartOptions = {
-    scales: {
-      yAxes: [{
-        ticks: {
-          beginAtZero: true
-        }
-      }]
-    },
-    legend: {
-      display: false
-    },
-    elements: {
-      point: {
-        radius: 0
-      }
-    },
-    responsive: true,
-    maintainAspectRatio: false
-  };
-
-  lineChartColors = [
-    {
-      borderColor: '#3880FF'
-    }
-  ];
   
   ngOnInit(): void {
     if(history.state.data){
@@ -93,4 +62,35 @@ export class EditDriverComponent implements OnInit {
       })
     }
 
+
+    /*
+      Author:Kapil Soni
+      Funcion:deleteVehicle
+      Summary:deleteVehicle for get delete vehicle
+      Return list
+  */
+    deleteDriver(value){
+      const dialogRef = this.dialog.open(ConfirmationDialog, {
+        panelClass: 'custom-dialog-container',
+        data: {
+          message: 'Are you sure want to delete?',
+          buttonText: {
+            ok: 'Delete',
+            cancel: 'No',
+          },
+        },
+      });
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if(confirmed && this.currentVehicleDetail.id){
+            this.userService.deleteDataFromDb(this.currentVehicleDetail.id,'deleteDriverByID').subscribe((data:any)=>{
+              if(data.message){
+                this.authService.successToast(data.message);
+                this.router.navigate(['/user/driver']);
+              }
+            }, error => {
+              this.authService.errorToast(error.error.message);
+            })
+          }
+      });
+    }
 }

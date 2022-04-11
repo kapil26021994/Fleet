@@ -1,6 +1,6 @@
 
 <div class="navigation">
-    <a *ngIf="!isEdit" routerLink="/user/device/list"><span><i class="mdi mdi-keyboard-backspace"></i> Device </span></a>
+    <a  routerLink="/user/device/list"><span><i class="mdi mdi-keyboard-backspace"></i> Device </span></a>
     <span routerLink="/user/device/list"> <span ><i class="mdi mdi-chevron-right"></i></span> {{currentDeviceDetail.deviceName}} </span>
     <span></span>
 </div>
@@ -12,7 +12,7 @@
       <ul class="breadcrumb" style="padding: 0;">
         <li class="breadcrumb-item active" aria-current="page">
             <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
-         <button class="btn btn-info button-size" >Deactivate</button>
+         <button class="btn btn-info button-size" (click)="deleteDevice()">Delete</button>
          <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
          <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateDriverInfo()">Save</button>
         </li>
@@ -20,7 +20,7 @@
     </nav>
   </div>
   
-  <div class="row">
+  <!-- <div class="row">
     <div class="col-md-12">
       <div class="card card-table">
         <div class="media">
@@ -37,7 +37,7 @@
           </div>
       </div>
     </div>
-  </div>
+  </div> -->
   
 
   <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
@@ -47,11 +47,11 @@
       <form id="contact" action="" method="post">
         <div class="row">
           <div class="col-sm-6">
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label>Sr. No</label>
               <span>:</span>
               <input name="id" readonly [(ngModel)]="currentDeviceDetail.id" [disabled]="!isEdit" class="form-input" type="text" tabindex="1" required autofocus>
-            </div>
+            </div> -->
             <div class="form-group">
               <label>Device Name</label>
               <span>:</span>

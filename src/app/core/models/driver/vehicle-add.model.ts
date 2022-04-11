@@ -1,6 +1,7 @@
 import{CompanyAddModel} from './company/company-add.model';
 export class VehicleAdd {
     vehicleNumber: string;
+    id:string;
     vehicleType: string;
     modelName: string;  
     vehicleManufacturingCompanyName:string;

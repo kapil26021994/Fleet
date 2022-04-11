@@ -1,6 +1,6 @@
 <div class="page-header">
   <h3 class="page-title">
-    Permission 
+    Permission Management 
   </h3>
   <nav aria-label="breadcrumb">
     <ul class="breadcrumb" style="padding: 0;">
@@ -44,7 +44,7 @@
         <td mat-cell *matCellDef="let element" > <span *ngIf="element.name">{{element.name}}</span> </td>
       </ng-container>
       <ng-container matColumnDef="item">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header  style="width:58% !important;"> Permission </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header  style="width:58% !important;">Permissions </th>
         <td mat-cell *matCellDef="let element" > 
           <span *ngIf="element.items">
             <mat-chip-list aria-label="Fish selection">
@@ -100,7 +100,7 @@
   <div class="closeDailog" (click)="toggleDialog($event)"></div>
   <div class="form-container">
     <div class="heading">
-      <p> <b>Alert  Management</b>  </p>
+      <p> <b>Add Permission</b>  </p>
       <div class="float-right">
           <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event);resetData()">Close</button>
       </div>

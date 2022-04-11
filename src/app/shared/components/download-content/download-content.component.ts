@@ -10,17 +10,108 @@ import 'jspdf-autotable';
 })
 export class DownloadContentComponent implements OnInit {
   @Input() data: any;
-  @Input() exporterInstance: string;
+  public isReportUrl : boolean = false;
+  @Input() exporterInstance: any;
   public currentPageRoute :any;
   public templateHeader :any;
+  public pageKey :any;
   public templateData = [];
   constructor(public router :Router) { }
 
   ngOnInit(): void {
-    console.log(this.router.url)
+    this.initializePageKey()
+    this.router.url.includes('/user/report/')  || this.router.url.includes('/user/report') ? this.isReportUrl = true : this.isReportUrl = false;
   }
-
     
+  initializePageKey(){
+      switch (this.router.url){
+        case '/user/company':
+          this.currentPageRoute = '/user/company';
+          this.pageKey= 'company';
+          break;
+        case '/user/device/list':
+          this.currentPageRoute = '/user/device/list';
+          this.pageKey= 'device';
+          break;
+          case '/user/route/list':
+            this.currentPageRoute = '/user/route/list';
+            this.pageKey= 'route';
+            break;
+        case '/user/driver/list':
+          this.currentPageRoute = '/user/driver/list';
+          this.pageKey= 'driver';
+          break;
+        case '/user/places/list':
+          this.currentPageRoute = '/user/places/list';
+          this.pageKey= 'places';
+          break;
+        case '/user/sim/list':
+          this.currentPageRoute = '/user/sim/list';
+          this.pageKey= 'sim';
+          break;
+        case '/user/trip/list':
+          this.currentPageRoute = '/user/trip/list';
+          this.pageKey= 'trip';
+          break;
+        case '/user/group':
+          this.currentPageRoute = '/user/group/list';
+          this.pageKey= 'group';
+          break;
+        case '/user/vehicle/list':
+          this.currentPageRoute = '/user/vehicle/list';
+          this.pageKey= 'vehicle';
+          break;
+        case '/user/alert/list':
+          this.currentPageRoute = '/user/alert/list';
+          this.pageKey= 'alert';
+          break;
+        case '/user/report':
+          this.currentPageRoute = 'user/report/stoppage-report';
+          this.pageKey= 'stoppage-report';
+        break;
+        case '/user/customer-support/list':
+          this.currentPageRoute = '/user/customer-support/list';
+          this.pageKey= 'customer-support';
+          break;
+        case '/user/report/stoppage-report':
+          this.currentPageRoute = '/user/report/stoppage-report';
+          this.pageKey= 'stoppage-report';
+          break;
+        case '/user/report/raw-Details':
+            this.currentPageRoute = '/user/report/raw-Details';
+            this.pageKey= 'raw-Details';
+          break;
+        case '/user/report/speed-report':
+          this.currentPageRoute = '/user/report/speed-report';
+          this.pageKey= 'speed-report';
+          break;
+        case '/user/report/vehicle-performance':
+          this.currentPageRoute = '/user/report/vehicle-performance';
+          this.pageKey= 'vehicle-performance';
+          break;
+        case '/user/report/vehicle-log':
+          this.currentPageRoute ='/user/report/vehicle-log';
+          this.pageKey= 'vehicle-log';
+          break;
+        case '/user/report/trip-summary':
+          this.currentPageRoute = '/user/report/trip-summary';
+          this.pageKey= 'trip-summary';
+          break;
+        case '/user/report/trip-summary-time':
+          this.currentPageRoute = '/user/report/trip-summary-time';
+          this.pageKey= 'trip-summary-time';
+
+          break;
+        case '/user/report/event-log':
+          this.currentPageRoute = '/user/report/event-log';
+          this.pageKey= 'event-log';
+          break;
+        default:
+          this.currentPageRoute = '/user/management/list';
+          this.pageKey= 'management';
+    }
+  }
+  
   createPdf() {
     if(((this.router.url.indexOf('/detail') > -1) || this.router.url.indexOf('/edit') > -1)) {
       switch (this.router.url){
@@ -52,43 +143,9 @@ export class DownloadContentComponent implements OnInit {
           this.currentPageRoute = '/user/management/list';
     }
     }else{
-      switch (this.router.url){
-          case '/user/company':
-            this.currentPageRoute = '/user/company';
-            break;
-          case '/user/device/list':
-            this.currentPageRoute = '/user/device/list';
-            break;
-          case '/user/driver/list':
-            this.currentPageRoute = '/user/driver/list';
-            break;
-          case '/user/places/list':
-            this.currentPageRoute = '/user/places/list';
-            break;
-          case '/user/sim/list':
-            this.currentPageRoute = '/user/sim/list';
-            break;
-          case '/user/trip/list':
-            this.currentPageRoute = '/user/trip/list';
-            break;
-          case '/user/group':
-            this.currentPageRoute = '/user/group/list';
-            break;
-          case '/user/vehicle/list':
-            this.currentPageRoute = '/user/vehicle/list';
-            break;
-          case '/user/alert/list':
-            this.currentPageRoute = '/user/alert/list';
-            break;
-          case '/user/customer-support/list':
-            this.currentPageRoute = '/user/customer-support/list';
-            break;
-          default:
-            this.currentPageRoute = '/user/management/list';
-      }
+     this.initializePageKey();
     }
   
-
     switch (this.currentPageRoute){
         case '/user/company':
            this.templateHeader = [['Created Date', 'Name', 'Email', 'Number','Status','Domain']];
@@ -222,18 +279,119 @@ export class DownloadContentComponent implements OnInit {
                     this.templateData.push(tempObj);
                   });
                   break;
-                  
-                default:
-                  this.templateHeader = [['Vehicle Number', 'Vehicle Type', 'Engine Number','tankCapacity','modelName']];
-                  this.data.forEach(e=>{
-                    var tempObj =[];
-                    tempObj.push(e.vehicleNumber);
-                    tempObj.push(e.vehicleType);
-                    tempObj.push(e.tankCapacity);
-                    tempObj.push( e.isActive);
-                    this.templateData.push(tempObj);
-                  });
-                }
+                  case '/user/report/stoppage-report':
+                    this.currentPageRoute = this.router.url;
+                    this.templateHeader  = [['Date & Time', 'Duration']];
+                    this.data.forEach(e=>{
+                      var tempObj =[];
+                      tempObj.push(e.dttime);
+                      tempObj.push( e.duration);
+                      this.templateData.push(tempObj);
+                    });
+                    break;
+                  case '/user/report/raw-Details':
+                    this.currentPageRoute = this.router.url;
+                    this.templateHeader  = [['Date & Time', 'Speed', 'KMS','Status']];
+                    this.data.forEach(e=>{
+                      var tempObj =[];
+                      tempObj.push(e.dttime);
+                      tempObj.push( e.speed);
+                      tempObj.push(e.kms);
+                      tempObj.push(e.status);
+                      this.templateData.push(tempObj);
+                    });
+                    break;
+                    break;
+                  case '/user/report/speed-report':
+                    this.currentPageRoute = this.router.url;
+                    this.templateHeader  = [['Date & Time', 'Duration', 'Speed']];
+                    this.data.forEach(e=>{
+                      var tempObj =[];
+                      tempObj.push(e.dttime);
+                      tempObj.push( e.duration);
+                      tempObj.push(e.topSpeed);
+                      this.templateData.push(tempObj);
+                    });
+                    break;
+                    break;
+                  case '/user/report/vehicle-performance':
+                    this.currentPageRoute = this.router.url;
+                    this.templateHeader  = [['Driver', 'Mobile', 'Max Speed','Movement','Peroid','vname']];
+                    this.data.forEach(e=>{
+                      var tempObj =[];
+                      tempObj.push(e.driver);
+                      tempObj.push( e.driverMobile);
+                      tempObj.push(e.maxSpeed);
+                      tempObj.push(e.movement);
+                      tempObj.push(e.period);
+                      tempObj.push(e.vname);
+                      this.templateData.push(tempObj);
+                    });
+                    break;
+                    break;
+                  case '/user/report/vehicle-log':
+                    this.currentPageRoute = this.router.url;
+                    this.templateHeader  = [['Start Time', 'End Time', 'Duration','cumulaiveKM','event']];
+                    this.data.forEach(e=>{
+                      var tempObj =[];
+                      tempObj.push(e.startTime);
+                      tempObj.push( e.endTime);
+                      tempObj.push(e.duration);
+                      tempObj.push(e.cumulaiveKM);
+                      tempObj.push(e.event);
+                      this.templateData.push(tempObj);
+                    });
+                    break;
+                    break;
+                  case '/user/report/trip-summary':
+                    this.currentPageRoute = this.router.url;
+                    this.templateHeader  = [['Start Date', 'End Date', 'kms Covered','movement']];
+                    this.data.forEach(e=>{
+                      var tempObj =[];
+                      tempObj.push(e.startDate);
+                      tempObj.push( e.startDate);
+                      tempObj.push(e.kmsCovered);
+                      tempObj.push(e.movement);
+                      this.templateData.push(tempObj);
+                    });
+                    break;
+                    break;
+                  case '/user/report/trip-summary-time':
+                    this.currentPageRoute = this.router.url;
+                    this.templateHeader  = [['Movement', 'Interval', 'period','avgSpeed']];
+                    this.data.forEach(e=>{
+                      var tempObj =[];
+                      tempObj.push(e.movement);
+                      tempObj.push( e.interval);
+                      tempObj.push(e.period);
+                      tempObj.push(e.avgSpeed);
+                      this.templateData.push(tempObj);
+                    });
+                    break;
+                    break;
+                  case '/user/report/event-log':
+                    this.currentPageRoute = this.router.url;
+                    this.templateHeader  = [['Date & Time', 'Duration', 'KMS','Event']];
+                    this.data.forEach(e=>{
+                      var tempObj =[];
+                      tempObj.push(e.dttime);
+                      tempObj.push( e.duration);
+                      tempObj.push(e.kms);
+                      tempObj.push(e.event);
+                      this.templateData.push(tempObj);
+                    });
+                    break;
+                  default:
+                    this.templateHeader = [['Vehicle Number', 'Vehicle Type', 'Engine Number','tankCapacity','modelName']];
+                    this.data.forEach(e=>{
+                      var tempObj =[];
+                      tempObj.push(e.vehicleNumber);
+                      tempObj.push(e.vehicleType);
+                      tempObj.push(e.tankCapacity);
+                      tempObj.push( e.isActive);
+                      this.templateData.push(tempObj);
+                    });
+                  }
                   var doc = new jsPDF();
                   doc.setFontSize(5);
                   doc.setTextColor(100);
@@ -242,6 +400,7 @@ export class DownloadContentComponent implements OnInit {
                           body:this.templateData,
                     theme: 'striped',
                   })
-                doc.save('download.pdf');
+                doc.save(this.pageKey);
         }
+
 }

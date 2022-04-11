@@ -2,10 +2,9 @@ import { Component, OnInit,Input,ViewChild } from '@angular/core';
 import{UserService} from 'src/app/core/services/user/user.service';
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { ChangeDetectorRef } from '@angular/core';
-
-import {Router} from '@angular/router';
-//import { MarkerClusterer } from "@googlemaps/markerclusterer";
-
+import { DatePipe } from '@angular/common';
+import {Router } from '@angular/Router';
+import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 
 declare var google;
 @Component({
@@ -22,7 +21,7 @@ public vehicleRoute : boolean = false;
 @Input() vehicleData :any;
 public locationList = [];
 public mapMarker :any;
-public startDate :null;
+public startDate :any;
 public markersArray = [];
 public isLoadingData = false;
 public endDate :any;
@@ -35,17 +34,33 @@ public flightPlanCoordinates =[];
 public currentPageView :any;
 public vehicleHistoryExist : boolean = false
 public dashboardExist : boolean = false;
+public assignGroupPermission =[];
+public withoutGroupPermission =[];
 public locationExist: boolean = false;
 
-  constructor(public userService:UserService,public router :Router,private cdRef:ChangeDetectorRef) { }
+  constructor(
+    public auth:AuthenticationService,
+    public userService:UserService,public router :Router,private cdRef:ChangeDetectorRef,
+    public datePipe:DatePipe) { }
 
   ngOnInit(): void {
-    if(JSON.parse(localStorage.getItem('user-data')).assignGroup){
-      this.currentPageView =JSON.parse(localStorage.getItem('user-data')).assignGroup.addPermissions.filter(x=>x.name == 'Map');
-      this.vehicleHistoryExist = this.currentPageView[0].items.find(x=>x.lable  == 'Vehicle History');
-      this.dashboardExist = this.currentPageView[0].items.find(x=>x.lable  == 'Dashboard');
-      this.locationExist = this.currentPageView[0].items.find(x=>x.lable  == 'Vehicle Live Location');
+    if(JSON.parse(localStorage.getItem('user-data')).assignGroup != null){
+      this.assignGroupPermission =JSON.parse(localStorage.getItem('user-data')).assignGroup.addPermissions.filter(x=>x.name == 'Map');
     }
+    if(JSON.parse(localStorage.getItem('user-data')).addPermissions != null){
+      this.withoutGroupPermission =JSON.parse(localStorage.getItem('user-data')).addPermissions.filter(x=>x.name == 'Map');
+    }
+    if(this.assignGroupPermission.length > 0 && this.assignGroupPermission[0].items.length>0){
+      this.vehicleHistoryExist = this.assignGroupPermission[0].items.findIndex(x=>x.lable == 'Vehicle Live Location');
+      this.dashboardExist = this.assignGroupPermission[0].items.findIndex(x=>x.lable == 'Dashboard');
+      this.locationExist = this.assignGroupPermission[0].items.findIndex(x=>x.lable == 'Vehicle History');
+    }
+    if(this.withoutGroupPermission.length > 0 && this.withoutGroupPermission[0].items.length>0){
+      this.vehicleHistoryExist = this.withoutGroupPermission[0].items.findIndex(x=>x.lable == 'Vehicle Live Location');
+      this.dashboardExist = this.withoutGroupPermission[0].items.findIndex(x=>x.lable == 'Dashboard');
+      this.locationExist = this.withoutGroupPermission[0].items.findIndex(x=>x.lable == 'Vehicle History');
+    }
+
     this.router.url == '/user/vehicle/location' ? this.vehicleRoute = true : this.vehicleRoute = false;
     this.getAllCompanyData();
 
@@ -95,7 +110,7 @@ public locationExist: boolean = false;
       Return list
     */
    getVehicleLocation(vehicleNumber) {
-     if(vehicleNumber){
+     if(vehicleNumber || (this.startDate && this.endDate)){
         this.isLoadingData = true;
         if(this.startDate == undefined){
           this.startDate = null;
@@ -103,16 +118,28 @@ public locationExist: boolean = false;
         if(this.endDate == undefined){
           this.endDate = null;
           }
-        this.userService.getDataByUrl('vehicleLocation/'+vehicleNumber+'/'+this.startDate+'/'+this.endDate).subscribe((data:any)=>{
-          if(data.length>0){  
-            this.vehicelLocationList = data;
-              this.drwapMarker();
-            }else{
+
+          let sDate  = this.datePipe.transform(this.startDate, 'yyyy-MM-dd hh:mm:ss');
+          let eDate = this.datePipe.transform(this.endDate, 'yyyy-MM-dd hh:mm:ss');
+
+          if(sDate == null && eDate == null){
+            var url = 'vehicleLocation/'+vehicleNumber+'/'+sDate+'/'+eDate;
+          }else{
+            // var url = 'vehicleLocation/'+vehicleNumber+'/'+sDate.replace(/\s+/g, '')+'/'+eDate.replace(/\s+/g, '');
+            var url = 'vehicleLocation/'+vehicleNumber+'/'+sDate+'/'+eDate
+          }
+          this.userService.getDataByUrl(url).subscribe((data:any)=>{
+            if(data.length>0){  
+              this.vehicelLocationList = data;
+                this.drwapMarker();
+              }else{
+                this.vehicelLocationList  =[];
+                this.isLoadingData=false;
+                this.auth.errorToast('Location Not Found');
+              }
+            },  error => {
               this.isLoadingData=false;
-            }
-          },  error => {
-            this.isLoadingData=false;
-        })
+          })
       }
   }
 
@@ -291,10 +318,14 @@ public locationExist: boolean = false;
     }
 
       getToday(): string {
-        if(this.startDate){
-          var now =new Date(this.startDate);
-          let finalDate = new Date(now.setDate(now.getDate() + 10));
-          return new Date(finalDate).toISOString().split('T')[0];
+        if(this.startDate || this.endDate){
+          const now =new Date();
+          return new Date().toISOString().split('T')[0];
         }
+        // if(this.startDate){
+        //   const now =new Date();
+        //   let finalDate = new Date(now.setDate(now.getDate() + 10));
+        //   return new Date(finalDate).toISOString().split('T')[0];
+        // }
    }
 }

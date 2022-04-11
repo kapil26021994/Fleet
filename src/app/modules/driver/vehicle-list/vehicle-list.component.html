@@ -5,7 +5,10 @@
   <nav aria-label="breadcrumb">
     <ul class="breadcrumb" style="padding: 0;">
       <li class="breadcrumb-item active" aria-current="page">
-       <button class="btn btn-info button-size" (click)="toggleDialog($event)" [disabled]="currentPageView ? currentPageView[0].items.indexOf('insert') == -1  : false"> + Add Vehicle</button>
+       <button class="btn btn-info button-size" (click)="toggleDialog($event)" 
+          [disabled]="isAddPermission"> 
+          + Add Vehicle
+      </button>
        <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
       </li>
     </ul> 
@@ -28,6 +31,7 @@
           <td>
             <mat-form-field  fxFlex="40" class="field-wrapper-filter">
               <mat-select  formControlName="vehicleType" placeholder="Vehicle Type" multiple>
+                <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)"> 
                 <mat-option *ngFor="let vehicle of vehicleTypeList" [value]="vehicle.vehicleType">{{ vehicle.vehicleType}}</mat-option>
               </mat-select>
             </mat-form-field>
@@ -76,11 +80,11 @@
         </ng-container> -->
       <!-- Name Column -->
       <ng-container matColumnDef="insurance">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Insurance Renewal Date </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Insurance Date  </th>
         <td mat-cell *matCellDef="let element"> {{element.insuranceRenewalDate}} </td>
       </ng-container>
       <ng-container matColumnDef="puc">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>PUC Renewal Date </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>PUC Date </th>
         <td mat-cell *matCellDef="let element"> {{element.pucRenewalDate}} </td>
       </ng-container>
       <ng-container matColumnDef="service_period">
@@ -88,21 +92,27 @@
         <td mat-cell *matCellDef="let element"> {{element.servicingPeriod}} </td>
       </ng-container>
       <ng-container matColumnDef="last_date">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Servicing Date </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Servicing Period  </th>
         <td mat-cell *matCellDef="let element"> {{element.lastServicingDate}} </td>
       </ng-container>
       <ng-container matColumnDef="vehicleNumber">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Vehicle Number </th>
         <td mat-cell *matCellDef="let element"> {{element.vehicleNumber}} </td>
       </ng-container>
+      <ng-container matColumnDef="vehicleDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Vehicle Created Date </th>
+        <td mat-cell *matCellDef="let element"> {{element.updateDateTime  | date:'yyyy-MM-dd'}} </td>
+      </ng-container>
     
       <ng-container matColumnDef="isActive">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
         <td mat-cell *matCellDef="let element"> 
-          <span class="dot" [ngClass]="element.isActive ==  'active' ? 'dot' : 'deactive-dot'"></span>{{element.isActive}} 
+          <span class="dot" [ngClass]="element.isActive  ? 'active'  : 'deactive-dot'"></span>
+          <span *ngIf="element.isActive">active </span> 
+          <span *ngIf="!element.isActive">inActive</span> 
        </td>
       </ng-container>
-      <ng-container matColumnDef="status">
+      <!-- <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
         <td mat-cell *matCellDef="let element"> 
           <span *ngIf="element.status == 'running'" class="deactive-dot">
@@ -111,7 +121,7 @@
           </span> 
           {{element.status}}
        </td>
-      </ng-container>
+      </ng-container> -->
       <!-- Weight Column -->
       <ng-container matColumnDef="companyName">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Company Name </th>
@@ -214,39 +224,37 @@
         <label>Vehicle Type</label>
         <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
           <mat-label >Vehicle Type</mat-label>
-          <mat-select name="vehicleType" [(ngModel)]="vehicleData.vehicleType"  (ngModelChange)="updateDataViaKey($event,'')"
-          #vehicleType="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && vehicleType.invalid }" required>
+          <mat-select name="vehicleType" [(ngModel)]="vehicleData.vehicleType"  (ngModelChange)="updateDataViaKey($event,'')">
             <mat-option *ngFor="let vehicle of vehicleTypeList" [value]="vehicle.vehicleType">  {{ vehicle.vehicleType}}</mat-option>
           </mat-select>
-          <mat-error *ngIf="f.submitted && vehicleType.invalid">
+          <!-- <mat-error *ngIf="f.submitted && vehicleType.invalid">
             <div *ngIf="vehicleType.errors.required">Company is required</div>
-          </mat-error> 
+          </mat-error>  -->
         </mat-form-field>
       </div>
 
       <div class="form-group">
         <label>Model Name</label>
-          <input type="text" class="form-control" name="modelName" [(ngModel)]="vehicleData.modelName" #modelName="ngModel" 
-          placeholder="Enter Model Name" [ngClass]="{ 'is-invalid': f.submitted && modelName.invalid }" required />
-          <div *ngIf="f.submitted && modelName.invalid" class="invalid-feedback">
+          <input type="text" class="form-control" name="modelName" [(ngModel)]="vehicleData.modelName" placeholder="Enter Model Name" />
+          <!-- <div *ngIf="f.submitted && modelName.invalid" class="invalid-feedback">
             <div *ngIf="modelName.errors.required">Model Name is required</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group">
         <label >Vehicle Manufacturing Company Name</label>
-          <input type="text" class="form-control" name="vehicleManufacturing" [(ngModel)]="vehicleData.vehicleManufacturingCompanyName" #vehicleManufacturing="ngModel" 
-          placeholder="Vehicle Manufacturing Company Name" [ngClass]="{ 'is-invalid': f.submitted && vehicleManufacturing.invalid }" required />
-          <div *ngIf="f.submitted && vehicleManufacturing.invalid" class="invalid-feedback">
+          <input type="text" class="form-control" name="vehicleManufacturing" [(ngModel)]="vehicleData.vehicleManufacturingCompanyName"
+          placeholder="Vehicle Manufacturing Company Name" />
+          <!-- <div *ngIf="f.submitted && vehicleManufacturing.invalid" class="invalid-feedback">
             <div *ngIf="vehicleManufacturing.errors.required">Vehicle Manufacturing Company Name is required</div>
-          </div>
+          </div> -->
       </div>
       <div class="form-group">
         <label >Max Speed</label>
           <input type="text" class="form-control" name="maxSpeed" [(ngModel)]="vehicleData.maxSpeed" #maxSpeed="ngModel" 
-          placeholder="Max Speed" [ngClass]="{ 'is-invalid': f.submitted && maxSpeed.invalid }" required />
-          <div *ngIf="f.submitted && maxSpeed.invalid" class="invalid-feedback">
+          placeholder="Max Speed" />
+          <!-- <div *ngIf="f.submitted && maxSpeed.invalid" class="invalid-feedback">
             <div *ngIf="maxSpeed.errors.required">Max Speed is required</div>
-          </div>
+          </div> -->
       </div>
 
       <div class="form-group">
@@ -254,25 +262,25 @@
         <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
           <mat-label >Fuel Type</mat-label>
           <mat-select name="fuelType" [(ngModel)]="vehicleData.fuelType"  (ngModelChange)="updateDataViaKey($event,'')"
-          #fuelType="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && fuelType.invalid }" required>
+          #fuelType="ngModel">
             <mat-option *ngFor="let fuel of fuelTypeList" [value]="fuel.fuelType"> {{ fuel.fuelType}}</mat-option>
           </mat-select>
-          <mat-error *ngIf="f.submitted && fuelType.invalid">
+          <!-- <mat-error *ngIf="f.submitted && fuelType.invalid">
             <div *ngIf="fuelType.errors.required">Fuel Type is required</div>
-          </mat-error> 
+          </mat-error>  -->
         </mat-form-field>
       </div>
       <div class="form-group">
-        <label>Device Type</label>
+        <label>Assign Device</label>
         <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
-          <mat-label >Device Type</mat-label>
+          <mat-label >Assign Device</mat-label>
           <mat-select name="device" [(ngModel)]="vehicleData.deviceType"
-          #deviceType="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && deviceType.invalid }" required>
+          #deviceType="ngModel">
             <mat-option *ngFor="let device of deviceList" [value]="device.deviceType"> {{ device.deviceType}}</mat-option>
           </mat-select>
-          <mat-error *ngIf="f.submitted && deviceType.invalid">
+          <!-- <mat-error *ngIf="f.submitted && deviceType.invalid">
             <div *ngIf="deviceType.errors.required">Device Type is required</div>
-          </mat-error> 
+          </mat-error>  -->
         </mat-form-field>
       </div>
   
@@ -280,85 +288,85 @@
       <div class="form-group">
         <label >Tank Capacity</label>
           <input type="text" class="form-control" name="tankCapacity" [(ngModel)]="vehicleData.tankCapacity" #tankCapacity="ngModel" 
-          placeholder="Tank Capacity" [ngClass]="{ 'is-invalid': f.submitted && tankCapacity.invalid }" required />
-          <div *ngIf="f.submitted && tankCapacity.invalid" class="invalid-feedback">
+          placeholder="Tank Capacity"/>
+          <!-- <div *ngIf="f.submitted && tankCapacity.invalid" class="invalid-feedback">
             <div *ngIf="tankCapacity.errors.required">Tank Capacity is required</div>
-          </div>
+          </div> -->
       </div>
 
       <div class="form-group">
         <label>Purchase Year</label>
           <input type="date" name="purchaseYear"  class="form-control date-picker-position"  [(ngModel)]="vehicleData.purchaseYear" #purchaseYear="ngModel" 
-          placeholder="Purchase Year" [ngClass]="{ 'is-invalid': f.submitted && purchaseYear.invalid }" required >
-          <div *ngIf="f.submitted && purchaseYear.invalid" class="invalid-feedback">
+          placeholder="Purchase Year" >
+          <!-- <div *ngIf="f.submitted && purchaseYear.invalid" class="invalid-feedback">
             <div *ngIf="purchaseYear.errors.required">Purchase Year is required</div>
-          </div>
+          </div> -->
       </div>
 
       <div class="form-group">
         <label>Idle Mileage</label>
           <input type="text" class="form-control" name="idleMileage" [(ngModel)]="vehicleData.idleMileage" #idleMileage="ngModel" 
-          placeholder="Idle Mileage" [ngClass]="{ 'is-invalid': f.submitted && idleMileage.invalid }" required />
-          <div *ngIf="f.submitted && idleMileage.invalid" class="invalid-feedback">
+          placeholder="Idle Mileage" />
+          <!-- <div *ngIf="f.submitted && idleMileage.invalid" class="invalid-feedback">
             <div *ngIf="idleMileage.errors.required">Idle Mileage is required</div>
-          </div>
+          </div> -->
       </div>
         
       <div class="form-group">
         <label>Insurance Renewal Date</label>
         <input type="date" class="form-control date-picker-position" name="insuranceRenewalDate" [(ngModel)]="vehicleData.insuranceRenewalDate" #insuranceRenewalDate="ngModel" 
-        placeholder="Idle Mileage" [ngClass]="{ 'is-invalid': f.submitted && insuranceRenewalDate.invalid }" required />
-        <div *ngIf="f.submitted && insuranceRenewalDate.invalid" class="invalid-feedback">
+        placeholder="Idle Mileage"/>
+        <!-- <div *ngIf="f.submitted && insuranceRenewalDate.invalid" class="invalid-feedback">
           <div *ngIf="insuranceRenewalDate.errors.required">Insurance Renewal Date is required</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group">
         <label>PUC Renewal Date</label>
         <input type="date" class="form-control date-picker-position" name="pucRenewalDate" [(ngModel)]="vehicleData.pucRenewalDate" #pucRenewalDate="ngModel" 
-        placeholder="PUC Renewal Date" [ngClass]="{ 'is-invalid': f.submitted && pucRenewalDate.invalid }" required />
-        <div *ngIf="f.submitted && pucRenewalDate.invalid" class="invalid-feedback">
+        placeholder="PUC Renewal Date"/>
+        <!-- <div *ngIf="f.submitted && pucRenewalDate.invalid" class="invalid-feedback">
           <div *ngIf="pucRenewalDate.errors.required">PUC Renewal Date is required</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group">
         <label>Service Period</label>
         <input type="text" class="form-control " name="servicingPeriod" [(ngModel)]="vehicleData.servicingPeriod" #servicingPeriod="ngModel" 
-        placeholder="Service Period" [ngClass]="{ 'is-invalid': f.submitted && servicingPeriod.invalid }" required />
-        <div *ngIf="f.submitted && servicingPeriod.invalid" class="invalid-feedback">
+        placeholder="Service Period" />
+        <!-- <div *ngIf="f.submitted && servicingPeriod.invalid" class="invalid-feedback">
           <div *ngIf="servicingPeriod.errors.required">Service Period is required</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group">
         <label>Last Service Date</label>
         <input type="date" class="form-control date-picker-position" name="lastServicingDate" [(ngModel)]="vehicleData.lastServicingDate" #lastServicingDate="ngModel" 
-        placeholder="Last Service Date" [ngClass]="{ 'is-invalid': f.submitted && lastServicingDate.invalid }" required />
-        <div *ngIf="f.submitted && lastServicingDate.invalid" class="invalid-feedback">
+        placeholder="Last Service Date"/>
+        <!-- <div *ngIf="f.submitted && lastServicingDate.invalid" class="invalid-feedback">
           <div *ngIf="lastServicingDate.errors.required">Last Service Date is required</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group">
         <label>Average Running Limit Per Day</label>
         <input type="text" class="form-control" name="averageRunningLimitPerDay" [(ngModel)]="vehicleData.averageRunningLimitPerDay" #averageRunningLimitPerDay="ngModel" 
-        placeholder="Average Running Limit Per Day" [ngClass]="{ 'is-invalid': f.submitted && averageRunningLimitPerDay.invalid }" required />
-        <div *ngIf="f.submitted && averageRunningLimitPerDay.invalid" class="invalid-feedback">
+        placeholder="Average Running Limit Per Day"  />
+        <!-- <div *ngIf="f.submitted && averageRunningLimitPerDay.invalid" class="invalid-feedback">
           <div *ngIf="averageRunningLimitPerDay.errors.required">Average Running Limit Per Day is required</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group">
         <label>Chasis Number</label>
         <input type="text" class="form-control" name="chasisNumber" [(ngModel)]="vehicleData.chasisNumber" #chasisNumber="ngModel" 
-        placeholder="Chasis Number" [ngClass]="{ 'is-invalid': f.submitted && chasisNumber.invalid }" required />
-        <div *ngIf="f.submitted && chasisNumber.invalid" class="invalid-feedback">
+        placeholder="Chasis Number"/>
+        <!-- <div *ngIf="f.submitted && chasisNumber.invalid" class="invalid-feedback">
           <div *ngIf="chasisNumber.errors.required">Chasis Number is required</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group">
         <label>Engine Number</label>
         <input type="text" class="form-control" name="enginNumber" [(ngModel)]="vehicleData.enginNumber" #enginNumber="ngModel" 
-        placeholder="Engine Number" [ngClass]="{ 'is-invalid': f.submitted && enginNumber.invalid }" required />
-        <div *ngIf="f.submitted && enginNumber.invalid" class="invalid-feedback">
+        placeholder="Engine Number" />
+        <!-- <div *ngIf="f.submitted && enginNumber.invalid" class="invalid-feedback">
           <div *ngIf="enginNumber.errors.required">Engine Number is required</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group">
         <label>Active</label>

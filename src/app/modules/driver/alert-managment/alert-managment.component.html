@@ -6,7 +6,7 @@
     <ul class="breadcrumb" style="padding: 0;">
       <li class="breadcrumb-item active" aria-current="page">
        <button class="btn btn-info button-size" (click)="toggleDialog($event)" style="font-size:0.7rem !important"
-       [disabled]="currentPageView ? currentPageView[0].items.indexOf('insert') == -1 : false"> + Save Alert</button>
+       [disabled]="isAddPermission"> + Save Alert</button>
        <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
       </li>
     </ul> 

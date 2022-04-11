@@ -175,38 +175,36 @@
       <div class="form-group">
         <label>Last Name</label>
         <input type="text" class="form-control" name="lastName" [(ngModel)]="driverAddModel.lastName" #lastName="ngModel" 
-        placeholder="Enter Vehicle Name" [ngClass]="{ 'is-invalid': f.submitted && lastName.invalid }" required autofocus/>
-        <div *ngIf="f.submitted && lastName.invalid" class="invalid-feedback">
+        placeholder="Enter Vehicle Name"/>
+        <!-- <div *ngIf="f.submitted && lastName.invalid" class="invalid-feedback">
             <div *ngIf="lastName.errors.required">Last Name is required</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group">
         <label>Email</label>
         <input type="email" name="email"  class="form-control form-control-lg" placeholder="Enter Email"
-        [(ngModel)]="driverAddModel.email" #email="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || email.touched)  && email.invalid}" 
-        email required>                
-        <div *ngIf="f.submitted && email.invalid" class="invalid-feedback">
+        [(ngModel)]="driverAddModel.email" #email="ngModel" >                
+        <!-- <div *ngIf="f.submitted && email.invalid" class="invalid-feedback">
             <div *ngIf="email.errors.required">Email is required</div>
             <div *ngIf="email.errors.email">Must be a valid email address</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group">
         <label>Address</label>
         <input type="email" name="address"  class="form-control form-control-lg" placeholder="Enter address"
-        [(ngModel)]="driverAddModel.address" #address="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || address.touched)  && address.invalid}" 
-         required>                
-        <div *ngIf="f.submitted && address.invalid" class="invalid-feedback">
+        [(ngModel)]="driverAddModel.address" #address="ngModel"
+         >                
+        <!-- <div *ngIf="f.submitted && address.invalid" class="invalid-feedback">
             <div *ngIf="address.errors.required">Address is required</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group">
         <label>Joined Date</label>
         <input type="date" name="joinedDate"  class="form-control form-control-lg date-picker-position" placeholder="Enter address"
-        [(ngModel)]="driverAddModel.joinedDate" #joinedDate="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || joinedDate.touched)  && joinedDate.invalid}" 
-         required>                
-        <div *ngIf="f.submitted && joinedDate.invalid" class="invalid-feedback">
+        [(ngModel)]="driverAddModel.joinedDate" #joinedDate="ngModel">                
+        <!-- <div *ngIf="f.submitted && joinedDate.invalid" class="invalid-feedback">
             <div *ngIf="joinedDate.errors.required">Joined Date is required</div>
-        </div>
+        </div> -->
       </div>
       <div class="form-group row">
         <label class="col-sm-3 col-form-label"> Phone Number</label>

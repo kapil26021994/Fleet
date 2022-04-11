@@ -337,7 +337,7 @@ th.sortable {
   }
 
   .card-details small {
-    font-size: 12px !important;
+    font-size: 14px !important;
   }
   .navbar-nav.navbar-nav-right {
     padding-right: 11px;
@@ -584,7 +584,7 @@ th.sortable {
 }
 
 .edit-profile.disableEdit .form-group input {
-  border: none !important
+  // border: none !important
 }
 
 
@@ -851,6 +851,36 @@ input[type="date"]:before {
 }
 
 
+//add click event on full input
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
+//show iocn on date picker
+input[type="datetime-local"]:before {
+color: transparent;
+background: none;
+display: block;
+font-family: 'FontAwesome';
+content: '\f073';
+/* This is the calendar icon in FontAwesome */
+width: 15px;
+height: 20px;
+position: absolute;
+top: 12px;
+right: 6px;
+color: #999;
+}
+
 @media screen and (max-width: 960px) {
   .form-container {
     min-width: 100%!important;
@@ -983,4 +1013,23 @@ input[type=number] {
 
 .spinner-container{
   margin: 0 auto;
+}
+
+.input-report-wrapper{
+  margin-left: 14px !important;
+  width: 7% !important;
+  padding: 16px !important;
+}
+
+.checkbox-report-margint{
+  margin-top: 6px !important;
+  font-size: 14px !important;
+}
+
+.icon-wrapper{
+  font-size:20px;
+  color:#004c84;
+}
+.modal-content{
+  background-color: white !important;
 }

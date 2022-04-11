@@ -5,6 +5,9 @@ import { Router } from '@angular/router';
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 import{DataSharingService} from 'src/app/core/services/data-sharing.service';
 import { FormControl } from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
+import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+
 @Component({
   selector: 'app-user-group-detail',
   templateUrl: './user-group-detail.component.html',
@@ -29,8 +32,9 @@ export class UserGroupDetailComponent implements OnInit {
   public isDefaultAPICall :boolean = false;
   constructor(
       public userService:UserService,
-      public authService:AuthenticationService,
       public dataShare:DataSharingService,
+      public dialog:MatDialog,
+      public authService:AuthenticationService,
       public cdref: ChangeDetectorRef,
       public router :Router) { 
         this.dataShare.updatedData.subscribe((res: any) => { 
@@ -184,4 +188,34 @@ export class UserGroupDetailComponent implements OnInit {
       this.cdref.detectChanges();
     }
 
+     /*
+      Author:Kapil Soni
+      Funcion:deleteVehicle
+      Summary:deleteVehicle for get delete vehicle
+      Return list
+    */
+    deletGroup(){
+      const dialogRef = this.dialog.open(ConfirmationDialog, {
+        panelClass: 'custom-dialog-container',
+        data: {
+          message: 'Are you sure want to delete?',
+          buttonText: {
+            ok: 'Delete',
+            cancel: 'No',
+          },
+        },
+      });
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if(confirmed && this.currentGroupDetail.id){
+          this.userService.deleteDataFromDb(this.currentGroupDetail.id,'deleteUserGroupByID').subscribe((data:any)=>{
+            if(data.message){
+              this.router.navigate(['/user/group/']);
+              this.authService.successToast(data.message);
+            }
+          },  error => {
+              this.authService.errorToast(error.error.message);
+          })
+        }
+      });
+    }
 }

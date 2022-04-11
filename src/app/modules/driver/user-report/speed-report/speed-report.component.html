@@ -1,0 +1,139 @@
+<div class="page-header">
+    <h3 class="page-title">
+    {{currentReportData.reportType}}
+    </h3>
+    <nav aria-label="breadcrumb">
+      <ul class="breadcrumb" style="padding: 0;">
+        <li class="breadcrumb-item active" aria-current="page">
+         <button class="btn btn-info button-size" style="font-size:0.7rem !important" [matMenuTriggerFor]="menu" [disabled]="reportList.length == 0"> + Export</button>
+         <mat-menu #menu="matMenu">
+          <app-download-content [data]="reportList" [exporterInstance]="exporter"></app-download-content>
+        </mat-menu>
+        </li>
+      </ul> 
+    </nav>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="table-filter-options row">
+        <div class="col-md-12 col-sm-12 col-md-12">
+          <form (ngSubmit)="f.form.valid && getReportData(f)" class="example-form" style="display: flex;"  [formGroup]="filterForm" #f="ngForm">
+            <table class="example-full-width" cellspacing="0"><tr>
+              <td>
+              <div class="table-search">
+                <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
+                <div>
+                  <input type="string" placeholder="Search" formControlName="companyName">
+                </div>
+              </div>
+            </td>
+            <td>
+              <mat-form-field fxFlex="40" class="field-wrapper">
+                <mat-select disableOptionCentering [(ngModel)]="reportAdd.vehicleNumber" [ngModelOptions]="{standalone: true}"
+                placeholder="Company Name" name="vehicleNumber" (ngModelChange)="updateDataViaKey($event,'')"
+                #vehicleNumber="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && vehicleNumber.invalid }" required>
+                  <mat-option *ngFor="let company of companyList" [value]="company.companyName">
+                    {{company.companyName}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.submitted && vehicleNumber.invalid">
+                  <div *ngIf="vehicleNumber.errors.required">Company  is required</div>
+                </mat-error> 
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field fxFlex="40" class="field-wrapper">
+                <mat-select disableOptionCentering name="contactMethod" name="vehicle" placeholder="Select vehicle"
+                [disabled]="vehicleList == undefined" [(ngModel)]="reportAdd.vname" [ngModelOptions]="{standalone: true}" 
+                (ngModelChange)="updateDataViaKey($event,'vehicle')" #vname="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && vname.invalid }" required>
+                  <mat-option *ngFor="let vehicle of vehicleList" [value]="vehicle.vehicleNumber">{{vehicle.vehicleNumber}}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.submitted && vname.invalid">
+                  <div *ngIf="vname.errors.required">Vehicle is required</div>
+                </mat-error> 
+              </mat-form-field>
+            </td>
+            <td>
+              <ng-container> 
+                <td>
+                  <input type="datetime-local" id="session-date" class="form-control date-picker-position" name="startDate" 
+                  [(ngModel)]="reportAdd.startdate" placeholder="Select Start Date" [ngModelOptions]="{standalone: true}" 
+                  #startdate="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && startdate.invalid }" required/>
+                  <mat-error *ngIf="f.submitted && startdate.invalid">
+                    <div *ngIf="startdate.errors.required">Start Date is required</div>
+                  </mat-error> 
+                </td>
+                <td>
+                  <input type="datetime-local"  id="session-endDate " class="form-control date-picker-position" 
+                  [(ngModel)]="reportAdd.enddate" name="endDate" [ngModelOptions]="{standalone: true}" #enddate="ngModel" 
+                  [ngClass]="{ 'is-invalid': f.submitted && enddate.invalid }" required/>
+                  <mat-error *ngIf="f.submitted && enddate.invalid">
+                    <div *ngIf="enddate.errors.required">End Date is required</div>
+                  </mat-error> 
+                </td>
+                <td>
+                  <button type="submit" class="btn btn-info button-size"  style="font-size:0.7rem !important" (click)="getReportData()"> View</button>
+                </td>
+                </ng-container>
+            </td>
+            </tr></table>
+              </form>
+        </div>
+      </div>
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableResponsive matTableExporter #exporter="matTableExporter" id="reportDetailPrint">
+            <ng-container matColumnDef="dttime">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Date & Time </th>
+              <td mat-cell *matCellDef="let element"> {{element.dttime | date:'yyyy-MM-dd hh:mm:ss'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="duration">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Duration </th>
+              <td mat-cell *matCellDef="let element"> {{element.duration}} </td>
+            </ng-container>
+            <ng-container matColumnDef="location">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Location </th>
+              <td mat-cell *matCellDef="let element"> {{element.location}} </td>
+            </ng-container>
+            <ng-container matColumnDef="topSpeed">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Top Speed </th>
+                <td mat-cell *matCellDef="let element"> {{element.topSpeed}} </td>
+              </ng-container>
+  <!--      
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef style="color: white;"> Actions </th>
+          <td mat-cell *matCellDef="let row" style="width:20%">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item  title="View Contact" (click)="getCurrentVehicleDetail(row)">
+                <mat-icon>remove_red_eye</mat-icon>
+                <span>View</span>
+              </button>
+              <button mat-menu-item (click)="deleteVehicle(row)">
+                <mat-icon>delete</mat-icon>
+                  <span>Delete</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container> -->
+        <ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+              (click)="selection.toggle(row)">
+          </tr>
+        </ng-container>
+      </table>
+      <div *ngIf="isLoading"  class="circle-spinner">
+        <mat-progress-spinner 
+          color="primary" [diameter]="50"
+          mode="indeterminate">
+        </mat-progress-spinner>
+      </div>
+      <tr *ngIf="!dataSource">
+        <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
+          No Records Found!
+        </td>
+      </tr>
+      <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
+    </div>
+  </div>

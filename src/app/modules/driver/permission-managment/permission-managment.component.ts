@@ -173,7 +173,7 @@ get isActive() {
         data: {
           message: 'Are you sure want to delete?',
           buttonText: {
-            ok: 'Save',
+            ok: 'Delete',
             cancel: 'No',
           },
         },
@@ -208,25 +208,12 @@ get isActive() {
         this.filteredValues['item'] = positionValue;
         this.dataSource.filter = JSON.stringify(this.filteredValues);
       });
-      // this.isActive.valueChanges.subscribe((positionValue) => {
-      //   this.filteredValues['isActive'] = positionValue;
-      //   this.dataSource.filter = JSON.stringify(this.filteredValues);
-      // });
     }
   
     getFormsValue() {
       this.dataSource.filterPredicate = (data, filter: string): boolean => {
             let searchString = JSON.parse(filter);
             let isStatusAvailable = false;
-            // if(searchString.isActive &&  searchString.isActive.length) {
-            //   for (const d of searchString.isActive) {
-            //     if (data.isActive === d.toLowerCase()) {
-            //       isStatusAvailable = true;
-            //     }
-            //   }
-            // } else {
-            //   isStatusAvailable = true;
-            // }
             const resultValue =
               data.name.toString().trim().toLowerCase().indexOf(searchString.page != null ? searchString.page.toLowerCase() : '') !== -1;
               return resultValue;
@@ -257,7 +244,7 @@ get isActive() {
   selectPermission(name){
     this.selectedPermissionList =[];
     if(name != 'Map' && name != 'Dashboard'){
-      this.permissionList = ['insert','update','view','delete'];
+      this.permissionList = [name+' '+'insert',name+' '+'update',name+' '+'view',name+' '+'delete'];
     }else if(name == 'Map'){
       this.permissionList = ['Dashboard','Vehicle History','Vehicle Live Location'];
     }else{

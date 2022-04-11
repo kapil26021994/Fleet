@@ -13,7 +13,7 @@
       <ul class="breadcrumb" style="padding: 0;">
         <li class="breadcrumb-item active" aria-current="page">
             <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
-          <button class="btn btn-info button-size" >Deactivate</button>
+          <button class="btn btn-info button-size" (click)="deleteRoute()">Delete</button>
          <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
          <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateDriverInfo()">Save</button>
         </li>
@@ -43,7 +43,7 @@
     <div class="col-sm-12">
       <div class="card">
       <form id="contact" action="" method="post">
-        <div class="row">
+        <!-- <div class="row">
           <div class="col-sm-6">
             <div class="form-group">
               <label>Vehicle</label>
@@ -70,7 +70,7 @@
               </mat-form-field>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="row">
           <div class="col-sm-6">
             <div class="form-group">
@@ -88,6 +88,14 @@
           <div class="row">
             <div class="col-sm-6">
               <div class="form-group">
+                <label>Route Name</label>
+                <span>:</span><input name="routeName" type="text" [(ngModel)]="currentTripDetail.routeName" [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
+              </div>
+            </div>
+            </div>
+          <!-- <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
                 <label>Start Date</label>
                 <span>:</span><input name="createDateTime" [(ngModel)]="currentTripDetail.startDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
               </div>
@@ -98,7 +106,7 @@
                 <span>:</span><input name="updateDateTime" [(ngModel)]="currentTripDetail.endDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
               </div>
               </div>
-         </div>
+         </div> -->
       </form>
       </div>
     </div>

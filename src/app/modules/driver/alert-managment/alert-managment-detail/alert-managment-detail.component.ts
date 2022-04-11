@@ -4,6 +4,8 @@ import{UserManagmentListModel} from 'src/app/core/models/driver/user-managment-l
 import { Router } from '@angular/router';
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
 import{DataSharingService} from 'src/app/core/services/data-sharing.service';
+import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-alert-managment-detail',
@@ -22,6 +24,7 @@ export class AlertManagmentDetailComponent implements OnInit {
 
   constructor(
       public userService:UserService,
+      public dialog:MatDialog,
       public authService:AuthenticationService,
       public dataShare:DataSharingService,
       public router :Router) { 
@@ -69,5 +72,33 @@ export class AlertManagmentDetailComponent implements OnInit {
       })
     }
 
-
+      /*
+      Author:Kapil Soni
+      Funcion:deleteAlert
+      Summary:deleteAlert for get delete vehicle
+      Return list
+    */
+    deleteAlert(value){
+      const dialogRef = this.dialog.open(ConfirmationDialog, {
+        panelClass: 'custom-dialog-container',
+        data: {
+          message: 'Are you sure want to delete?',
+          buttonText: {
+            ok: 'Delete',
+            cancel: 'No',
+          },
+        },
+      });
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if(confirmed && this.currentUserDetail.id){
+          this.userService.deleteDataFromDb(this.currentUserDetail.id,'deleteAlertByID').subscribe((data:any)=>{
+            if(data.message){
+              this.router.navigate(['/user/alert/']);
+            }
+          },  error => {
+            this.authService.errorToast(error.message);
+          })
+        }
+      });
+    }
 }
