@@ -15,4 +15,5 @@ export class CompanyManagmentAddModel {
     companyDomain:string;
     selectTimezone:string;
     isActive :string;
+    image:string;
 }

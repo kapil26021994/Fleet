@@ -7,4 +7,5 @@ export class PlaceListModel {
     phoneNumber: string;
     createDateTime: string;
     updateDateTime:string;
+    company:string;
 }

@@ -12,6 +12,7 @@ import{AuthenticationService} from '../../../core/services/authentication/authen
 import{Router} from '@angular/router';
 import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
+import { HttpClient, HttpEventType } from '@angular/common/http';
 
 
 declare var google;
@@ -37,6 +38,7 @@ export class CompanyManagmentComponent implements OnInit {
 public isLoading = false;
 public isResetData = false;
 @ViewChild('f', {static: false}) myForm: NgForm;
+public imageFileObject :any;
 
   checked = false;
   indeterminate = false;
@@ -66,12 +68,12 @@ get isActive() {
     public dialog:MatDialog,
     public userService:UserService,
     public formDirective: FormGroupDirective,
+    public httpClient:HttpClient,
     public authService:AuthenticationService,public router:Router) { }
 
   ngOnInit() {
     this.vehicleTypeList =  JSON.parse(localStorage.getItem('vehicleTypeList'));
     this.getAllUserList();
-
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
@@ -112,6 +114,7 @@ get isActive() {
     this.userService.getDataByUrl('company/showAllCompanyData').subscribe((data:any)=>{
       if(data.length>0){
         this.userList = data;
+        localStorage.setItem('companyList',JSON.stringify( this.userList));
         this.dataSource = new MatTableDataSource(<any>this.userList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -147,7 +150,7 @@ get isActive() {
         }else{
           this.companyAddData.isActive='inActive';
         }
-        this.userService.storeDataToDb(<any>this.companyAddData,'company/saveCompany').subscribe((data:any)=>{
+       this.userService.storeDataToDb(<any>this.companyAddData,'company/saveCompany').subscribe((data:any)=>{
           if(data.message){
             this.isLoadingData = false;
             form.resetForm();
@@ -295,6 +298,25 @@ get isActive() {
         const place = autocomplete.getPlace().address_components;
         self.companyAddData.state= place[2].short_name;
         self.companyAddData.country = place[3].long_name;
+        self.companyAddData.city = autocomplete.getPlace().formatted_address;
       });
     }
+
+  //   let imageLogo= <any>document.getElementById('company-logo');
+  //   let imageLogoSrc= <any>document.getElementById('company-logo-src')
+  //   imageLogo.onchange = evt => {
+  //     const [file] = imageLogo.files;
+  //     this.imageFileObject = [file];
+  //     this.companyAddData.image = this.imageFileObject[0];
+  //     console.log(this.imageFileObject);
+  //     if (file) {
+  //       imageLogoSrc.src = <any>URL.createObjectURL(file)
+  //     }
+  //     this.userService.uploadImageToDb(this.imageFileObject[0],'image/uploadImage').subscribe((image:any)=>{
+  //       if(image){
+  //         console.log('image'+image);
+  //       }
+  //     })
+  //   }
+  // }
 }

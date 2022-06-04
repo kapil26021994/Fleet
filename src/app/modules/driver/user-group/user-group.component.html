@@ -5,7 +5,8 @@
   <nav aria-label="breadcrumb">
     <ul class="breadcrumb" style="padding: 0;">
       <li class="breadcrumb-item active" aria-current="page">
-       <button class="btn btn-info button-size" (click)="toggleDialog($event)" style="font-size:0.7rem !important"> + Add User Group</button>
+       <button class="btn btn-info button-size" (click)="toggleDialog($event)" style="font-size:0.7rem !important"
+       *ngIf="'User Group Management' | isDisabledPipe : 'User Group Management insert'"> + Add User Group</button>
        <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
       </li>
     </ul> 
@@ -21,7 +22,7 @@
             <div class="table-search">
               <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
               <div>
-                <input type="string" placeholder="Group  Name" formControlName="groupName">
+                <input type="string" placeholder="Search Name" formControlName="groupName">
               </div>
             </div>
           </td>
@@ -35,6 +36,7 @@
           <td>
             <mat-form-field fxFlex="40" class="field-wrapper">
               <mat-select disableOptionCentering formControlName="companyName" placeholder="Company Name" multiple>
+                <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)"> 
                 <mat-option *ngFor="let company of companyList" [value]="company.companyName">
                   {{company.companyName}}
                 </mat-option>
@@ -46,7 +48,7 @@
       </div>
     </div>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableResponsive matTableExporter #exporter="matTableExporter">
-      <ng-container matColumnDef="select">
+      <!-- <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
           <mat-checkbox (change)="$event ? masterToggle() : null"
                         [checked]="selection.hasValue() && isAllSelected()"
@@ -61,7 +63,7 @@
                         [aria-label]="checkboxLabel(row)">
           </mat-checkbox>
         </td>
-      </ng-container>
+      </ng-container> -->
         <!-- Name Column -->
         <ng-container matColumnDef="createDateTime">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Created Date </th>
@@ -91,11 +93,11 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item  title="View Contact" (click)="getCurrentVehicleDetail(row)">
+            <button mat-menu-item  title="View Contact" (click)="getCurrentVehicleDetail(row)" *ngIf="'User Group Management' | isDisabledPipe : 'User Group Management update'">
               <mat-icon>remove_red_eye</mat-icon>
               <span>View</span>
             </button>
-            <button mat-menu-item (click)="deleteVehicle(row)">
+            <button mat-menu-item (click)="deleteVehicle(row)" *ngIf="'User Group Management' | isDisabledPipe : 'User Group Management delete'">
               <mat-icon>delete</mat-icon>
                 <span>Delete</span>
             </button>
@@ -145,7 +147,8 @@
           <mat-label >Select Company</mat-label>
           <mat-select name="contactMethod"  id="contactMethod"  [(ngModel)]="groupAdd.companyName"  (ngModelChange)="updateDataViaKey($event,'company')"
           #companyName="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && companyName.invalid }" required>
-            <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
+          <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)">  
+          <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
           </mat-select>
           <mat-error *ngIf="f.submitted && companyName.invalid">
             <div *ngIf="companyName.errors.required">Company is required</div>
@@ -183,7 +186,7 @@
         <input type="checkbox" name="isActive"  class="form-check"  [(ngModel)]="groupAdd.isActive">
       </div>
       <div class="form-group form-control-footer margin-top: 176px;">
-        <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
+        <button class="btn btn-outline-info btn-custom" type="reset" (click)="toggleDialog($event);f.reset()">Cancel</button>&nbsp;&nbsp;
         <button class="btn  btn-outline-info btn-custom" type="reset" (click)="f.reset()">Reset</button>
         <div>
           <button class="btn btn-info button-size" [disabled]="isLoadingData">

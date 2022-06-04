@@ -76,3 +76,16 @@ mat-error{
 .checkbox-container{
 margin: -7px 0px 0px 119px;
 }
+
+.permission-container{
+  margin-left:126px !important;
+    display: grid !important;
+}
+
+::ng-deep .mat-checkbox-inner-container{
+  margin:0px !important;
+}
+
+.permission-container-lable{
+  margin:10px !important
+}

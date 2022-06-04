@@ -1,7 +1,7 @@
 <section class="vh-100" style="background-color: #004C84;">
 <div class="d-flex align-items-center auth px-0">
   <div class="row w-100 mx-0" style="margin-top:70px">
-    <div class="col-lg-4 mx-auto">
+    <div class="col-lg-4 mx-auto" *ngIf="!isFirstTimeLogin && !isChangePasswordView">
       <div class="auth-form-light text-left py-5 px-4 px-sm-5">
         <div class="text-center" style="margin: -42px 11px 31px 5px;">
           <h4 class="text-color">Login In</h4>
@@ -26,12 +26,17 @@
             </div>
           </div>
            <div class="form-group">
-            <label for="username" >Create A New Password</label>
+            <label for="username" >Password</label>
               <input type="password" name="password" class="form-control form-control-lg" placeholder="Password" 
               [(ngModel)]="loginData.password" #password="ngModel" [ngClass]="{ 'is-invalid': (f.submitted || f.touched)  && password.invalid}"  minlength="8" required>
               <div *ngIf="(f.submitted || f.touched) && password.invalid" class="invalid-feedback">
                   <div *ngIf="password.errors.required">Password is required</div>
                   <div *ngIf="password.errors.minlength">Password should be at least 8 characters long</div>
+              </div>
+            </div>
+            <div class="row pb-3">
+              <div class="col-6 text-left">
+                <a onclick="return false;" class="black font-w-400" (click)="isFirstTimeLogin = !isFirstTimeLogin"> Forgot Password? </a>
               </div>
             </div>
           <div class="mt-3">
@@ -44,6 +49,76 @@
                   Loading..
               </ng-container>
             </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-4 mx-auto" *ngIf="isFirstTimeLogin">
+      <div class="auth-form-light text-left py-5 px-4 px-sm-5">
+        <div class="row">
+          <div class="col-md-6" style="margin: -25px -30px;" (click)="isFirstTimeLogin = !isFirstTimeLogin">
+            <mat-icon>arrow_back</mat-icon>
+          </div>
+          <div class="col-md-6" style="margin:-24px -47px">
+              <div class="text-color text-center"><b>Enter Email</b></div>
+          </div>
+        </div>
+        <form class="pt-3" (ngSubmit)="forgotPasswordForm.form.valid && resetUserPassword(forgotPasswordForm.form)" #forgotPasswordForm="ngForm" novalidate>
+          <div class="form-group">
+            <label for="username">Enter Email</label>
+            <input type="text" (keydown.space)="$event.preventDefault();" class="form-control" name="email" [(ngModel)]="forgotPassword.email" #email="ngModel" 
+            [ngClass]="{ 'is-invalid': (email.touched || forgotPasswordForm.submitted) && email.invalid }" required email/>
+            <div *ngIf="(email.touched || forgotPasswordForm.submitted) && email.invalid" class="invalid-feedback">
+              <div *ngIf="email.errors.required">Email is required</div>
+              <div *ngIf="email.errors.email">Email must be a valid email address</div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <button type="submit" class="btn btn-block btn-info btn-lg font-weight-medium auth-form-btn" 
+            [disabled]="forgotPasswordForm.form.invalid" (click)="resetUserPassword(forgotPasswordForm.form.valid)"> 
+               <ng-container *ngIf="!isLoadingData">
+                   Reset Password 
+              </ng-container>
+                <ng-container *ngIf="isLoadingData">
+                  <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>Loading... 
+                </ng-container>
+           </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-4 mx-auto" *ngIf="isChangePasswordView">
+      <div class="auth-form-light text-left py-5 px-4 px-sm-5">
+        <div class="row">
+          <div class="col-md-6" style="margin: -25px -30px;" (click)="isChangePasswordView = !isChangePasswordView">
+            <mat-icon>arrow_back</mat-icon>
+          </div>
+          <div class="col-md-10" style="margin:-28px -97px">
+              <div class="text-color text-center"><b>Enter New Password</b></div>
+          </div>
+        </div>
+        <form class="pt-3" (ngSubmit)="changePasswordForm.form.valid && changePassword(changePasswordForm.form)" #changePasswordForm="ngForm" novalidate>
+          <div class="form-group">
+            <label for="username" >Password</label>
+              <input type="password" name="password" class="form-control form-control-lg" placeholder="Password" 
+              [(ngModel)]="changePassword.password" #password="ngModel" [ngClass]="{ 'is-invalid': (changePasswordForm.submitted || changePasswordForm.touched)  && password.invalid}"  minlength="8" required>
+              <div *ngIf="(changePasswordForm.submitted || changePasswordForm.touched) && password.invalid" class="invalid-feedback">
+                  <div *ngIf="password.errors.required">Password is required</div>
+                  <div *ngIf="password.errors.minlength">Password should be at least 8 characters long</div>
+              </div>
+            </div>
+          <div class="mt-3">
+            <button type="submit" class="btn btn-block btn-info btn-lg font-weight-medium auth-form-btn" 
+            [disabled]="changePasswordForm.form.invalid" (click)="updatePasswordINDB(changePasswordForm.form.valid)"> 
+               <ng-container *ngIf="!isLoadingData">
+                   Update Password 
+              </ng-container>
+                <ng-container *ngIf="isLoadingData">
+                  <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>Loading... 
+                </ng-container>
+           </button>
           </div>
         </form>
       </div>

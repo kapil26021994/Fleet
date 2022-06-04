@@ -1,97 +1,119 @@
-
 <div class="navigation">
-    <a  routerLink="/user/management"><span><i class="mdi mdi-keyboard-backspace"></i>User Management</span></a>
-    <span routerLink="/user/management"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
-    <span></span>
+  <a routerLink="/user/management"><span class="navigation-back"><i class="mdi mdi-keyboard-backspace"></i>User
+      Management</span></a>
+  <span routerLink="/user/management" class="navigation-back"> <span><i class="mdi mdi-chevron-right"></i></span>
+    Details </span>
+  <span></span>
 </div>
 <div class="page-header">
-    <h3 class="page-title">
-      Details
-    </h3>
-    <nav aria-label="breadcrumb">
-      <ul class="breadcrumb" style="padding: 0;">
-        <li class="breadcrumb-item active" aria-current="page">
-         <button class="btn btn-info button-size" (click)="delete()">Delete</button>
-         <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
-         <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateGroupInfo()">Save</button>
-        </li>
-      </ul> 
-    </nav>
-  </div>
-  <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
-    <div class="col-sm-12">
-      <div class="card">
-        
+  <h3 class="page-title">
+    Details
+  </h3>
+  <nav aria-label="breadcrumb">
+    <ul class="breadcrumb" style="padding: 0;">
+      <li class="breadcrumb-item active" aria-current="page">
+        <button class="btn btn-info button-size" (click)="delete()">Delete</button>
+        <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
+        <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateGroupInfo()">Save</button>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
+  <div class="col-sm-12">
+    <div class="card">
+
       <form id="contact" action="" method="post">
         <div class="row">
           <div class="col-sm-6">
             <div class="form-group">
               <label>Select Company</label>
               <span>:</span>
-              <mat-form-field fxFlex="40" class="field-wrapper app-permission" >
-                <mat-select [disabled]="!isEdit" name="contactMethod"  id="contactMethod"  [(ngModel)]="currentUserDetail.company.companyName">
-                  <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
+              <mat-form-field fxFlex="40" class="field-wrapper app-permission">
+                <mat-select [disabled]="!isEdit" name="contactMethod" id="contactMethod"
+                  [(ngModel)]="currentUserDetail.company.companyName" (ngModelChange)="getGroupListByCompanyId($event)">
+                  <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)"> 
+                  <mat-option *ngFor="let company of companyList" [value]="company.companyName">{{ company.companyName
+                    }}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
             <div class="form-group">
               <label>Last Name</label>
-              <span>:</span><input name="lastName"   [(ngModel)]="currentUserDetail.lastName" [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
+              <span>:</span><input name="lastName" [(ngModel)]="currentUserDetail.lastName" [disabled]="!isEdit"
+                class="form-input" type="text" tabindex="2" required>
             </div>
             <div class="form-group">
               <label>User Name</label>
-              <span>:</span><input name="username"   [(ngModel)]="currentUserDetail.username" [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
+              <span>:</span><input name="username" [(ngModel)]="currentUserDetail.username" [disabled]="!isEdit"
+                class="form-input" type="text" tabindex="2" required>
             </div>
             <div class="form-group">
               <label>Address</label>
-              <span>:</span><input name="address"  [(ngModel)]="currentUserDetail.address" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
+              <span>:</span><input name="address" [(ngModel)]="currentUserDetail.address" [disabled]="!isEdit"
+                class="form-input" type="text" tabindex="4" required>
             </div>
             <div class="form-group">
               <label>App Permission</label>
               <span>:</span>
               <mat-form-field fxFlex="40" class="field-wrapper app-permission">
-                  <mat-select  [(ngModel)]="modelGroup" #itemSelectPermission="ngModel" disableOptionCentering multiple  name="modelGroup">
-                    <mat-optgroup *ngFor="let permission of totalPermissionList" [label]="permission.name">
-                      <mat-option *ngFor="let permission_name of permission.items" [value]="permission_name.lable" 
-                      (onSelectionChange)="optionSelected($event,permission_name.lable,permission)" >
-                        {{permission_name.lable}}
-                      </mat-option>
-                    </mat-optgroup>
-                  </mat-select>
-                </mat-form-field>
+                <mat-select [(ngModel)]="modelGroup" #itemSelectPermission="ngModel" disableOptionCentering multiple
+                  name="modelGroup">
+                  <mat-optgroup *ngFor="let permission of totalPermissionList" [label]="permission.name">
+                    <mat-option *ngFor="let permission_name of permission.items" [value]="permission_name.lable"
+                      (onSelectionChange)="optionSelected($event,permission_name.lable,permission)">
+                      {{permission_name.lable}}
+                    </mat-option>
+                  </mat-optgroup>
+                </mat-select>
+              </mat-form-field>
             </div>
           </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label>First Name</label>
-                <span>:</span>
-                <input name="firstName"  [(ngModel)]="currentUserDetail.firstName" [disabled]="!isEdit" class="form-input" type="text" tabindex="1" required autofocus>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>First Name</label>
+              <span>:</span>
+              <input name="firstName" [(ngModel)]="currentUserDetail.firstName" [disabled]="!isEdit" class="form-input"
+                type="text" tabindex="1" required autofocus>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <span>:</span><input name="email" [(ngModel)]="currentUserDetail.email" [disabled]="!isEdit"
+                class="form-input" type="email" tabindex="3" required>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 col-form-label" style="margin:-17px 23px 0px -23px"> Number</label><span style="margin-left: 17px;">:</span>
+              <div class="input-group flex-nowrap input-label-container">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="addon-wrapping">+91</span>
+                </div>
+                <input style="height: 42px;" [disabled]="!isEdit" type="tel" name="phoneNumber" [(ngModel)]="currentUserDetail.phoneNumber"
+                  class="form-control form-control-lg number_wrapper" placeholder="Enter Phone Number" maxlength="10">
               </div>
-              <div class="form-group">
-                <label>Email</label>
-                <span>:</span><input name="email"  [(ngModel)]="currentUserDetail.email" [disabled]="!isEdit" class="form-input" type="email" tabindex="3" required>
-              </div>
-              <div class="form-group">
+            </div>
+            <!-- <div class="form-group">
                 <label>Phone Number</label>
                 <span>:</span><input name="phoneNumber" [(ngModel)]="currentUserDetail.phoneNumber" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
-              </div>
-              <div class="form-group">
-                <label>Assign Group</label>
-                <mat-form-field fxFlex="40" class="field-wrapper app-permission">
-                  <mat-select  [(ngModel)]="currentUserDetail.groupName"  [disabled]="!isEdit" placeholder="App companyName" name="groupName"
-                  (ngModelChange)="updateDataViaKey($event)"> 
-                    <mat-option *ngFor="let group of groupList" [value]="group.groupName"> {{group.groupName}}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="form-group">
-                <label>Is Active</label>
-                <span>:</span>
-                <input  [(ngModel)]="isEditData" [disabled]="!isEdit" class="form-input checkbox-margin"  type="checkbox" name="isActive"> 
-              </div>
-              </div>
+              </div> -->
+            <div class="form-group">
+              <label>Assign Group</label>
+              <mat-form-field fxFlex="40" class="field-wrapper app-permission">
+                <mat-select [(ngModel)]="currentUserDetail.groupName" [disabled]="!isEdit" placeholder="App companyName"
+                  name="groupName" (ngModelChange)="updateDataViaKey($event)">
+                  <mat-option *ngFor="let group of groupList" [value]="group.groupName"> {{group.groupName}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="form-group">
+              <label>Is Active</label>
+              <span>:</span>
+              <input [(ngModel)]="isEditData" [disabled]="!isEdit" class="form-input checkbox-margin" type="checkbox"
+                name="isActive">
+            </div>
+          </div>
         </div>
       </form>
-      </div>
     </div>
   </div>
+</div>

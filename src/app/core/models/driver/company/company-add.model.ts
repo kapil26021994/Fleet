@@ -13,5 +13,6 @@ export class CompanyAddModel {
     country: string;
     pinCode: string;
     isActive: string;
-    gstnumber: string
+    gstnumber: string;
+    id:string;
 }

@@ -1,54 +1,60 @@
-
 <div class="page-header">
-    <h3 class="page-title">
-      SIM  MANAGMENT
-    </h3>
-    <nav aria-label="breadcrumb">
-      <ul class="breadcrumb" style="padding: 0;">
-        <li class="breadcrumb-item active" aria-current="page">
-         <button class="btn btn-info button-size" (click)="toggleDialog($event);">Add New Sim</button>
-         <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
-        </li>
-      </ul> 
-    </nav>
-  </div>
-  
-  <div class="row">
-    <div class="col-md-12">
-      <div class="table-filter-options row">
-        <div class="col-md-12 col-sm-12 col-md-12">
-          <form class="example-form" style="display: flex;"  [formGroup]="simCardForm">
-          <table class="example-full-width" cellspacing="0"><tr>
-            <td>
-            <div class="table-search">
-              <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
-              <div>
-                <input type="string" placeholder="Search SIM Name" formControlName="simName">
-              </div>
-            </div>
-          </td>
-          <td>
-            <mat-form-field  fxFlex="40" class="field-wrapper">
-              <mat-select  formControlName="callingNumber" placeholder="Calling Number" multiple>
-                <mat-option *ngFor="let number of callingNumberList" [value]="number">{{number}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </td>
-          <td>
+  <h3 class="page-title">
+    SIM MANAGMENT
+  </h3>
+  <nav aria-label="breadcrumb">
+    <ul class="breadcrumb" style="padding: 0;">
+      <li class="breadcrumb-item active" aria-current="page">
+        <button class="btn btn-info button-size" (click)="toggleDialog($event);"
+          *ngIf="'Sim Management' | isDisabledPipe : 'Sim Management insert'">
+          + Add New Sim</button>
+        <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-filter-options row">
+      <div class="col-md-12 col-sm-12 col-md-12">
+        <form class="example-form" style="display: flex;" [formGroup]="simCardForm">
+          <table class="example-full-width" cellspacing="0">
+            <tr>
+              <td>
+                <div class="table-search">
+                  <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
+                  <div>
+                    <input type="string" placeholder="Search SIM Name" formControlName="simName">
+                  </div>
+                </div>
+              </td>
+              <td>
+                <mat-form-field fxFlex="40" class="field-wrapper">
+                  <mat-select formControlName="callingNumber" placeholder="Calling Number" multiple>
+                    <input class="example-input" placeholder="search " (keyup)="search($event.target.value,'number')">
+                    <mat-option *ngFor="let number of callingNumberList" [value]="number">{{number}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </td>
+              <!-- <td>
             <mat-form-field fxFlex="40" class="field-wrapper">
               <mat-select  formControlName="imeiNumber" placeholder="IMEI Number" multiple>
+                <input class="example-input" placeholder ="search " (keyup)="search($event.target.value,'imei')">
                 <mat-option *ngFor="let imeiNumber of imeiNumberList" [value]="imeiNumber">
                   {{imeiNumber}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
-          </td>
-          </tr></table>
-            </form>
-        </div>
-       </div> 
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter #exporter="matTableExporter">
-        <!-- <ng-container matColumnDef="select">
+          </td> -->
+            </tr>
+          </table>
+        </form>
+      </div>
+    </div>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter
+      #exporter="matTableExporter">
+      <!-- <ng-container matColumnDef="select">
           <th mat-header-cell *matHeaderCellDef>
             <mat-checkbox (change)="$event ? masterToggle() : null"
                           [checked]="selection.hasValue() && isAllSelected()"
@@ -64,167 +70,190 @@
             </mat-checkbox>
           </td>
         </ng-container> -->
-          <!-- Name Column -->
-          <ng-container matColumnDef="imeiNumber">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>IMEI Number</th>
-            <td mat-cell *matCellDef="let element"> {{element.imeiNumber }} </td>
-          </ng-container>
-        <!-- Name Column -->
-        <ng-container matColumnDef="callingNumber">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Calling Number </th>
-          <td mat-cell *matCellDef="let element"> {{element.callingNumber}} </td>
-        </ng-container>
+      <ng-container matColumnDef="callingNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Calling Number </th>
+        <td mat-cell *matCellDef="let element"> {{element.callingNumber}} </td>
+      </ng-container>
+      <ng-container matColumnDef="simProvider">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>SIM Provider</th>
+        <td mat-cell *matCellDef="let element"> {{element.simProvider}} </td>
+      </ng-container>
       
-        <!-- Weight Column -->
-        <ng-container matColumnDef="simProvider">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>SIM Provider</th>
-          <td mat-cell *matCellDef="let element"> {{element.simProvider}} </td>
-        </ng-container>
-  
-         <!-- Weight Column -->
-         <ng-container matColumnDef="purchaseDate">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Purchase Date </th>
-          <td mat-cell *matCellDef="let element"> {{element.purchaseDate | date:'MM/dd/yyyy'}} </td>
-        </ng-container>
+      <ng-container matColumnDef="iccdNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ICCD Number </th>
+        <td mat-cell *matCellDef="let element"> {{element.iccdNumber}} </td>
+      </ng-container>
+      <ng-container matColumnDef="purchaseDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Purchase Date </th>
+        <td mat-cell *matCellDef="let element"> {{element.purchaseDate | date:'MM/dd/yyyy'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="rechargeStartDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Recharge date</th>
+        <td mat-cell *matCellDef="let element"> {{element.rechargeStartDate | date:'MM/dd/yyyy'}} </td>
+      </ng-container>
       
-        <!-- Symbol Column -->
-        <ng-container matColumnDef="rechargeExpiryDate">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Recharge Expiry Date </th>
-          <td mat-cell *matCellDef="let element"> {{element.rechargeExpiryDate}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="iccdNumber">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>ICCD Provider</th>
-            <td mat-cell *matCellDef="let element"> {{element.iccdNumber}} </td>
-          </ng-container>
-        <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef> Actions </th>
-          <td mat-cell *matCellDef="let row" style="width:20%">
-            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-              <mat-icon>more_vert</mat-icon>
+      <ng-container matColumnDef="rechargeExpiryDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Expiry Date </th>
+        <td mat-cell *matCellDef="let element"> {{element.rechargeExpiryDate}} </td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let row" style="width:20%">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item title="View Contact" (click)="getCurrentSimCardDetail(row,exporter)"
+              *ngIf="'Sim Management' | isDisabledPipe : 'Sim Management update'">
+              <mat-icon>remove_red_eye</mat-icon>
+              <span>View</span>
             </button>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item  title="View Contact" (click)="getCurrentSimCardDetail(row,exporter)">
-                <mat-icon>remove_red_eye</mat-icon>
-                <span>View</span>
-              </button>
-              <button mat-menu-item (click)="deleteSimCard(row)">
-                <mat-icon>delete</mat-icon>
-                  <span>Delete</span>
-              </button>
-            </mat-menu>
-          </td>
-        </ng-container>
-        <ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-              (click)="selection.toggle(row)">
-          </tr>
-        </ng-container>
-      </table>
-      <div *ngIf="isLoading"  class="circle-spinner">
-        <mat-progress-spinner 
-          color="primary" [diameter]="50"
-          mode="indeterminate">
-        </mat-progress-spinner>
-      </div>
-      <tr *ngIf="!dataSource">
-        <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
-          No Records Found!
+            <button mat-menu-item (click)="deleteSimCard(row)"
+              *ngIf="'Sim Management' | isDisabledPipe : 'Sim Management delete'">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
         </td>
-      </tr>
-      
-   <ng-container *ngIf="simCardList.length>0">
-    <app-download-content [data]="simCardList" [exporterInstance]="exporter"></app-download-content>
- </ng-container> 
-      <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
-  
+      </ng-container>
+      <ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)">
+        </tr>
+      </ng-container>
+    </table>
+    <div *ngIf="isLoading" class="circle-spinner">
+      <mat-progress-spinner color="primary" [diameter]="50" mode="indeterminate">
+      </mat-progress-spinner>
     </div>
+    <tr *ngIf="!dataSource">
+      <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
+        No Records Found!
+      </td>
+    </tr>
+
+    <ng-container *ngIf="simCardList.length>0">
+      <app-download-content [data]="simCardList" [exporterInstance]="exporter"></app-download-content>
+    </ng-container>
+    <mat-paginator [pageSize]="100" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false"
+      aria-label="Select page of users"></mat-paginator>
+
   </div>
-  
-  
-  <!-- Add new driver form -->
-  
-  
-  <div class="form-dialog" id="addDriver"> 
-    <div class="closeDailog" (click)="toggleDialog($event)"></div>
-    <div class="form-container">
-      <div class="heading">
-        <p>Add New SIM</p>
-        <div class="float-right">
-            <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event)">Close</button>
-          <!-- <button class="btn btn-info">Save Driver</button> -->
-        </div>
+</div>
+
+
+<!-- Add new driver form -->
+
+
+<div class="form-dialog" id="addDriver">
+  <div class="closeDailog" (click)="toggleDialog($event)"></div>
+  <div class="form-container">
+    <div class="heading">
+      <p>Add New SIM</p>
+      <div class="float-right">
+        <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event)">Close</button>
+        <!-- <button class="btn btn-info">Save Driver</button> -->
       </div>
-      <form (ngSubmit)="addDriver(f)" #f="ngForm">
-        
-        <div class="form-group">
+    </div>
+    <form #f="ngForm">
+
+      <!-- <div class="form-group">
           <label>IMEI Number</label>
           <input type="text" class="form-control" name="imeiNumber" [(ngModel)]="simCartAddModel.imeiNumber" #imeiNumber="ngModel" 
               placeholder="Enter IMEI Number" [ngClass]="{ 'is-invalid': f.submitted && imeiNumber.invalid }" required autofocus/>
             <div *ngIf="f.submitted && imeiNumber.invalid" class="invalid-feedback">
                 <div *ngIf="imeiNumber.errors.required">IMEI Number is required</div>
             </div>
+        </div> -->
+        <div class="form-group">
+          <label>Select Company</label>
+          <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission">
+            <mat-label>Select Company</mat-label>
+            <mat-select disableOptionCentering name="contactMethod" id="contactMethod"
+              [(ngModel)]="simCartAddModel.company" #company="ngModel"
+              [ngClass]="{ 'is-invalid': f.submitted && company.invalid }" required>
+              <input class="example-input" placeholder="search " (keyup)="search($event.target.value,'company')">
+              <mat-option *ngFor="let company of companyList" [value]="company">{{ company.companyName }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="f.submitted && company.invalid">
+              <div *ngIf="company.errors.required">Company is required</div>
+            </mat-error>
+          </mat-form-field>
         </div>
-        <div class="form-group">
-            <label>ICCD Number</label>
-            <input type="text" class="form-control" name="iccdNumber" [(ngModel)]="simCartAddModel.iccdNumber" #iccdNumber="ngModel" 
-                placeholder="Enter ICCD Number" [ngClass]="{ 'is-invalid': f.submitted && iccdNumber.invalid }" required autofocus/>
-              <div *ngIf="f.submitted && iccdNumber.invalid" class="invalid-feedback">
-                  <div *ngIf="iccdNumber.errors.required">ICCD Number is required</div>
-              </div>
-          </div>
-        <div class="form-group">
-          <label>SIM Number</label>
-          <input type="text" class="form-control" name="callingNumber" [(ngModel)]="simCartAddModel.callingNumber" #callingNumber="ngModel" 
-          placeholder="Enter Calling Number" [ngClass]="{ 'is-invalid': f.submitted && callingNumber.invalid }" required autofocus/>
-          <div *ngIf="f.submitted && callingNumber.invalid" class="invalid-feedback">
-              <div *ngIf="callingNumber.errors.required">Calling Number is required</div>
-          </div>
+      <div class="form-group">
+        <label>Calling number</label>
+        <input type="text" class="form-control" name="callingNumber" [(ngModel)]="simCartAddModel.callingNumber"
+          #callingNumber="ngModel" placeholder="Enter Calling Number"
+          [ngClass]="{ 'is-invalid': f.submitted && callingNumber.invalid }" required autofocus />
+        <div *ngIf="f.submitted && callingNumber.invalid" class="invalid-feedback">
+          <div *ngIf="callingNumber.errors.required">Calling Number is required</div>
         </div>
-        <div class="form-group">
-          <label>SIM Provider</label>
-          <input type="email" name="simProvider"  class="form-control form-control-lg" placeholder="Enter Sim Provider"
-          [(ngModel)]="simCartAddModel.simProvider" #simProvider="ngModel">                
-          <!-- <div *ngIf="f.submitted && simProvider.invalid" class="invalid-feedback">
-              <div *ngIf="simProvider.errors.required">SIM Provider is required</div>
-          </div> -->
-        </div>
-        <div class="form-group">
-          <label>Purchase Date</label>
-          <input type="date" name="joinedDate" [max]="userService.getToday()" class="form-control form-control-lg date-picker-position" placeholder="Enter Purchase Date"
-          [(ngModel)]="simCartAddModel.purchaseDate" #purchaseDate="ngModel" >                
-          <!-- <div *ngIf="f.submitted && purchaseDate.invalid" class="invalid-feedback">
+      </div>
+      <div class="form-group">
+        <label>SIM Provider</label>
+        <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission">
+          <mat-label>Select SIM Provider</mat-label>
+          <mat-select disableOptionCentering name="contactMethod" id="contactMethod"
+            [(ngModel)]="simCartAddModel.simProvider" #simProvider="ngModel"
+            [ngClass]="{ 'is-invalid': f.submitted && simProvider.invalid }" required>
+            <input class="example-input" placeholder="search " (keyup)="search($event.target.value,'sim')">
+            <mat-option *ngFor="let sim of simProviderList" [value]="sim.simProvider">{{ sim.simProvider }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="f.submitted && simProvider.invalid">
+            <div *ngIf="simProvider.errors.required">SIM Provider is required</div>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="form-group">
+        <label>ICCD Number</label>
+        <input type="text" class="form-control" name="iccdNumber" [(ngModel)]="simCartAddModel.iccdNumber"
+          #iccdNumber="ngModel" placeholder="Enter ICCD Number" />
+        <!-- <div *ngIf="f.submitted && iccdNumber.invalid" class="invalid-feedback">
+          <div *ngIf="iccdNumber.errors.required">ICCD Number is required</div>
+        </div> -->
+      </div>
+    
+      <div class="form-group">
+        <label>Purchase Date</label>
+        <input type="date" name="joinedDate" [max]="userService.getToday()"
+          class="form-control form-control-lg date-picker-position" placeholder="Enter Purchase Date"
+          [(ngModel)]="simCartAddModel.purchaseDate" #purchaseDate="ngModel">
+        <!-- <div *ngIf="f.submitted && purchaseDate.invalid" class="invalid-feedback">
               <div *ngIf="purchaseDate.errors.required">Purchase Date is required</div>
           </div> -->
-        </div>
-        <div class="form-group">
-            <label>Recharge Start Date</label>
-            <input type="date" name="rechargeStartDate" [max]="userService.getToday()" class="form-control form-control-lg date-picker-position" placeholder="Enter Recharge Start  Date"
-            [(ngModel)]="simCartAddModel.rechargeStartDate" #rechargeStartDate="ngModel">                
-            <!-- <div *ngIf="f.submitted && rechargeStartDate.invalid" class="invalid-feedback">
+      </div>
+      <div class="form-group">
+        <label>Recharge Start Date</label>
+        <input type="date" name="rechargeStartDate" [max]="userService.getToday()"
+          class="form-control form-control-lg date-picker-position" placeholder="Enter Recharge Start  Date"
+          [(ngModel)]="simCartAddModel.rechargeStartDate" #rechargeStartDate="ngModel">
+        <!-- <div *ngIf="f.submitted && rechargeStartDate.invalid" class="invalid-feedback">
                 <div *ngIf="rechargeStartDate.errors.required">Recharge Start Date is required</div>
             </div> -->
-          </div>
-          <div class="form-group">
-            <label>Recharge Expiry Date</label>
-            <input type="date" name="rechargeExpiryDate" [max]="userService.getToday()"  class="form-control form-control-lg date-picker-position" placeholder="Enter Expiry Date"
-            [(ngModel)]="simCartAddModel.rechargeExpiryDate" #rechargeExpiryDate="ngModel">                
-            <!-- <div *ngIf="f.submitted && rechargeExpiryDate.invalid" class="invalid-feedback">
+      </div>
+      <div class="form-group">
+        <label>Recharge Expiry Date</label>
+        <input type="date" name="rechargeExpiryDate" class="form-control form-control-lg date-picker-position"
+          placeholder="Enter Expiry Date" [(ngModel)]="simCartAddModel.rechargeExpiryDate"
+          #rechargeExpiryDate="ngModel">
+        <!-- <div *ngIf="f.submitted && rechargeExpiryDate.invalid" class="invalid-feedback">
                 <div *ngIf="rechargeExpiryDate.errors.required">Recharge Expiry Date is required</div>
             </div> -->
-          </div>
-          <div class="form-group">
-            <label>Active</label>
-            <input type="checkbox" name="isActive"  class="form-check"  [(ngModel)]="simCartAddModel.isActive">
-          </div>
-        <div class="form-group form-control-footer">
-          <button class="btn btn-outline-info btn-custom"  (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
-          <button class="btn  btn-outline-info btn-custom"  type="reset" (click)="f.reset()">Reset</button>
-          <div>
-            <button class="btn btn-info button-size">Save SIM</button>
-          </div>
+      </div>
+      <div class="form-group">
+        <label>Active</label>
+        <input type="checkbox" name="isActive" class="form-check" [(ngModel)]="simCartAddModel.isActive">
+      </div>
+      <div class="form-group form-control-footer">
+        <button class="btn btn-outline-info btn-custom" type="reset"
+          (click)="toggleDialog($event);f.reset()">Cancel</button>&nbsp;&nbsp;
+        <button class="btn  btn-outline-info btn-custom" type="reset" (click)="f.reset()">Reset</button>
+        <div>
+          <button class="btn btn-info button-size" (click)="addDriver(f)">Save SIM</button>
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
+</div>

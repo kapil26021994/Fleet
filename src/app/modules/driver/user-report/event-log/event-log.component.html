@@ -80,31 +80,20 @@
               </form>
         </div>
       </div>
-      <div class="table-filter-options row">
+      <div class="table-filter-options row" style="margin-left: -41px">
         <section class="example-section" >
             <span class="checkbox-container" >
-               <mat-checkbox color="primary" #checkbox  class="example-margin">
-                   <div class="checkbox-report-margint">Stopage</div>
-               </mat-checkbox>
-               <input class="form-control input-report-wrapper" type="tel" [(ngModel)]="reportAdd.stoppage">&nbsp;
-               <mat-checkbox color="primary" #checkbox  class="example-margin">
-                <div class="checkbox-report-margint">Timer Interval</div>
-                </mat-checkbox>
-                <input class="form-control input-report-wrapper" type="tel" [(ngModel)]="reportAdd.interval">&nbsp;
-                <mat-checkbox color="primary" #checkbox  class="example-margin">
-                  <div class="checkbox-report-margint">Over Speed</div>
-                </mat-checkbox>
-                  <input class="form-control input-report-wrapper" type="tel" [(ngModel)]="reportAdd.overSpeed">(KMPH)&nbsp;
-                <mat-checkbox color="primary" #checkbox  class="example-margin">
+               <input class="form-control input-report-wrapper" type="tel" [(ngModel)]="reportAdd.stoppage" placeholder="Stoppage">&nbsp;
+               <div class="checkbox-report-margint">Stoppage</div>
+               <input class="form-control input-report-wrapper" type="tel" [(ngModel)]="reportAdd.interval" placeholder="Time interval">&nbsp;
+               <div class="checkbox-report-margint">Timer Interval</div>
+                <input class="form-control input-report-wrapper" type="tel" [(ngModel)]="reportAdd.overSpeed"
+                placeholder="OverSpeed">&nbsp;
+                <div class="checkbox-report-margint">Over Speed</div>
+                  <input class="form-control input-report-wrapper" type="tel" [(ngModel)]="reportAdd.gradeLocation" placeholder="Location">&nbsp;
                   <div class="checkbox-report-margint">Location</div>
-                </mat-checkbox>
-                <input class="form-control input-report-wrapper" type="tel" [(ngModel)]="reportAdd.gradeLocation">(Grade)&nbsp;
-                <mat-checkbox color="primary" #checkbox  class="example-margin">
-                  <div class="checkbox-report-margint">Site</div>
-                </mat-checkbox>&nbsp;
-                <!-- <mat-checkbox color="primary" #checkbox  class="example-margin">
-                  <div class="checkbox-report-margint">Not Rechable</div>
-                </mat-checkbox> -->
+                <input class="form-control input-report-wrapper" type="tel" [(ngModel)]="reportAdd.type" placeholder="Type">&nbsp;
+                <div class="checkbox-report-margint">Site</div>
             </span>
          </section>
         </div>
@@ -162,6 +151,6 @@
           No Records Found!
         </td>
       </tr>
-      <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
+      <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100,500]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
     </div>
   </div>

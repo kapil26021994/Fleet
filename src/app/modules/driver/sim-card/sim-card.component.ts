@@ -21,7 +21,7 @@ import {MatDialog} from '@angular/material/dialog';
 })
 export class SimCardComponent implements OnInit {
 
-  displayedColumns: any[] = ['imeiNumber','callingNumber', 'simProvider', 'purchaseDate','rechargeExpiryDate','iccdNumber','action'];
+  displayedColumns: any[] = ['callingNumber', 'simProvider','iccdNumber', 'purchaseDate','rechargeStartDate','rechargeExpiryDate','action'];
   dataSource: MatTableDataSource<any>;
   selection = new SelectionModel(true, []);
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -39,6 +39,9 @@ export class SimCardComponent implements OnInit {
   public companyList = [];
   public currentDate = new Date();
   public simCardFormData:any;
+  public simProviderCloneList =[];
+  public companyCloneList =[];
+  public simProviderList =[];
    filteredValues =  {simName:'',callingNumber:[], imeiNumber:[],imei:'',number:'',companyName:''};
 
   // form group
@@ -63,17 +66,22 @@ export class SimCardComponent implements OnInit {
     public dataShare:DataSharingService, public authService:AuthenticationService,public router:Router,public dialog:MatDialog,) { }
 
   ngOnInit() {
-    this.getAllSimCardList()
+    this.companyList = this.userService.getCompanyList();
+    this.companyCloneList  = this.companyList;
+    this.getAllSimCardList();
+    this.getAllProviderList();
   }
 
 
-  
+
     /*
     Author:Kapil Soni
     Funcion:getAllVehicleList
     Summary:getAllVehicleList for get vehicle list
     Return list
   */
+    public callingNumberCloneList =[];
+    public imeiNumberCloneList =[];
     getAllSimCardList() {
       this.simCartAddModel.isActive = true;
       this.isLoading = true;
@@ -85,6 +93,8 @@ export class SimCardComponent implements OnInit {
           this.dataSource.sort = this.sort;
           this.callingNumberList = this.dataSource.filteredData.map(x=>x.callingNumber);
           this.imeiNumberList = this.dataSource.filteredData.map(x=>x.imeiNumber);
+          this.callingNumberCloneList = this.callingNumberList;
+          this.imeiNumberCloneList = this.imeiNumberList;
            this.isLoading = false;
 
           //inistialze the fitlers
@@ -128,7 +138,7 @@ export class SimCardComponent implements OnInit {
     */
       getCurrentSimCardDetail(detail:any,exporter){
         this.dataShare.updatedData.next(exporter);  
-        this.router.navigate(['/user/sim/detail'], <any>{state: {data: detail}});
+        this.router.navigate(['/user/sim/detail'], <any>{state: {data: detail,providerList:this.simProviderList}});
       }
 
       /*
@@ -181,21 +191,24 @@ export class SimCardComponent implements OnInit {
             this.simCartAddModel.isActive='inActive';
           }
           this.isLoadingData = true;
+
           this.userService.storeDataToDb(<any>this.simCartAddModel,'saveSimCard').subscribe((data:any)=>{
             if(data.message){
               this.isLoadingData = false;
               form.resetForm();
                 form.reset();
+                this.authService.successToast(data.message)
   
                 //dismiss dlalog and get all list
                 this.toggleDialog('');
                 this.getAllSimCardList();
             } else{
+              this.authService.errorToast(data.message)
               this.isLoadingData = false;
             }
           },  error => {
             this.isLoadingData = false;
-            this.authService.errorToast(error.error.message);
+            this.authService.errorToast(error.error.message)
           })
         }
       }
@@ -273,7 +286,7 @@ export class SimCardComponent implements OnInit {
             isPositionAvailable && isCallingNumber  &&
             (data.simProvider.toString().trim().toLowerCase().indexOf(searchString.simName != null ? searchString.simName.toLowerCase(): '') !== -1 ||
             data.callingNumber.toString().trim().toLowerCase().indexOf(searchString.number != null ? searchString.number.toLowerCase(): '') !== -1 ||
-            data.imeiNumber.toString().trim().toLowerCase().indexOf(searchString.imei != null ? searchString.imei.toLowerCase(): '') !== -1);
+            data.iccdNumber.toString().trim().toLowerCase().indexOf(searchString.imei != null ? searchString.imei.toLowerCase(): '') !== -1);
           return resultValue;
         };
         this.dataSource.filter = JSON.stringify(this.filteredValues);
@@ -283,4 +296,29 @@ export class SimCardComponent implements OnInit {
       this.getAllSimCardList();
       this.userService.resetFilter(this.simCardForm);
     }
+
+    getAllProviderList(){
+      this.userService.getDataByUrl('showAllSimProvider').subscribe((data:any)=>{
+        if(data.length>0){
+          this.simProviderList = data;
+          this.simProviderCloneList = this.simProviderList;
+        }
+      })
+    }
+
+    search(value: string,key) {
+      let filter = value.toLowerCase();
+      if(key == 'number'){
+        let list = this.callingNumberCloneList.filter(item => item.toLowerCase().search(filter) > -1);
+        return this.callingNumberList= list;
+      }else if(key == 'company'){
+        let list = this.companyCloneList.filter(item => item.companyName.toLowerCase().search(filter) > -1);
+        return this.companyList= list;
+      }else{
+        let list = this.simProviderCloneList.filter(item => item.simProvider.toLowerCase().search(filter) > -1);
+        return this.simProviderList= list;
+      }
+    }
+
+ 
 }

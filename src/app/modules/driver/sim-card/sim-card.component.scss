@@ -5,10 +5,6 @@
   width: 100%;
 }
 
-.example-full-width {
-  width: 100%;
-}
-
 select.form-control {
   outline: 1px solid #979797 !important;
     color: #000000 !important; 
@@ -33,13 +29,17 @@ select.form-control {
 
 .form-group{
   margin-left:-16px !important;
-}
-
-.invalid-feedback{
-position: absolute !important;
-margin: 39px 0px 0px 120px !important;
-}
-
-.form-group{
   margin-bottom: 18px !important;
+}
+
+.field-wrapper{
+  margin: 18px 2px 2px 7px;
+  width: 350px;
+  font-size: 13px;
+}
+
+.app-permission  {
+  margin: -5px -5px -1px 30px !important;
+  width: 139% !important;
+  font-size: 12px !important;
 }

@@ -44,7 +44,7 @@
         <td mat-cell *matCellDef="let element" > <span *ngIf="element.name">{{element.name}}</span> </td>
       </ng-container>
       <ng-container matColumnDef="item">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header  style="width:58% !important;">Permissions </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header  style="width:70% !important;">Permissions </th>
         <td mat-cell *matCellDef="let element" > 
           <span *ngIf="element.items">
             <mat-chip-list aria-label="Fish selection">
@@ -91,7 +91,7 @@
     <!-- <ng-container *ngIf="userList.length>0">
       <app-download-content [data]="userList" [exporterInstance]="exporter"></app-download-content>
    </ng-container>  -->
-    <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100,500,1000,2000,5000]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
+    <mat-paginator  [pageSize]="100" [pageSizeOptions]="[5, 10, 25, 100,500,1000,2000,5000]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
   </div>
 </div>
 
@@ -120,15 +120,24 @@
         </mat-form-field>
       </div>
       <div class="form-group" *ngIf="permissionList">
-        <span class="checkbox-container" *ngFor="let permission of permissionList">
+        <section class="example-section" >
+          <span class="permission-container">
+             <mat-checkbox color="primary" #checkbox *ngFor="let permission of permissionList" class="example-margin" 
+             (change)="addOrRemoveNewPermission(checkbox.checked,permission)"
+             [checked]="checkPermissionAddedOrNot(permission)">
+               <span class="permission-container-lable">{{permission}}</span>
+             </mat-checkbox>
+           </span>
+       </section>
+        <!-- <span class="checkbox-container" *ngFor="let permission of permissionList">
           <label class = "checkbox-inline">
             {{permission}} <input type="checkbox" [value]="permission" [name]="permission" (change)="addOrRemoveNewPermission($event.currentTarget.checked,permission)"
             [checked]="checkPermissionAddedOrNot(permission)">
           </label>
-        </span>
+        </span> -->
       </div>
       <div class="form-group form-control-footer margin-top: 176px;">
-        <button class="btn btn-outline-info btn-custom"  (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
+        <button class="btn btn-outline-info btn-custom"  type="reset"  (click)="toggleDialog($event);f.reset()">Cancel</button>&nbsp;&nbsp;
         <button class="btn  btn-outline-info btn-custom"  type="reset" (click)="f.reset()">Reset</button>
         <div>
           <button class="btn btn-info button-size" [disabled]="isLoadingData" (click)="addVehicle(f)">

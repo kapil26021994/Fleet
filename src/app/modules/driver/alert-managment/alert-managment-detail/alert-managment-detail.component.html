@@ -1,7 +1,7 @@
 
 <div class="navigation">
-    <a  routerLink="/user/alert"><span><i class="mdi mdi-keyboard-backspace"></i>Alert Management</span></a>
-    <span routerLink="/user/alert"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
+    <a  routerLink="/user/alert"><span class="navigation-back"><i class="mdi mdi-keyboard-backspace"></i>Alert Management</span></a>
+    <span routerLink="/user/alert" class="navigation-back"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
     <span></span>
 </div>
 <div class="page-header">
@@ -30,8 +30,10 @@
               <label>Select Company</label>
               <span>:</span>
               <mat-form-field fxFlex="40" class="field-wrapper app-permission" >
-                <mat-select [disabled]="!isEdit" name="contactMethod"  id="contactMethod"  [(ngModel)]="currentUserDetail.company.companyName">
-                  <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
+                <mat-select [disabled]="!isEdit" name="contactMethod"  id="contactMethod"  [(ngModel)]="currentUserDetail.company.companyName"
+                (ngModelChange)="updateCompany($event)">
+                <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)">  
+                <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>

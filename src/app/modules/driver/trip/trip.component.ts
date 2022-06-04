@@ -23,7 +23,7 @@ declare var google;
   styleUrls: ['./trip.component.scss']
 })
 export class TripComponent implements OnInit {
-  displayedColumns: string[] = ['select', 'createDateTime', 'tripName', 'driverName','vehicleNumber','active','action'];
+  displayedColumns: string[] = ['createDateTime', 'tripName', 'driverName','vehicleNumber','active','action'];
   dataSource = new MatTableDataSource<any>();
   selection = new SelectionModel(true, []);
   @ViewChild(MatSort) sort: MatSort;
@@ -129,6 +129,7 @@ export class TripComponent implements OnInit {
       zoom:5,
       streetViewControl: false,
       fullscreenControl: true,
+      gestureHandling: 'greedy',
       draggable : true,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
@@ -190,15 +191,14 @@ export class TripComponent implements OnInit {
             console.log(this.tripAddModel);
             this.userService.storeDataToDb(<any>this.tripAddModel,'saveTrip').subscribe((data:any)=>{
               if(data.message){
-          
                 this.isLoading = false;
-                  form.resetForm();
-                  form.reset();
-                  this.resetDirectionalLine();
+                form.resetForm();
+                form.reset();
+                this.resetDirectionalLine();
 
-                  //dismiss dlalog and get all list
-                  this.toggleDialog();
-                  this.getAllPlacesList();
+                //dismiss dlalog and get all list
+                this.toggleDialog();
+                this.getAllPlacesList();
               } else{
                 this.isLoading = false;
               }
@@ -215,10 +215,12 @@ export class TripComponent implements OnInit {
     Summary:getAllVehicleList for get vehicle list
     Return list
   */
+ public vehiclecloneList =[];
     getDriverAndVehicleList() {
       this.userService.getMulipleAPIData().subscribe((data:any)=>{
         if(data.length>0){
           this.vehicleList = data[0];
+          this.vehiclecloneList = this.vehicleList;
           this.driverList = data[1];
         } else{
           this.isLoading = false;
@@ -254,7 +256,6 @@ export class TripComponent implements OnInit {
             self.startPointLocation=autocomplete.getPlace().formatted_address;
             self.tripAddModel.startPoint =self.startPointLocation;
 
-
             self.tripAddModel.tripLatLong.push({
               "stop_address":'start',
               "address": self.startPointLocation,
@@ -289,29 +290,13 @@ export class TripComponent implements OnInit {
         });
       }
 
-          /*
-      Author:Kapil Soni
-      Funcion:resetData
-      Summary:resetData for reset Data
-      Return list
-    */
-      resetData(){
-        this.resetDirectionalLine();
-        this.resetAllMarkerData();
-        this.mapMarkerList=[];
-        if(this.tripForm){
-          this.tripForm.resetForm();
-          this.tripForm.reset();
-          this.tripListForm.reset();
-        }
-        this.submitted ? this.getAllPlacesList() : '';
-      }
-
+   
 
       drwaLineBetweenLocation(){
         var self = this;
         var directionsService = new google.maps.DirectionsService();
         self.directionsDisplay = new google.maps.DirectionsRenderer();
+  
         self.directionsDisplay.setOptions();
           var myOptions = {
             mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -347,14 +332,34 @@ export class TripComponent implements OnInit {
         }
        }
 
-       removeSelectedLocation(location){
-        let index = this.tripAddModel.tripLatLong.findIndex(x=>x.address == location.address);
-        if(index != -1){
-          this.tripAddModel.tripLatLong.splice(index,1);
-          this.selectedAddressList.splice(index,1);
-          this.drwaLineBetweenLocation();
-        }
-       }
+
+      /*
+      Author:Kapil Soni
+      Funcion:resetData
+      Summary:resetData for reset Data
+      Return list
+    */
+    resetData(){
+      this.loadGoogleMap();
+      this.resetDirectionalLine();
+      this.resetAllMarkerData();
+      this.mapMarkerList=[];
+      if(this.tripForm){
+        this.tripForm.resetForm();
+        this.tripForm.reset();
+        this.tripListForm.reset();
+      }
+      this.submitted ? this.getAllPlacesList() : '';
+    }
+
+    removeSelectedLocation(location){
+      let index = this.tripAddModel.tripLatLong.findIndex(x=>x.address == location.address);
+      if(index != -1){
+        this.tripAddModel.tripLatLong.splice(index,1);
+        this.selectedAddressList.splice(index,1);
+        this.drwaLineBetweenLocation();
+      }
+    }
 
          /*
           Author:Kapil Soni
@@ -406,42 +411,10 @@ export class TripComponent implements OnInit {
       if(this.directionsDisplay != null) {
         this.directionsDisplay.setMap(null);
         this.directionsDisplay = null;
+        this.startPointLocation= '';
+        this.endPointLocation= '';
       }
     }
-
-    // makeMarker(position, icon, title, map) {
-    // var marker :any;
-    //   if(this.dynamicallyWaypoints.length > 0){
-    //      marker   = new google.maps.Marker({
-    //       position:position,
-    //       map:map,
-    //     })
-    //   }else{
-    //     marker =  new google.maps.Marker({
-    //       position: position,
-    //       map: map,
-    //       icon: icon,
-    //       title: title
-    //     });
-    //   }
-    //   this.mapMarkerList.push(marker);
-    //     marker.addListener("click", () => {
-    //     map.setCenter(marker.getPosition());
-
-    //     var geocoder = geocoder = new google.maps.Geocoder();
-    //     var latlng = new google.maps.LatLng(marker.getPosition().lat(), marker.getPosition().lng());
-    //     geocoder.geocode({ 'latLng': latlng }, function (results, status) {
-    //         if (status == google.maps.GeocoderStatus.OK) {
-    //             if (results[1]) {
-    //                 var infowindow = new google.maps.InfoWindow();
-    //                 infowindow.setContent( results[1].formatted_address);
-    //                 infowindow.open( results[1].formatted_address, marker);
-    //             }
-    //         }
-    //     });
-    //   });
-    // }
-
 
     formSubscribe() {
       this.driverTripName.valueChanges.subscribe((positionValue) => {
@@ -472,11 +445,11 @@ export class TripComponent implements OnInit {
     Summary:updateDrwaingType for update type
     Return list
   */
+ public selectedPolylineLatLngList =[];
   updateDrwaingType(){
     this.deleteAllShape();
     this.deleteSelectedShape();
     const drawingManager = new google.maps.drawing.DrawingManager({
-      drawingMode: google.maps.drawing.OverlayType.MARKER,
       drawingControl: true,
       drawingControlOptions: {
         position: google.maps.ControlPosition.TOP_CENTER,
@@ -523,32 +496,41 @@ export class TripComponent implements OnInit {
       if(event.type == 'polygon') {
         const coords = event.overlay.getPath().getArray();
         for(var i=0;i<coords.length;i++){
-          self.selectedLatLngList.push({ 
-            "tripGeofanceLat": coords[i].lat(),
-            "tripGeofenceLng": coords[i].lng()
-          })
+          const matched = self.selectedLatLngList.find(x=>x.tripGeofanceLat == coords[i].lat() && x.tripGeofenceLng == coords[i].lng());
+          if(matched == undefined){
+            self.selectedLatLngList.push({ 
+              "tripGeofanceLat": coords[i].lat(),
+              "tripGeofenceLng": coords[i].lng()
+            })
+          }
         }
         self.tripAddModel.tripGeofence.push({
           "type":event.type,
           "radius": '',
           "data": self.selectedLatLngList
         })
+        self.selectedLatLngList =[];
       }
 
       if(event.type == 'polyline') {
         const coords = event.overlay.getPath().getArray();
         for(var i=0;i<coords.length;i++){
-          self.selectedLatLngList.push({ 
-            "tripGeofanceLat": coords[i].lat(),
-            "tripGeofenceLng": coords[i].lng()
-          })
+          const matched = self.selectedPolylineLatLngList.find(x=>x.tripGeofanceLat == coords[i].lat() && x.tripGeofenceLng == coords[i].lng());
+          if(matched == undefined){
+            self.selectedPolylineLatLngList.push({ 
+              "tripGeofanceLat": coords[i].lat(),
+              "tripGeofenceLng": coords[i].lng()
+            })
+          }
         }
         self.tripAddModel.tripGeofence.push({
           "type":'polyline',
           "radius": '',
-          "data": self.selectedLatLngList
+          "data": self.selectedPolylineLatLngList
         })
+        self.selectedPolylineLatLngList=[];
       }
+      console.log(self.tripAddModel.tripGeofence);  
     });
   }
 
@@ -578,6 +560,19 @@ export class TripComponent implements OnInit {
   }
 
   addLocation(){
+   this.submitted = false;
+    this.tripAddModel.addNewLocation = '';
      this.drwaLineBetweenLocation();
+  }
+
+  getSelectedDate(value){
+    const now = new Date(this.tripAddModel.startDate).toISOString().slice(0, 16);
+    (<any>document.getElementById("endDateLocal")).min = now;
+  }
+
+  search(value: any) { 
+    let filter = value.toLowerCase();
+   let list = <any>this.vehiclecloneList.filter(option => option.vehicleNumber.toLowerCase().startsWith(filter));
+    return this.vehicleList= list;
   }
 }

@@ -30,6 +30,7 @@ export class UserManagmentDetailComponent implements OnInit {
   public isUpdatePermission = false;
   public totalPermissionList =[];
   public isDefaultDataLoad = false;
+  public companyCloneList =[];
   constructor(
       public userService:UserService,
       public authService:AuthenticationService,
@@ -47,11 +48,14 @@ export class UserManagmentDetailComponent implements OnInit {
    var list =[];
    this.isDefaultDataLoad = true;
     this.companyList =  JSON.parse(localStorage.getItem('companyList'));
+    this.companyCloneList = this.companyList;
     if(history.state.data){
       this.currentUserDetail = history.state.data;
       this.currentUserDetail.groupName=this.currentUserDetail.assignGroup.groupName
       this.modelGroup = this.currentUserDetail.addPermissions;
       this.data  = [history.state.data];
+      //getGroupListByCompanyId get groupList...
+      this.getGroupListByCompanyId('');
       this.groupList = history.state.groupList;
       localStorage.setItem('currentPageData',JSON.stringify(history.state.data))
      
@@ -98,6 +102,11 @@ export class UserManagmentDetailComponent implements OnInit {
         this.currentUserDetail.isActive='active';
       }else{
         this.currentUserDetail.isActive='inActive';
+      }
+      //check company name in array...
+      let matchedCompany = this.companyList.find(x=>x.companyName == this.currentUserDetail.company.companyName);
+      if(matchedCompany){
+        this.currentUserDetail.company = matchedCompany;
       }
       this.userService.updateData(this.currentUserDetail ,'subUser/updatesubUserInfo').subscribe((data:any)=>{
         if(data.message){
@@ -202,9 +211,13 @@ export class UserManagmentDetailComponent implements OnInit {
         }
       }else{
         let matched =this.selectedPermissionList.find(x=>x.name == event.source.group.label);
+        let permssionIndex = this.selectedPermissionList.findIndex(x=>x.name == event.source.group.label);
         if(matched){
           let index = matched.items.findIndex(x=>x.value == value);
           matched.items.splice(index,1);
+          if(matched.items.length == 0){
+            this.selectedPermissionList.splice(permssionIndex,1);
+          }
         }
   
         let matchedcloneData =this.selectedPermissionCloneList.find(x=>x.name == event.source.group.label);
@@ -262,4 +275,32 @@ export class UserManagmentDetailComponent implements OnInit {
         }
       });
     }
+
+    getGroupListByCompanyId(value){
+      var companyData:any;
+      if(value == '' || value == undefined){
+        companyData= this.currentUserDetail.company.id
+      }else{
+        let data= this.companyList.find(x=>x.companyName == value);
+        companyData =data.id;
+      }
+      if(this.currentUserDetail.groupName){
+        this.userService.getDataByUrl('showUserGroupByCompanyId/'+companyData).subscribe((data:any)=>{
+          if(data.length>0){
+            this.groupList = data;
+          }else{
+            this.groupList=[];
+          }
+        }, error => {
+          this.authService.errorToast(error.message);
+        })
+      }
+    }
+
+    search(value: string) { 
+      let filter = value.toLowerCase();
+     let list = this.companyCloneList.filter(option => option.companyName.toLowerCase().startsWith(filter));
+      return this.companyList= list;
+    }
+  
 }

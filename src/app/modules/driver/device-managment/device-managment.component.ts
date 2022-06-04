@@ -21,7 +21,7 @@ import {MatDialog} from '@angular/material/dialog';
 })
 export class DeviceManagmentComponent implements OnInit {
 
-  displayedColumns: any[] = ['select', 'deviceName','assignedSim','isActive','deviceType','issueDate','activationDate','action'];
+  displayedColumns: any[] = ['deviceName','deviceImei','callingNumber','deviceType','issueDate','activationDate','isActive','action'];
   dataSource: MatTableDataSource<any>;
   selection = new SelectionModel(true, []);
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -37,8 +37,11 @@ export class DeviceManagmentComponent implements OnInit {
   public simCardList = [];
   public deviceTypeList = [];
   public companyList = [];
-  statusList :string[]=["Active","InActive"];
-  filteredValues =  {deviceName:'',deviceType:[],isActive:[],device:'',sim:''};
+  public selectedSimCard :any;
+  statusList :string[]=["active","inActive"];
+  public simCardCloneList =[];
+  public companyCloneList =[];
+  filteredValues =  {deviceName:'',deviceType:[],isActive:[],device:'',sim:'',callingNumber:''};
 
   // form group
   deviceForm = new FormGroup({
@@ -62,7 +65,9 @@ export class DeviceManagmentComponent implements OnInit {
     public dialog:MatDialog,public authService:AuthenticationService,public router:Router,public dataShare :DataSharingService) { }
 
   ngOnInit() {
+    this.deviceManagmentAddModel.activationDate = this.userService.getDefaultDateSelected();
     this.getAllDeviceList();
+    this.getDeviceTypeList();
     this.getAllMultpleDataViaURL();
   }
   
@@ -72,11 +77,13 @@ export class DeviceManagmentComponent implements OnInit {
     Summary:getAllVehicleList for get vehicle list
     Return list
   */
+ public deviceTypeCloneList =[];
     getAllDeviceList() {
       this.isLoading = true;
       this.userService.getDataByUrl('showAllDeviceData').subscribe((data:any)=>{
         if(data.length>0){
           this.deviceManagmentList = data;
+          this.deviceManagmentAddModel.isActive = true;
           this.dataSource = new MatTableDataSource(this.deviceManagmentList);
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
@@ -84,7 +91,8 @@ export class DeviceManagmentComponent implements OnInit {
          //get filter function...
          this.formSubscribe();
          this.getFormsValue();
-         this.deviceTypeList = this.dataSource.filteredData.map(x=>x.deviceType);
+        //  this.deviceTypeList = this.dataSource.filteredData.map(x=>x.deviceType);
+        //  this.deviceTypeCloneList = this.deviceTypeList;
         } else{
           this.isLoading = false;
         }
@@ -94,11 +102,18 @@ export class DeviceManagmentComponent implements OnInit {
       })
     }
 
-    
+    getDeviceTypeList(){
+      this.userService.getDataByUrl('showAllDeviceType').subscribe((data:any)=>{
+        if(data.length>0){
+          this.deviceTypeList = data
+          this.deviceTypeCloneList = this.deviceTypeList;
+        }
+      })
+    } 
+
   toggleDialog(event) {
     document.getElementById('addDriver').classList.toggle('show-dailog');
     this.resetData();
-    this.getAllSimList();
   }
 
      /*
@@ -123,7 +138,7 @@ export class DeviceManagmentComponent implements OnInit {
     */
       getCurrentSimCardDetail(detail:any,exporter){
         this.dataShare.updatedData.next(exporter); 
-        this.router.navigate(['/user/device/detail'], <any>{state: {data: detail}});
+        this.router.navigate(['/user/device/detail'], <any>{state: {data: detail,device:this.deviceManagmentList}});
       }
 
       /*
@@ -178,10 +193,20 @@ export class DeviceManagmentComponent implements OnInit {
         if(data){
           this.deviceManagmentAddModel.company=data;
         }
+
+        //check sim card exist or not..
+        let simCardData =  this.simCardList.find(x=>x.simProvider == this.selectedSimCard);
+        if(simCardData){
+          this.deviceManagmentAddModel.sim = simCardData;
+        }else{
+          this.deviceManagmentAddModel.sim  = null;
+        }
+
         if(form.form.valid){
           this.isLoadingData = true;
           this.userService.storeDataToDb(<any>this.deviceManagmentAddModel,'saveDevice').subscribe((data:any)=>{
             if(data.message){
+              this.authService.successToast(data.message);
               this.isLoadingData = false;
               form.resetForm();
                 form.reset();
@@ -233,23 +258,35 @@ export class DeviceManagmentComponent implements OnInit {
     Summary:getAllVehicleList for get vehicle list
     Return list
   */
-    getAllSimList() {
-      this.userService.getDataByUrl('showAllUnusedSimCard').subscribe((data:any)=>{
+  getSimListByCompany(name) {
+    const matched = this.companyList.find(x=>x.companyName == name);
+    if(matched.id){
+      this.userService.getDataByUrl('showAllUnusedSimCardByCompanyId/'+matched.id).subscribe((data:any)=>{
         if(data.length>0){
           this.simCardList = data;
+          this.simCardCloneList = this.simCardList;
+        }else{
+          this.simCardList =[];
+          this.authService.errorToast('Sim Card Not found');  
         }
       }, error => {
         this.authService.errorToast(error.error.message);
       })
     }
+  }
 
     updateDataViaKey(value,key):void{
       if(key == 'device'){
         let data =  this.simCardList.find(x=>x.callingNumber == value);
-        this.deviceManagmentAddModel.assignSim = data;
+        if(data){
+          this.deviceManagmentAddModel.assignSim = data;
+          this.deviceManagmentAddModel.deviceName ='Dev_'+data.callingNumber;
+        }
+        value == 'No-SIM-card' ? this.deviceManagmentAddModel.deviceName = '' : this.deviceManagmentAddModel.deviceName;
       }else{
         let data =  (<any>this.deviceManagmentList).find(x=>x.callingNumber == value);
         this.deviceManagmentAddModel.assignSim = data;
+        
       }
     }
 
@@ -262,6 +299,7 @@ export class DeviceManagmentComponent implements OnInit {
       this.deviceName.valueChanges.subscribe((positionValue) => {
         this.filteredValues['deviceName'] = positionValue;
         this.filteredValues['device'] = positionValue;
+        this.filteredValues['callingNumber'] = positionValue;
         this.filteredValues['sim'] = positionValue;
         this.dataSource.filter = JSON.stringify(this.filteredValues);
       });
@@ -282,7 +320,7 @@ export class DeviceManagmentComponent implements OnInit {
         let isDeviceTypeAvailable= false;
         if (searchString.isActive && searchString.isActive.length) {
           for (const d of searchString.isActive) {
-            if (data.isActive === d.toLowerCase()) {
+            if (data.isActive === d) {
               isStatusAvailable = true;
             }
           }
@@ -300,9 +338,10 @@ export class DeviceManagmentComponent implements OnInit {
         }
         const resultValue =
           isStatusAvailable && isDeviceTypeAvailable && 
-          (data.deviceName.toString().trim().toLowerCase().indexOf(searchString.deviceName != null ? searchString.deviceName.toLowerCase() : '') !== -1 ||
-          data.deviceType.toString().trim().toLowerCase().indexOf(searchString.device != null ? searchString.device.toLowerCase() : '') !== -1)
-        return resultValue;
+          (data.deviceName != null ? data.deviceName.toString().trim().toLowerCase().indexOf(searchString.deviceName != null ? searchString.deviceName.toLowerCase() : '') !== -1 : 0 ||
+          data.deviceType != null ? data.deviceType.toString().trim().toLowerCase().indexOf(searchString.deviceType != null ? searchString.deviceType.toLowerCase() : '') !== -1 : 0 ||
+          data.assignSim != null  ? data.assignSim.callingNumber.indexOf(searchString.callingNumber) !== -1 : 0)
+          return <any>resultValue;
       };
         this.dataSource.filter = JSON.stringify(this.filteredValues);
     }
@@ -315,12 +354,35 @@ export class DeviceManagmentComponent implements OnInit {
     */
       getAllMultpleDataViaURL() {
         this.userService.getMulipleAPIDataViaUrl('company/showAllCompanyData','showAllPermissionData','','').subscribe((data:any)=>{
-          if(data[1].length > 0 && data[0].length > 0){
             this.companyList = data[1];
-          }
+            this.companyCloneList = this.companyList;
         },  error => {
           this.authService.errorToast(error.error.message);
         })
       }
+
+      search(value: string,key) { 
+        switch (key) {
+          case 'company':
+              const companyList = this.companyCloneList.filter(item => item.companyName.toLowerCase().search(value.toLowerCase()) > -1);
+              return this.companyList = companyList;
+            break;
+          case 'device':
+            const deviceList = this.deviceTypeCloneList.filter(item => item.deviceType.toLowerCase().search(value.toLowerCase()) > -1);
+            return this.deviceTypeList= deviceList;
+            break;
+          default:
+            const simList = this.simCardCloneList.filter(item => item.toLowerCase().search(value.toLowerCase()) > -1);
+            return this.simCardList= simList;
+            break;
+        }
+    }
+
+    updateDevice(value):void{
+      let data =  this.deviceTypeList.find(x=>x.deviceType  == value);
+      if(data){
+        this.deviceManagmentAddModel.device = data.deviceType;
+      }
+    }
 
 }

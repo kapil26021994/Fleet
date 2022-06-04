@@ -23,4 +23,6 @@ export class VehicleAdd {
     isActive:string;
     deviceType:string;
     device:any;
+    geofence:any;
+    geofencePlace:any = [];
 }

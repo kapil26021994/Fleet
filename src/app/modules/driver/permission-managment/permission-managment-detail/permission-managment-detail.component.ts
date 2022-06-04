@@ -98,7 +98,7 @@ export class PermissioManagmentDetailComponent implements OnInit {
       }else if(name == 'Map'){
         this.permissionList = ['Dashboard','Vehicle History','Vehicle Live Location'];
       }else{
-        this.permissionList = [name+' '+'View'];
+        this.permissionList = [name+' '+'view'];
       }
     }
 

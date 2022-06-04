@@ -21,7 +21,7 @@ import { match } from 'assert';
 })
 export class UserManagmentComponent implements OnInit {
   vehicleAddForm : FormGroup;
-  displayedColumns: any[] = ['name','username','email','isActive','phoneNumber','groupName','action'];
+  displayedColumns: any[] = ['company','name','username','email','isActive','phoneNumber','groupName','action'];
   dataSource: MatTableDataSource<any>;
   selection = new SelectionModel(true, []);
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -49,7 +49,7 @@ public selectedPermission =[];
   positionFilter = new FormControl()
   public isResetFormError = false;
   public isLoadingPermission = false;
-  filteredValues =  {username: '',isActive:[],email:'',name:''};
+  filteredValues =  {username: '',isActive:[],email:'',name:'',phoneNumber:''};
 
  // form group
  filterForm = new FormGroup({
@@ -72,7 +72,7 @@ get isActive() {
   ngOnInit() {
     this.vehicleTypeList =  JSON.parse(localStorage.getItem('vehicleTypeList'));
     this.getAllUserList();
-    this.getAllGroupList();
+    //this.getAllGroupList();
     this.getAllCompanyData();
     this.getAllMultpleDataViaURL();
 
@@ -105,13 +105,13 @@ get isActive() {
   }
 
 
-  getAllGroupList() {
-    this.userService.getDataByUrl('showAllUserGroupData').subscribe((data:any)=>{
-      if(data.length>0){
-        this.groupList = data;
-      }
-    })
-  }
+  // getAllGroupList() {
+  //   this.userService.getDataByUrl('showAllUserGroupData').subscribe((data:any)=>{
+  //     if(data.length>0){
+  //       this.groupList = data;
+  //     }
+  //   })
+  // }
 
 
    /*
@@ -151,10 +151,12 @@ get isActive() {
       Summary:getAllCompanyData for get vehicle list
       Return list
     */
+   public companyCloneList =[];
     getAllCompanyData() {
       this.userService.getDataByUrl('company/showAllCompanyData').subscribe((data:any)=>{
         if(data.length>0){
           this.companyList = data;
+          this.companyCloneList = this.companyList;
           this.groupAdd.company=this.companyList[0];
         } else{
           this.companyList= [];
@@ -173,8 +175,8 @@ get isActive() {
     */
     addVehicle(form:any){
       this.vehicleForm = form;
-      if(form) {
-        this.submitted = true;
+      this.submitted = true;
+      if(form.form.valid) {
         this.isLoadingData = true;
         if(this.groupAdd.isActive){
           this.groupAdd.isActive='active';
@@ -214,6 +216,16 @@ get isActive() {
       }else{
         let companyData =  this.companyList.find(x=>x.companyName == value);
         this.groupAdd.company = companyData;
+        //get groupList by company id
+        if(this.groupAdd.company && this.groupAdd.company.id){
+          this.userService.getDataByUrl('showUserGroupByCompanyId/'+this.groupAdd.company.id).subscribe((data:any)=>{
+            if(data.length>0){
+              this.groupList = data;
+            }
+          }, error => {
+            this.authService.errorToast(error.message);
+          })
+        }
       }
     }
 
@@ -239,11 +251,11 @@ get isActive() {
       Return list
     */
     resetData(){
-      this.getAllGroupList();
+     // this.getAllGroupList();
       if(this.vehicleForm){
         this.vehicleForm.reset();
        this.vehicleForm.resetForm();
-    } 
+      } 
     }
 
     isAllSelected() {
@@ -332,15 +344,14 @@ get isActive() {
             const resultValue = isStatusAvailable &&
               (data.username.toString().trim().toLowerCase().indexOf(searchString.username != null ? searchString.username.toLowerCase() : '') !== -1 ||
               data.email.toString().trim().toLowerCase().indexOf(searchString.email != null ? searchString.email.toLowerCase() : '') !== -1 ||
-              data.phoneNumber.toString().trim().toLowerCase().indexOf(searchString.phoneNumber != null ? searchString.phoneNumber.toLowerCase() : '') !== -1 ||
-              data.firstName.toString().trim().toLowerCase().indexOf(searchString.name != null ? searchString.name.toLowerCase() : '') !== -1 ||
-              data.lastName.toString().trim().toLowerCase().indexOf(searchString.name != null ? searchString.name.toLowerCase() : '') !== -1);
+              (data.firstName != null ? data.firstName.toString().trim().toLowerCase().indexOf(searchString.name != null ? searchString.name.toLowerCase() : '') !== -1 : true) ||
+              (data.lastName != null ? data.lastName.toString().trim().toLowerCase().indexOf(searchString.name != null ? searchString.name.toLowerCase() : '') !== -1 : true));
             return resultValue;
           };
           this.dataSource.filter = JSON.stringify(this.filteredValues);
       }
 
-        // Reset table filters
+        // Reset table filters 
   resetFilters() {
     this.getAllUserList();
     this.userService.resetFilter(this.filterForm);
@@ -433,5 +444,12 @@ get isActive() {
         this.isLoadingPermission  = false;
         this.authService.errorToast(error.error.message);
       })
+    }
+
+
+    search(value: string) { 
+      let filter = value.toLowerCase();
+     let list = this.companyCloneList.filter(option => option.companyName.toLowerCase().startsWith(filter));
+      return this.companyList= list;
     }
 }

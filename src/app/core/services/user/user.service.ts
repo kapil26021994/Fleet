@@ -13,15 +13,26 @@ export class UserService {
   constructor(public http:HttpClient,public authService:AuthenticationService) { 
   }
 
-  uploadDataToDb(fileToUpload: File,url:string): Observable<any> {
-      const formData: FormData = new FormData();
-      formData.append('file', fileToUpload);
-      return this.http.post(environment.baseUrl+url, formData);
+  uploadImageToDb(data: any,url:string): Observable<any> {
+    const formData: FormData = new FormData();
+    formData.append('imageFile', data,data.name);
+    return this.http.post(environment.baseUrl+url, formData);
   }
 
   storeDataToDb(data:any,url:string): Observable<any> {
-    console.log(environment.baseUrl+url)
     return this.http.post(environment.baseUrl+url, data);
+  }
+
+  storeFormDataValue(data:any,url:string): Observable<any> {
+    const formData: FormData = new FormData();
+    formData.append('email', data);
+    return this.http.post(environment.baseUrl+url, formData);
+  }
+
+  storeFormDataValueViaPut(data:any,url:string): Observable<any> {
+    const formData: FormData = new FormData();
+    formData.append('password', data);
+    return this.http.put(url, formData);
   }
 
   getDataByUrl(url){
@@ -68,7 +79,19 @@ export class UserService {
   }
 
   getToday(): string {
-      const now =new Date();
-      return new Date().toISOString().split('T')[0];
+    const now =new Date();
+    return new Date().toISOString().split('T')[0];
+  }
+
+    getCompanyListFromStorage(){
+      return JSON.parse(localStorage.getItem('companyList'));
+    }
+
+    getDefaultDateSelected(){
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    getCompanyList(){
+      return JSON.parse(localStorage.getItem('companyList'));
     }
 }

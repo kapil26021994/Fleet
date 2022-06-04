@@ -155,10 +155,12 @@ get isActive() {
       Summary:getAllCompanyData for get vehicle list
       Return list
     */
+   public companyCloneList =[];
     getAllCompanyData() {
       this.userService.getDataByUrl('company/showAllCompanyData').subscribe((data:any)=>{
         if(data.length>0){
           this.companyList = data;
+          this.companyCloneList = this.companyList;
           this.alertAdd.company=this.companyList[0];
         } else{
           this.companyList= [];
@@ -212,6 +214,17 @@ get isActive() {
       }else{
         let companyData =  this.companyList.find(x=>x.companyName == value);
         this.alertAdd.company = companyData;
+        if(this.alertAdd.company.id){
+          this.userService.getDataByUrl('showVehicleByCompanyId/'+this.alertAdd.company.id).subscribe((data:any)=>{
+            if(data.length>0){
+              this.vehicleList = data;
+            }else{
+              this.vehicleList =[];
+            }
+          },error=>{
+            this.authService.errorToast(error.message);
+          })
+        }
       }
     }
 
@@ -222,6 +235,10 @@ get isActive() {
       Return list
     */
     resetData(){
+      if(this.vehicleForm){
+        this.vehicleForm.reset();
+        this.vehicleForm.resetForm();
+      }
       this.getAllGroupList();
     }
 
@@ -333,7 +350,7 @@ get isActive() {
     getDriverAndVehicleList() {
       this.userService.getMulipleAPIData().subscribe((data:any)=>{
         if(data.length>0){
-          this.vehicleList = data[0];
+          //this.vehicleList = data[0];
           this.companyList = JSON.parse(localStorage.getItem('companyList'));
         } else{
           this.isLoading = false;
@@ -342,5 +359,11 @@ get isActive() {
         this.isLoading = false;
         this.authService.errorToast(error.error.message);
       })
+    }
+
+    search(value: string) { 
+      let filter = value.toLowerCase();
+     let list = this.companyCloneList.filter(option => option.companyName.toLowerCase().startsWith(filter));
+      return this.companyList= list;
     }
 }

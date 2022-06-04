@@ -33,7 +33,7 @@ info: "!"
 lat: 0
 lngt: 0
 specific: "Istiyaque-ANS"
-  displayedColumns: any[] = ['name','vname','mobile','battery', 'ignition','imei','specific','info','date','idleTime','status'];
+  displayedColumns: any[] = ['name','vname','mobile','battery', 'ignition','imei','specific','date','idleTime','status'];
   dataSource: MatTableDataSource<any>;
   // @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild('paginator') paginator: MatPaginator;
@@ -69,8 +69,8 @@ get status() {
   }
 
   ngAfterViewInit() {
-    //this.barChartMethod();
-    this.dataSource.sort = this.sort;
+    this.dashboardFilterForm.get('companyName')?.setValue('19:20')
+
   }
 
   masterToggle() {
@@ -86,6 +86,12 @@ get status() {
     this.userService.getMulipleAPIDataViaUrl('showAllVehicleType','showAllFuelType','company/showAllCompanyData','showAllVehicleData').subscribe((data:any)=>{
       if(data.length>0){
         this.companyList = data[2];
+
+        //viewVehicleData get vehicle list by company id
+        if(this.companyList[0].id){
+          this.dashboardFilterForm.get('companyName').setValue( this.companyList[0].id);
+          this.viewVehicleData();
+        }
         this.vehicleNumberList = data[3];
         localStorage.setItem('vehicleTypeList',JSON.stringify(data[1]));
         localStorage.setItem('fuelTypeList',JSON.stringify(data[0]));
@@ -122,9 +128,9 @@ get status() {
       this.auth.errorToast('Select Company');
       return false;
     }
-    if(this.dashboardFilterForm.get('companyName').value && this.dashboardFilterForm.get('companyName').value.id){
+    if(this.dashboardFilterForm.get('companyName').value != null){
       this.isLoadingData =true;
-      this.userService.getDataByUrl('getVehicleDataToCompanyId/'+this.dashboardFilterForm.get('companyName').value.id).subscribe((data:any)=>{
+      this.userService.getDataByUrl('getVehicleDataToCompanyId/'+this.dashboardFilterForm.get('companyName').value).subscribe((data:any)=>{
         if(data.length>0){
           this.dashboardVehicleData =data;
           this.dataSource = new MatTableDataSource(this.dashboardVehicleData);
@@ -138,6 +144,9 @@ get status() {
           this.dashboardVehicleData=[];
           this.dataSource = new MatTableDataSource([]);
         }
+      },error=>{
+        this.isLoadingData =false;
+        console.log(error);
       })
     }
   }
@@ -183,9 +192,11 @@ get status() {
 
   public chartDataList =[];
   public lineChart:any;
+  public selectedPageKey:any;
   generateGraphByKey(key){
     this.isLoadingGraphData = true;
     var apiURL :any;
+    this.selectedPageKey =key;
     switch (key) {
       case 'customer':
         apiURL = 'CustomerChartData';
@@ -217,7 +228,6 @@ get status() {
 
     this.userService.getDataByUrl(apiURL).subscribe((data:any)=>{
       if(data){
-      
          // Now we need to supply a Chart element reference with an object that defines the type of chart we want to use, and the type of data we want to display.
        this.barChart = new Chart(this.barCanvas.nativeElement, {
         type: 'bar',
@@ -258,20 +268,63 @@ get status() {
       this.isLoadingGraphData =false;
       }
     })
+    // this.userService.getDataByUrl('CustomerChartData').subscribe((data:any)=>{
+    //   if(data){
+    //     let gravityBars = '#F06292';
+    //     let densityBars = '#4DB6AC';
+    //     this.chartDataList = data;
+
+    //     const list = Number(this.chartDataList.filter(x=>x.color == 'red').map(x=>x.data));
+    //     const list2 = Number(this.chartDataList.filter(x=>x.color == 'green').map(x=>x.data));
+    //     const list3 = Number(this.chartDataList.filter(x=>x.color == 'blue').map(x=>x.data));
+    //     let densityData = {
+    //       label: "REd",
+    //       data: [list],
+    //       backgroundColor: densityBars
+    //     };
+        
+    //     let gravityData = {
+    //       label: "Green",
+    //       data: [list2],
+    //       backgroundColor: gravityBars
+    //     };
+
+    //     let gravityData2 = {
+    //       label: "Green",
+    //       data: [list3],
+    //       backgroundColor: gravityBars
+    //     };
+    //     var  planetData :any = {
+    //       labels: this.chartDataList.map(x=>x.lable),
+    //       datasets: [densityData,gravityData,gravityData2]
+    //     };
+    //     let chartOptions :any = {
+    //       barPercentage: 1,
+    //     };
+    //     this.barChart= new Chart(this.barCanvas.nativeElement, {
+    //       type: "bar",
+    //       data: planetData,
+    //       options: {
+    //           scales: {
+    //             yAxes: [{
+    //               ticks: {
+    //                 beginAtZero: true
+    //               }
+    //             }]
+    //           }
+    //         }
+    //     });
+    //   }
+    // });
   }
 
-      
   resetGraphData(){
-     var ctxLine =(<any>document.getElementById("barCanvas")).getContext("2d");
-      if(this.barChart != undefined) {
-        this.barChart.destroy(); 
-        this.barChart = new Chart(ctxLine, {});
-      }
-
-      var ctxLine =(<any>document.getElementById("lineCanvas")).getContext("2d");
-      if(this.lineChart != undefined) {
-        this.lineChart.destroy(); 
-        this.lineChart = new Chart(ctxLine, {});
-      }
+    var ctxLine =(<any>document.getElementById("barCanvas")).getContext("2d");
+    if(this.barChart != undefined) {
+      this.barChart.destroy(); 
+      this.barChart = new Chart(ctxLine, {});
+    }
   }
+
+  
 }

@@ -17,10 +17,26 @@ hr {
 }
 
 .form-group {
-    margin-bottom: 28px !important;
+    margin-bottom: 14px !important;
 }
 
 .invalid-feedback {
     position: unset !important;
     margin: 5px 9px 3px 15px !important;
+}
+
+.font-w-400{
+    color: #004C84 !important;
+    font-size: 13px;
+    margin-left: -13px;
+}
+
+.mt-3{
+    margin-top: 2px !important;
+}
+
+
+hr{
+    width: 135% !important;
+    margin: 5px -48px !important;
 }

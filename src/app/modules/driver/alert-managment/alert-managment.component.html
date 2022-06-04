@@ -6,7 +6,7 @@
     <ul class="breadcrumb" style="padding: 0;">
       <li class="breadcrumb-item active" aria-current="page">
        <button class="btn btn-info button-size" (click)="toggleDialog($event)" style="font-size:0.7rem !important"
-       [disabled]="isAddPermission"> + Save Alert</button>
+       *ngIf="'Alert Management' | isDisabledPipe : 'Alert Management insert'"> + Save Alert</button>
        <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
       </li>
     </ul> 
@@ -38,23 +38,6 @@
       </div>
     </div>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter #exporter="matTableExporter">
-      <!-- <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="selection.hasValue() && isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()"
-                        [aria-label]="checkboxLabel()">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(row) : null"
-                        [checked]="selection.isSelected(row)"
-                        [aria-label]="checkboxLabel(row)">
-          </mat-checkbox>
-        </td>
-      </ng-container> -->
-      <!-- Name Column -->
       <ng-container matColumnDef="company">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Company Name </th>
         <td mat-cell *matCellDef="let element" > <span *ngIf="element.company">{{element.company.companyName}}</span> </td>
@@ -87,11 +70,11 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item  title="View Contact" (click)="getCurrentVehicleDetail(row,exporter)">
+            <button mat-menu-item  title="View Contact" (click)="getCurrentVehicleDetail(row,exporter)"  *ngIf="'Alert Management' | isDisabledPipe : 'Alert Management update'"> 
               <mat-icon>remove_red_eye</mat-icon>
               <span>View</span>
             </button>
-            <button mat-menu-item (click)="deleteVehicle(row)">
+            <button mat-menu-item (click)="deleteVehicle(row)" *ngIf="'Alert Management' | isDisabledPipe : 'Alert Management delete'">
               <mat-icon>delete</mat-icon>
                 <span>Delete</span>
             </button>
@@ -130,7 +113,7 @@
     <div class="heading">
       <p> <b>Alert  Management</b>  </p>
       <div class="float-right">
-          <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event);resetData()">Close</button>
+          <button class="btn btn-outline-info btn-custom"  type="reset" (click)="toggleDialog($event);resetData()">Close</button>
       </div>
     </div>
     <form  #f="ngForm">
@@ -138,9 +121,10 @@
         <label style="width: 161px !important">Select Company</label>
         <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
           <mat-label >Select Company</mat-label>
-          <mat-select name="contactMethod"  id="contactMethod"  [(ngModel)]="alertAdd.companyName"  (ngModelChange)="updateDataViaKey($event,'company')"
+          <mat-select disableOptionCentering name="contactMethod"  id="contactMethod"  [(ngModel)]="alertAdd.companyName"  (ngModelChange)="updateDataViaKey($event,'company')"
           #companyName="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && companyName.invalid }" required>
-            <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
+          <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)">  
+          <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
           </mat-select>
           <mat-error *ngIf="f.submitted && companyName.invalid">
             <div *ngIf="companyName.errors.required">Company is required</div>
@@ -151,7 +135,7 @@
         <label style="width: 161px !important">Select Vechicle</label>
         <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
           <mat-label >Select Vechicle</mat-label>
-          <mat-select name="contactMethod" #vehicleNumber="ngModel" [(ngModel)]="alertAdd.vehicleNumber" name="vehicle" 
+          <mat-select disableOptionCentering name="contactMethod" #vehicleNumber="ngModel" [(ngModel)]="alertAdd.vehicleNumber" name="vehicle" 
           (ngModelChange)="updateDataViaKey($event,'vehicle')"
             [ngClass]="{ 'is-invalid': f.submitted && vehicleNumber.invalid }" required>
             <mat-option *ngFor="let vehicle of vehicleList" [value]="vehicle.vehicleNumber">{{vehicle.vehicleNumber}}</mat-option>
@@ -201,7 +185,7 @@
         </span>
       </div>
       <div class="form-group form-control-footer margin-top: 176px;">
-        <button class="btn btn-outline-info btn-custom"  (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
+        <button class="btn btn-outline-info btn-custom"   type="reset" (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
         <button class="btn  btn-outline-info btn-custom"  type="reset" (click)="f.reset()">Reset</button>
         <div>
           <button class="btn btn-info button-size" [disabled]="isLoadingData" (click)="addVehicle(f)">

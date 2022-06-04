@@ -31,3 +31,12 @@ select.form-control {
 .input-group-prepend{
   margin:0px -10px 0px 56px !important;
 }
+
+
+@media  (min-width: 1500px) and (max-width: 2560px) {
+  .input-label-container{
+      margin-left: -82px !important;
+      width: 90% !important;
+      margin-top: -4px !important;
+    }
+ }

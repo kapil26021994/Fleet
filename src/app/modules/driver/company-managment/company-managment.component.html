@@ -5,7 +5,7 @@
   <nav aria-label="breadcrumb">
     <ul class="breadcrumb" style="padding: 0;">
       <li class="breadcrumb-item active" aria-current="page">
-        <button class="btn btn-info button-size" (click)="toggleDialog($event)" style="font-size:0.7rem !important"> +
+        <button class="btn btn-info button-size" (click)="toggleDialog($event)" style="font-size:0.7rem !important" *ngIf="'Company' | isDisabledPipe : 'Company insert'"> +
           Add New Company</button>
         <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
       </li>
@@ -93,15 +93,15 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef style="color: white;"> Actions </th>
         <td mat-cell *matCellDef="let row" style="width:20%">
-          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" *ngIf="'Company' | isDisabledPipe : 'Company view'">
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item title="View Contact" (click)="getCurrentVehicleDetail(row,exporter)">
+            <button mat-menu-item title="View Contact" (click)="getCurrentVehicleDetail(row,exporter)" *ngIf="'Company' | isDisabledPipe : 'Company update'">
               <mat-icon>remove_red_eye</mat-icon>
               <span>View</span>
             </button>
-            <button mat-menu-item (click)="deleteVehicle(row)">
+            <button mat-menu-item (click)="deleteVehicle(row)" *ngIf="'Company' | isDisabledPipe : 'Company delete'">
               <mat-icon>delete</mat-icon>
               <span>Delete</span>
             </button>
@@ -183,22 +183,26 @@
         <label class="col-sm-3 col-form-label">Address Line1</label>
         <div class="col-sm-9">
           <input type="text" class="form-control" name="addressLine1" [(ngModel)]="companyAddData.addressLine1"
+          #addressLine1="ngModel" placeholder="Address Line1"/>
+          <!-- <input type="text" class="form-control" name="addressLine1" [(ngModel)]="companyAddData.addressLine1"
             #addressLine1="ngModel" placeholder="Address Line1"
             [ngClass]="{ 'is-invalid': f.submitted && addressLine1.invalid }" required />
           <div *ngIf="f.submitted && addressLine1.invalid" class="invalid-feedback">
             <div *ngIf="addressLine1.errors.required">Address Line1 is required</div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="form-group row">
         <label class="col-sm-3 col-form-label">Address Line2</label>
         <div class="col-sm-9">
           <input type="text" class="form-control" name="addressLine2" [(ngModel)]="companyAddData.addressLine2"
+          #addressLine2="ngModel" placeholder="Address Line2"/>
+          <!-- <input type="text" class="form-control" name="addressLine2" [(ngModel)]="companyAddData.addressLine2"
             #addressLine2="ngModel" placeholder="Address Line2"
             [ngClass]="{ 'is-invalid': f.submitted && addressLine2.invalid }" required />
           <div *ngIf="f.submitted && addressLine2.invalid" class="invalid-feedback">
             <div *ngIf="addressLine2.errors.required">Address Line2 is required</div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="form-group row">
@@ -206,10 +210,13 @@
         <div class="col-sm-9">
           <input type="text" class="form-control" name="city" [(ngModel)]="companyAddData.city" #city="ngModel"
           id="companyAutocomplete" (keyup)="getStateAndCountryName()"
+            placeholder="City" />
+          <!-- <input type="text" class="form-control" name="city" [(ngModel)]="companyAddData.city" #city="ngModel"
+          id="companyAutocomplete" (keyup)="getStateAndCountryName()"
             placeholder="City" [ngClass]="{ 'is-invalid': f.submitted && city.invalid }" required />
           <div *ngIf="f.submitted && city.invalid" class="invalid-feedback">
             <div *ngIf="city.errors.required">Address Line2 is required</div>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -218,30 +225,37 @@
         <div class="col-sm-9">
           <input type="text" class="form-control" name="state" [(ngModel)]="companyAddData.state" #state="ngModel" disabled
           (focusout)="getStateAndCountryName()"
+            placeholder="Enter state"/>
+          <!-- <input type="text" class="form-control" name="state" [(ngModel)]="companyAddData.state" #state="ngModel" disabled
+          (focusout)="getStateAndCountryName()"
             placeholder="Enter state" [ngClass]="{ 'is-invalid': f.submitted && state.invalid }" required />
           <div *ngIf="f.submitted && state.invalid" class="invalid-feedback">
             <div *ngIf="state.errors.required">State is required</div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="form-group row">
         <label class="col-sm-3 col-form-label">Country</label>
         <div class="col-sm-9">
           <input type="text" class="form-control" name="country" [(ngModel)]="companyAddData.country" #country="ngModel" disabled
+          placeholder="Country"  />
+          <!-- <input type="text" class="form-control" name="country" [(ngModel)]="companyAddData.country" #country="ngModel" disabled
             placeholder="Country" [ngClass]="{ 'is-invalid': f.submitted && country.invalid }" required />
           <div *ngIf="f.submitted && country.invalid" class="invalid-feedback">
             <div *ngIf="country.errors.required">Country is required</div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="form-group row">
         <label class="col-sm-3 col-form-label">Pincode</label>
         <div class="col-sm-9">
           <input type="text" class="form-control" name="pinCode" [(ngModel)]="companyAddData.pincode" #pincode="ngModel"
+          placeholder="pincode" />
+          <!-- <input type="text" class="form-control" name="pinCode" [(ngModel)]="companyAddData.pincode" #pincode="ngModel"
             placeholder="pincode" [ngClass]="{ 'is-invalid': f.submitted && pincode.invalid }" required />
           <div *ngIf="f.submitted && pincode.invalid" class="invalid-feedback">
             <div *ngIf="pincode.errors.required">Pincode is required</div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="form-group row">
@@ -259,22 +273,20 @@
         <label class="col-sm-3 col-form-label">Company Domain</label>
         <div class="col-sm-9">
           <input type="text" class="form-control" name="companyDomain" [(ngModel)]="companyAddData.companyDomain"
+          #companyDomain="ngModel" placeholder="Enter Company Domain"/>
+          <!-- <input type="text" class="form-control" name="companyDomain" [(ngModel)]="companyAddData.companyDomain"
             #companyDomain="ngModel" placeholder="Enter Company Domain"
             [ngClass]="{ 'is-invalid': f.submitted && companyDomain.invalid }" required />
           <div *ngIf="f.submitted && companyDomain.invalid" class="invalid-feedback">
             <div *ngIf="companyDomain.errors.required">Company Domain is required</div>
-          </div>
+          </div> -->
         </div>
       </div>
       <!-- <div class="form-group row">
-        <label class="col-sm-3 col-form-label">Select Timezone</label>
+        <label class="col-sm-3 col-form-label">Company Logo</label>
         <div class="col-sm-9">
-          <input type="text" class="form-control" name="selectTimezone" [(ngModel)]="companyAddData.selectTimezone"
-            #selectTimezone="ngModel" placeholder="Enter Company Domain"
-            [ngClass]="{ 'is-invalid': f.submitted && selectTimezone.invalid }" required />
-          <div *ngIf="f.submitted && selectTimezone.invalid" class="invalid-feedback">
-            <div *ngIf="selectTimezone.errors.required">Timezone is required</div>
-          </div>
+          <input accept="image/*" type='file' id="company-logo" />
+          <img id="company-logo-src" src="#" alt="your image" />
         </div>
       </div> -->
       <div class="form-group">
@@ -285,10 +297,8 @@
       </div>
       <div class="form-group form-control-footer margin-top: 176px;">
         <div class="cancelBtn">
-          <button class="btn btn-outline-info btn-custom"(click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
+          <button class="btn btn-outline-info btn-custom"(click)="toggleDialog($event);f.reset()">Cancel</button>&nbsp;&nbsp;
           <button class="btn  btn-outline-info btn-custom" type="reset" (click)="f.reset()">Reset</button>
-          <!-- <a class="link-btn" (click)="toggleDialog($event);resetData()">Cancel</a>
-          <a class="link-btn" (click)="resetData()">Reset</a> -->
         </div>
         <div>
           <button (click)="addVehicle(f)" class="btn btn-info button-size" [disabled]="isLoadingData">

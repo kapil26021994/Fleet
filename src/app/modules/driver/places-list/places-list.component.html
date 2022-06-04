@@ -5,7 +5,7 @@
   <nav aria-label="breadcrumb">
     <ul class="breadcrumb" style="padding: 0;">
       <li class="breadcrumb-item active" aria-current="page">
-       <button class="btn btn-info button-size" (click)="toggleDialog($event)"> + Add New Geofence</button>
+       <button class="btn btn-info button-size" (click)="toggleDialog($event)" *ngIf="'Geofence' | isDisabledPipe : 'Geofence insert'"> + Add New Geofence</button>
        <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
       </li>
     </ul> 
@@ -39,23 +39,6 @@
       </div>
     </div>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter #exporter="matTableExporter">
-      <!-- <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="selection.hasValue() && isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()"
-                        [aria-label]="checkboxLabel()">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(row) : null"
-                        [checked]="selection.isSelected(row)"
-                        [aria-label]="checkboxLabel(row)">
-          </mat-checkbox>
-        </td>
-      </ng-container> -->
-        <!-- Name Column -->
         <ng-container matColumnDef="placeName">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Place Name </th>
           <td mat-cell *matCellDef="let element">
@@ -90,11 +73,11 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item  title="View Contact" (click)="getCurrentPlaceDetail(row,exporter)">
+            <button mat-menu-item  title="View Contact" (click)="getCurrentPlaceDetail(row,exporter)" *ngIf="'Geofence' | isDisabledPipe : 'Geofence update'">
               <mat-icon>remove_red_eye</mat-icon>
               <span>View</span>
             </button>
-            <button mat-menu-item (click)="deletePlace(row)">
+            <button mat-menu-item (click)="deletePlace(row)" *ngIf="'Geofence' | isDisabledPipe : 'Geofence delete'">
               <mat-icon>delete</mat-icon>
                 <span>Delete</span>
             </button>
@@ -122,7 +105,7 @@
     <ng-container *ngIf="placesList.length>0">
       <app-download-content [data]="placesList" [exporterInstance]="exporter"></app-download-content>
    </ng-container> 
-    <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
+    <mat-paginator  [pageSize]="100" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
     <div class="card card-table">
     </div>
   </div>
@@ -133,16 +116,16 @@
 
 
 <div class="form-dialog" id="addPlaceForm"> 
-  <div class="closeDailog" (click)="toggleDialog($event)"></div>
+  <!-- <div class="closeDailog" (click)="toggleDialog($event)"></div> -->
   <div class="form-container">
     <div class="heading">
       <p>Add Gefoence</p>
       <div class="float-right">
-          <button class="btn btn-outline-info btn-custom" (click)="toggleDialog($event);resetData()">Close</button>
+          <button type="reset" class="btn btn-outline-info btn-custom" (click)="toggleDialog($event);resetData('');">Close</button>
         <!-- <button class="btn btn-info button-size">Save Place</button> -->
       </div>
     </div>
-    <form (ngSubmit)="addNewPlace(f)" #f="ngForm" style="margin-top: -19px;">
+    <form #f="ngForm" style="margin-top: -19px;">
       <div class="row">
         <div class="col-sm-6">
           <div class="form-group row">
@@ -171,30 +154,36 @@
             <label>Address</label>
             <input type="text" id="placeAutocomplete" (keyup)="fetchStartLocation()"  class="form-control" name="address" 
             [(ngModel)]="placesAddModel.address" #address="ngModel" 
-            placeholder="Enter Address" [ngClass]="{ 'is-invalid': f.submitted && address.invalid }" required />
-            <div *ngIf="f.submitted && address.invalid" class="invalid-feedback-geofence">
+            placeholder="Enter Address" />
+            <!-- <div *ngIf="f.submitted && address.invalid" class="invalid-feedback-geofence">
                 <div *ngIf="address.errors.required">Address is required</div>
-            </div>
+            </div> -->
           </div>
           </div>
-          <!-- <div class="col-sm-6">
+          <div class="col-sm-6">
             <div class="form-group row">
-              <mat-form-field   [(ngModel)]="drwaingType" fxFlex="40" class="field-wrapper" [ngModelOptions]="{standalone: true}">
-                <mat-select   placeholder="Status" (selectionChange)="updateDrwaingType($event.value)"  >
-                  <mat-option *ngFor="let status of drwaingTypeList" [value]="status">{{status}}</mat-option>
+              <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
+                <mat-label >Select Company</mat-label>
+                <mat-select name="contactMethod" [(ngModel)]="placesAddModel.company"  
+                #companyName="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && companyName.invalid }" required>
+                <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)"> 
+                <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
                 </mat-select>
+                <mat-error *ngIf="f.submitted && companyName.invalid">
+                  <div *ngIf="companyName.errors.required">Company is required</div>
+                </mat-error> 
               </mat-form-field>
             </div>
-            </div> -->
+            </div>
       </div>
       <div class="form-group">
         <div id="googleMapPlace" class="map-wrapper" ></div>
       </div>
       <div class="form-group form-control-footer">
-        <button class="btn btn-outline-info btn-custom"  (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
-        <button class="btn  btn-outline-info btn-custom" (click)="toggleDialog($event);resetData()">Reset</button>
+        <button class="btn btn-outline-info btn-custom"  type="reset" (click)="toggleDialog($event);f.reset();resetData('');">Cancel</button>&nbsp;&nbsp;
+        <button class="btn  btn-outline-info btn-custom" type="reset" (click)="f.reset();resetData('');">Reset</button>
         <div>
-          <button class="btn btn-info button-size">Save Place</button>
+          <button class="btn btn-info button-size" (click)="addNewPlace(f)">Save Place</button>
         </div>
       </div>
     </form>

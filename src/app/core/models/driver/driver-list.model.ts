@@ -13,5 +13,7 @@ export class DiverListModel {
     active: string;
     createDateTime: string;
     updateDateTime:string;
-    gstnumber: string
+    gstnumber: string;
+    company:any;
+    vehicle:any;
 }

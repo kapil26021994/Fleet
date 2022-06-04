@@ -21,17 +21,18 @@ export class SidebarComponent implements OnInit {
     {'lableName':'Company','routerLink':'/user/company','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-domain menu-icon','list':[{'name':'Company List'}]},
     {'lableName':'User Group Management','routerLink':'/user/group','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-account','list':[{'name':'Group List'}]},
     {'lableName':'User Management','routerLink':'/user/management','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-account','list':[{'name':'User List'}]},
-    {'lableName':'Vehicles','routerLink':'vehicle/list','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Vehicle List'}]},
-    {'lableName':'Driver','routerLink':'/user/driver','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Driver List'}]},
-    {'lableName':'Device','routerLink':'/user/device','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Device List'}]},
     {'lableName':'Sim Management','routerLink':'/user/sim','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'SIM List'}]},
+    {'lableName':'Device','routerLink':'/user/device','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Device List'}]},
+    {'lableName':'Vehicles','routerLink':'vehicle/list','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Vehicle List'}]},
     {'lableName':'Geofence','routerLink':'/user/places','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-map-marker','list':[{'name':'Geofence List'}]},
     {'lableName':'Routes','routerLink':'/user/route','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Routes List'}]},
     {'lableName':'Trip','routerLink':'/user/trip','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Trip List'}]},
-    {'lableName':'Map','routerLink':'/user/map','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-map-marker','list':[]},
+    {'lableName':'report','routerLink':'/user/report','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':''}]},
     {'lableName':'Alert Management','routerLink':'/user/alert','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Alert List'}]},
     {'lableName':'Permission','routerLink':'/user/permission','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Permission List'}]},
-    {'lableName':'customer-support','routerLink':'/user/customer-support','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Case List'}]}
+    {'lableName':'Driver','routerLink':'/user/driver','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Driver List'}]},
+    {'lableName':'customer-support','routerLink':'/user/customer-support','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Case List'}]},
+    {'lableName':'Map','routerLink':'/user/map','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-map-marker','list':[]}
   ]
 
   constructor(public  auth:AuthenticationService,public router:Router,public userService:UserService) {}
@@ -68,46 +69,50 @@ export class SidebarComponent implements OnInit {
 
   initializeSideMenuList(){
     let groupExist = JSON.parse(localStorage.getItem('user-data'));
-    if(groupExist.assignGroup == null){
+    if(groupExist.assignGroup == null && groupExist.roles[0] ==  "SUPER_ADMIN"){
       this.sideMenuList = [
           {'lableName':'Dashboard','routerLink':'/user/dashboard','icon':'menu-icon mdi mdi-home menu-icon','active':true,'collapsed':false},
           {'lableName':'Company','routerLink':'/user/company','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-domain menu-icon','list':[{'name':'Company List'}]},
           {'lableName':'User Group Management','routerLink':'/user/group','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-account','list':[{'name':'Group List'}]},
           {'lableName':'User Management','routerLink':'/user/management','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-account','list':[{'name':'User List'}]},
-          {'lableName':'Vehicles','routerLink':'vehicle/list','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Vehicle List'}]},
-          {'lableName':'Driver','routerLink':'/user/driver','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Driver List'}]},
-          {'lableName':'Device','routerLink':'/user/device','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Device List'}]},
           {'lableName':'Sim Management','routerLink':'/user/sim','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'SIM List'}]},
+          {'lableName':'Device','routerLink':'/user/device','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Device List'}]},
+          {'lableName':'Vehicles','routerLink':'vehicle/list','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Vehicle List'}]},
           {'lableName':'Geofence','routerLink':'/user/places','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-map-marker','list':[{'name':'Geofence List'}]},
           {'lableName':'Routes','routerLink':'/user/route','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Routes List'}]},
           {'lableName':'Trip','routerLink':'/user/trip','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Trip List'}]},
-          {'lableName':'Map','routerLink':'/user/map','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-map-marker','list':[]},
+          {'lableName':'report','routerLink':'/user/report','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':''}]},
           {'lableName':'Alert Management','routerLink':'/user/alert','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Alert List'}]},
           {'lableName':'Permission','routerLink':'/user/permission','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Permission List'}]},
+          {'lableName':'Driver','routerLink':'/user/driver','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-car','list':[{'name':'Driver List'}]},
           {'lableName':'customer-support','routerLink':'/user/customer-support','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':'Case List'}]},
-          {'lableName':'report','routerLink':'/user/report','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-bell','list':[{'name':''}]}
+          {'lableName':'Map','routerLink':'/user/map','active':false,'collapsed':false,'icon':'menu-icon mdi mdi-map-marker','list':[]}
         ]
     }else{
-     for(let i=0;i<groupExist.assignGroup.addPermissions.length;i++){
-       var finalList =  this.sideMenuListClone.filter(x=>x.lableName == groupExist.assignGroup.addPermissions[i].name);
 
-       if(groupExist.assignGroup.addPermissions[i].items.length>0){
-        if(this.sideMenuList.length == 0){
-          this.sideMenuList = finalList;
-         }else{
-          this.sideMenuList =  this.sideMenuList.concat(finalList);
-         }
+      //Below check used for show group level permision
+      if(groupExist.assignGroup != null && groupExist.assignGroup.addPermissions.length>0){
+        for(let i=0;i<groupExist.assignGroup.addPermissions.length;i++){
+          var finalList =  this.sideMenuListClone.filter(x=>x.lableName == groupExist.assignGroup.addPermissions[i].name);
+            if(this.sideMenuList.length == 0){
+              this.sideMenuList = finalList;
+            }else{
+              this.sideMenuList =  this.sideMenuList.concat(finalList);
+            }
+          }
        }
-     }
 
-     for(let i=0;i<groupExist.addPermissions.length;i++){
-        var finalList =  this.sideMenuListClone.filter(x=>x.lableName == groupExist.addPermissions[i].name);
-        if(groupExist.assignGroup.addPermissions[i].items.length>0){
-          this.sideMenuList =  this.sideMenuList.concat(finalList);
-        }
-      }
+       //Below check used for show user level permision
+       if(groupExist.addPermissions.length>0){
+          for(let i=0;i<groupExist.addPermissions.length;i++){
+            var userPermission =  this.sideMenuListClone.filter(x=>x.lableName == groupExist.addPermissions[i].name);
+            if(userPermission.length>0){
+              this.sideMenuList =  this.sideMenuList.concat(userPermission);
+            }
+          }
+       }
     }
-      localStorage.setItem('pageList',JSON.stringify(this.sideMenuList));
+    localStorage.setItem('pageList',JSON.stringify(this.sideMenuList));
   }
   
   currentMenuDetail(value,submenu){
@@ -130,14 +135,6 @@ export class SidebarComponent implements OnInit {
         data.active = false;
         data.collapsed = false;
       }
-      // if(data.list && data.list.length>0){
-      //   data.list.forEach(data_item => {
-      //     if(data.routerLink != this.currentLink){
-      //       data_item.active = false;
-      //       data_item.collapsed = false;
-      //     }
-      //   });
-      // }
     });
   }
 
@@ -188,6 +185,18 @@ export class SidebarComponent implements OnInit {
           case 'Trip Summary Time Report':
             data_format.routerLink = '/user/report/trip-summary-time';
             break;
+          case 'KMS Summary Report':
+            data_format.routerLink = '/user/report/kms-summary-report';
+            break;
+          case 'All Vehicles Stoppage Report':
+            data_format.routerLink = '/user/report/vehicles-stoppage-report';
+            break;
+          case 'All Vehicles Stoppage Report':
+            data_format.routerLink = '/user/report/vehicles-stoppage-report';
+            break;
+          case 'Trip Summary Site Report':
+            data_format.routerLink = '/user/report/Trip-summary-report';
+              break;
           default:
             data_format.routerLink = '/user/report/event-log';
             break;

@@ -14,3 +14,11 @@
    width: 105% !important;
    margin-left: -24px
   }
+
+  ::-webkit-scrollbar {
+   height: 6px;
+}
+
+.modal-title{
+   text-transform: capitalize;
+}

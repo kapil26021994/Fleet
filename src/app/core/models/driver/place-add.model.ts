@@ -9,4 +9,6 @@ export class PlaceAddModel {
     createDateTime: string;
     updateDateTime:string;
     isActive:string;
+    company:string;
+    notification :string;
 }

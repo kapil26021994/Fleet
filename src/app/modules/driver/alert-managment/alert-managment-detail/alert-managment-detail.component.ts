@@ -20,6 +20,7 @@ export class AlertManagmentDetailComponent implements OnInit {
   public vehicleList = [];
   public data =[];
   public isEditData:boolean = false;
+  public companyCloneList =[];
   public exporterInstance :any;
 
   constructor(
@@ -41,10 +42,11 @@ export class AlertManagmentDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.companyList =  JSON.parse(localStorage.getItem('companyList'));
+    this.companyCloneList = this.companyList;
     if(history.state.data){
       this.currentUserDetail = history.state.data;
+      this.updateCompany(this.currentUserDetail.company.companyName);
       this.data  = [history.state.data];
-      this.vehicleList = history.state.vehicleList;
       localStorage.setItem('currentPageData',JSON.stringify(history.state.data))
       this.currentUserDetail.isActive == 'active' ? this.isEditData = true :this.isEditData = false;
     }else{
@@ -100,5 +102,25 @@ export class AlertManagmentDetailComponent implements OnInit {
           })
         }
       });
+    }
+
+
+    updateCompany(value){
+      let matched = this.companyList.find(x=>x.companyName == value);
+      if(matched){
+        this.userService.getDataByUrl('showVehicleByCompanyId/'+matched.id).subscribe((data:any)=>{
+          if(data.length>0){
+            this.vehicleList = data;
+          }
+        },  error => {
+          this.authService.errorToast(error.message);
+        })
+      }
+    }
+
+    search(value: string) { 
+      let filter = value.toLowerCase();
+     let list = this.companyCloneList.filter(option => option.companyName.toLowerCase().startsWith(filter));
+      return this.companyList= list;
     }
 }

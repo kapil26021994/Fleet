@@ -5,8 +5,7 @@
   <nav aria-label="breadcrumb">
     <ul class="breadcrumb" style="padding: 0;">
       <li class="breadcrumb-item active" aria-current="page">
-       <button class="btn btn-info button-size" (click)="toggleDialog($event)" 
-          [disabled]="isAddPermission"> 
+       <button class="btn btn-info button-size" (click)="toggleDialog($event)" *ngIf="'Vehicles' | isDisabledPipe : 'Vehicles insert'"> 
           + Add Vehicle
       </button>
        <button class="btn btn-danger button-size" (click)="resetFilters()">Reset</button>
@@ -31,7 +30,7 @@
           <td>
             <mat-form-field  fxFlex="40" class="field-wrapper-filter">
               <mat-select  formControlName="vehicleType" placeholder="Vehicle Type" multiple>
-                <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)"> 
+                <input class="example-input" placeholder ="search " (keyup)="search($event.target.value,'vehicle')"> 
                 <mat-option *ngFor="let vehicle of vehicleTypeList" [value]="vehicle.vehicleType">{{ vehicle.vehicleType}}</mat-option>
               </mat-select>
             </mat-form-field>
@@ -112,17 +111,6 @@
           <span *ngIf="!element.isActive">inActive</span> 
        </td>
       </ng-container>
-      <!-- <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-        <td mat-cell *matCellDef="let element"> 
-          <span *ngIf="element.status == 'running'" class="deactive-dot">
-          </span> 
-          <span *ngIf="element.status == 'stop'" class="dot">
-          </span> 
-          {{element.status}}
-       </td>
-      </ng-container> -->
-      <!-- Weight Column -->
       <ng-container matColumnDef="companyName">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Company Name </th>
         <td mat-cell *matCellDef="let element"> {{element.company?.companyName}} </td>
@@ -146,15 +134,15 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item  title="View Contact" (click)="getCurrentVehicleDetail(row)">
+            <button mat-menu-item  title="View Contact" (click)="getCurrentVehicleDetail(row)" *ngIf="'Vehicles' | isDisabledPipe : 'Vehicles update'">
               <mat-icon>remove_red_eye</mat-icon>
               <span>View</span>
             </button>
-            <button mat-menu-item (click)="getCurrentVehcleRoute(row)">
+            <button mat-menu-item (click)="getCurrentVehcleRoute(row)" >
               <mat-icon>location_on</mat-icon>
                 <span>Live Location</span>
             </button>
-            <button mat-menu-item (click)="deleteVehicle(row)">
+            <button mat-menu-item (click)="deleteVehicle(row)" *ngIf="'Vehicles' | isDisabledPipe : 'Vehicles delete'">
               <mat-icon>delete</mat-icon>
                 <span>Delete</span>
             </button>
@@ -182,7 +170,7 @@
     <ng-container *ngIf="vehicleList.length>0">
       <app-download-content [data]="vehicleList" [exporterInstance]="exporter"></app-download-content>
    </ng-container>
-    <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
+    <mat-paginator  [pageSize]="100" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
   </div>
 </div>
 
@@ -203,14 +191,32 @@
           <mat-label >Select Company</mat-label>
           <mat-select name="contactMethod"  id="contactMethod"  [(ngModel)]="vehicleData.companyName"  (ngModelChange)="updateDataViaKey($event,'company')"
           #companyName="ngModel"  [ngClass]="{ 'is-invalid': f.submitted && companyName.invalid }" required>
-            <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
+          <input class="example-input" placeholder ="search " (keyup)="search($event.target.value,'')">   
+          <mat-option *ngFor="let company of companyList"  [value]="company.companyName">
+              <ng-container *ngIf="company.companyName != ''">
+                {{ company.companyName }}
+              </ng-container>
+              </mat-option>
           </mat-select>
           <mat-error *ngIf="f.submitted && companyName.invalid">
             <div *ngIf="companyName.errors.required">Company is required</div>
           </mat-error> 
         </mat-form-field>
       </div>
-
+      <div class="form-group">
+        <label>Select Geofence</label>
+        <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
+          <mat-label >Select Geofence</mat-label>
+          <mat-select name="geofence"  id="geofence"  [(ngModel)]="vehicleData.geofence"
+          #geofence="ngModel"
+          (ngModelChange)="selectOrUnSelectGeofence($event)" multiple>
+            <mat-option *ngFor="let place of geofenceList"  [value]="place.id">{{ place.placeName }}</mat-option>
+          </mat-select>
+          <!-- <mat-error *ngIf="f.submitted && geofence.invalid">
+            <div *ngIf="geofence.errors.required">Geofence is required</div>
+          </mat-error>  -->
+        </mat-form-field>
+      </div>
       <div class="form-group">
         <label >Vehicle Number</label>
           <input type="text" class="form-control" name="vehicleNumber" [(ngModel)]="vehicleData.vehicleNumber" #vehicleNumber="ngModel" 
@@ -271,20 +277,15 @@
         </mat-form-field>
       </div>
       <div class="form-group">
-        <label>Assign Device</label>
+        <label>Device Name</label>
         <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
-          <mat-label >Assign Device</mat-label>
-          <mat-select name="device" [(ngModel)]="vehicleData.deviceType"
-          #deviceType="ngModel">
-            <mat-option *ngFor="let device of deviceList" [value]="device.deviceType"> {{ device.deviceType}}</mat-option>
-          </mat-select>
-          <!-- <mat-error *ngIf="f.submitted && deviceType.invalid">
-            <div *ngIf="deviceType.errors.required">Device Type is required</div>
-          </mat-error>  -->
+          <mat-label >Select Device Name</mat-label>
+            <mat-select name="device" [(ngModel)]="selectedDeviceType" #deviceName="ngModel">
+              <mat-option *ngFor="let device of deviceList" [value]="device.deviceName"> {{ device.deviceName}}</mat-option>
+              <mat-option  [value]="'No-device'">No device</mat-option>
+            </mat-select>
         </mat-form-field>
       </div>
-  
-
       <div class="form-group">
         <label >Tank Capacity</label>
           <input type="text" class="form-control" name="tankCapacity" [(ngModel)]="vehicleData.tankCapacity" #tankCapacity="ngModel" 
@@ -329,7 +330,7 @@
         </div> -->
       </div>
       <div class="form-group">
-        <label>Service Period</label>
+        <label>Service Period(only in month[s])</label>
         <input type="text" class="form-control " name="servicingPeriod" [(ngModel)]="vehicleData.servicingPeriod" #servicingPeriod="ngModel" 
         placeholder="Service Period" />
         <!-- <div *ngIf="f.submitted && servicingPeriod.invalid" class="invalid-feedback">
@@ -338,7 +339,8 @@
       </div>
       <div class="form-group">
         <label>Last Service Date</label>
-        <input type="date" class="form-control date-picker-position" name="lastServicingDate" [(ngModel)]="vehicleData.lastServicingDate" #lastServicingDate="ngModel" 
+        <input type="date" class="form-control date-picker-position" name="lastServicingDate" [max]="userService.getToday()"
+         [(ngModel)]="vehicleData.lastServicingDate" #lastServicingDate="ngModel" 
         placeholder="Last Service Date"/>
         <!-- <div *ngIf="f.submitted && lastServicingDate.invalid" class="invalid-feedback">
           <div *ngIf="lastServicingDate.errors.required">Last Service Date is required</div>
@@ -373,8 +375,9 @@
         <input type="checkbox" name="isActive"  class="form-check"  [(ngModel)]="vehicleData.isActive">
       </div>
       <div class="form-group form-control-footer">
+        <button class="btn btn-outline-info btn-custom"  type="reset"  (click)="toggleDialog($event);f.reset()">Cancel</button>&nbsp;&nbsp;
        <button class="btn  btn-outline-info btn-custom" type="reset" (click)="f.reset()">Reset</button>
-        <button class="btn btn-outline-info btn-custom" [disabled]="isLoadingData">
+        <button class="btn btn-info btn-custom" [disabled]="isLoadingData" style="font-size: 11px !important;">
           <ng-container *ngIf="!isLoadingData">
             Save Vehicle
           </ng-container>

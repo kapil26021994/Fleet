@@ -78,6 +78,7 @@ export class TripDetailComponent implements OnInit {
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         mapTypeControl: false,
         streetViewControl: false,
+        gestureHandling: 'greedy',
         fullscreenControl: true,
         zoomControlOptions: {
           position: google.maps.ControlPosition.RIGHT_CENTER,
@@ -93,6 +94,7 @@ export class TripDetailComponent implements OnInit {
            case 'Circle':
             var circelLocation =new google.maps.LatLng(Number(self.currentTripDetail.tripGeofence[i].data[0].tripGeofanceLat), Number(self.currentTripDetail.tripGeofence[i].data[0].tripGeofenceLng));
              this.circleInstance = new google.maps.Circle({
+                id:self.currentTripDetail.tripGeofence[i].id,
                center: circelLocation,
                map: self.tripDetailMapInstance,
                radius: self.currentTripDetail.tripGeofence[i].radius,
@@ -105,6 +107,19 @@ export class TripDetailComponent implements OnInit {
              });
              self.polylineList.push(self.circleInstance);
              self.circleInstance.setMap(self.tripDetailMapInstance);
+
+             //center_changed it will be triggerd once change from center of the point....
+             google.maps.event.addListener(self.circleInstance, 'center_changed', function (evt) {
+              self.selectedLatLngList.push({ 
+                "tripGeofanceLat":this.center.lat(),
+                "tripGeofenceLng":this.center.lng()
+              })
+              let  index = self.currentTripDetail.tripGeofence.findIndex(x=>x.id == this.id);
+              if(index != -1){
+                self.currentTripDetail.tripGeofence[index].data = self.selectedLatLngList;
+                self.selectedLatLngList =[];
+              }
+             });
  
              //get draggable and radius_changed events..
              google.maps.event.addListener(self.circleInstance, 'dragend', function(evt){
@@ -112,29 +127,34 @@ export class TripDetailComponent implements OnInit {
                  "tripGeofanceLat":evt.latLng.lat(),
                  "tripGeofenceLng":evt.latLng.lng()
                })
-               let  index = self.currentTripDetail.tripGeofence.findIndex(x=>x.type == <any>'Circle');
+               console.log(self.selectedLatLngList);
+               let  index = self.currentTripDetail.tripGeofence.findIndex(x=>x.id == this.id);
                if(index != -1){
                  self.currentTripDetail.tripGeofence[index].data = self.selectedLatLngList;
+                 self.selectedLatLngList =[];
                }
               });
               google.maps.event.addListener(self.circleInstance, 'radius_changed', function (evt) {
-                 let  index = self.currentTripDetail.tripGeofence.findIndex(x=>x.type == <any>'Circle');
+                 let  index = self.currentTripDetail.tripGeofence.findIndex(x=>x.id == this.id);
                  if(index != -1){
-                   self.currentTripDetail.tripGeofence[index].radius = self.circleInstance.getRadius()
-                 }
+                   self.currentTripDetail.tripGeofence[index].radius =this.getRadius();
+                   self.selectedLatLngList =[];
+                   self.circleInstance='';
+                }
              });
              break;
            case 'polygon':
              // Define the LatLng coordinates for the polygon's path.
-             for(var  j=0;j<this.currentTripDetail.tripGeofence[i].data.length;j++){
-               this.triangleCoords.push({
-                 'lat':Number(this.currentTripDetail.tripGeofence[i].data[j].tripGeofanceLat),
-                 'lng':Number(this.currentTripDetail.tripGeofence[i].data[j].tripGeofenceLng),
+             for(var  j=0;j<self.currentTripDetail.tripGeofence[i].data.length;j++){
+              self.triangleCoords.push({
+                 'lat':Number(self.currentTripDetail.tripGeofence[i].data[j].tripGeofanceLat),
+                 'lng':Number(self.currentTripDetail.tripGeofence[i].data[j].tripGeofenceLng),
                })
              }
                // Construct the polygon.
-               this.polygonInstance = new google.maps.Polygon({
-                 paths: this.triangleCoords,
+               self.polygonInstance = new google.maps.Polygon({
+                 id:self.currentTripDetail.tripGeofence[i].id,
+                 paths: self.triangleCoords,
                  strokeColor: "#FF0000",
                  strokeOpacity: 0.3,
                  strokeWeight: 1,
@@ -143,23 +163,25 @@ export class TripDetailComponent implements OnInit {
                  draggable: true,
                  editable: true
                });
-               var  self = this;
-               self.polylineList.push(this.polygonInstance);
+               self.polylineList.push(self.polygonInstance);
+               self.triangleCoords=[];
                
                var place_polygon_path = self.polygonInstance.getPath()
                google.maps.event.addListener(place_polygon_path, 'set_at', function (evt) {
-                 let list = [];
+                 var list = [];
+                 var place_polygon_path = self.polygonInstance.getPath()
                  let coords = place_polygon_path.getArray();
                  for(var  j=0;j<coords.length;j++){
                    list.push({
                      'tripGeofanceLat':Number(coords[j].lat()),
-                     'tripGeofenceLng':Number(coords[j].lng()),
+                     'tripGeofenceLng':Number(coords[j].lng())
                    })
                  }
-                 let  index = self.currentTripDetail.tripGeofence.findIndex(x=>x.type == <any>'polygon');
+                 let  index = self.currentTripDetail.tripGeofence.findIndex(x=>x.id == self.polygonInstance.id);
                  if(index != -1){
-                   self.currentTripDetail.tripGeofence[index].data = [];
                    self.currentTripDetail.tripGeofence[index].data = list;
+                   place_polygon_path='';
+                   list =[];
                  }
                });
                self.polygonInstance.setMap(self.tripDetailMapInstance);
@@ -172,31 +194,35 @@ export class TripDetailComponent implements OnInit {
                })
              }
              self.polylineInstance = new google.maps.Polyline({
+               id:this.currentTripDetail.tripGeofence[i].id,
                path: self.triangleCoords,
                geodesic: true,
                strokeColor: "#FF0000",
-               strokeOpacity: 3.0,
-               strokeWeight: 2,
+               strokeOpacity: 0.3,
+               strokeWeight: 1,
                draggable: true,
                editable: true
              });
              var  self = this;
-             this.polylineList.push(this.polylineInstance);
-             let polylinePath = this.polylineInstance.getPath();
+             self.polylineList.push(self.polylineInstance);
+             self.triangleCoords =[];
+             let polylinePath = self.polylineInstance.getPath();
              google.maps.event.addListener(polylinePath, 'set_at', function (evt) {
-               let list = [];
-               var path = polylinePath.getArray();
-                 let  index = self.currentTripDetail.tripGeofence.findIndex(x=>x.type == <any>'polyline');
-                 if(index != -1){
-                   for(var  j=0;j<path.length;j++){
-                     list.push({
-                       'tripGeofanceLat':Number(path[j].lat()),
-                       'tripGeofenceLng':Number(path[j].lng()),
-                     })
-                   }
-                   self.currentTripDetail.tripGeofence[index].data =[];
-                   self.currentTripDetail.tripGeofence[index].data =list;
-                 }
+                let list = [];
+                var polylinePath = self.polylineInstance.getPath();
+                var path = polylinePath.getArray();
+                let index = self.currentTripDetail.tripGeofence.findIndex(x=>x.id == self.polylineInstance.id);
+                if(index != -1){
+                  for(var  j=0;j<path.length;j++){
+                    list.push({
+                      'tripGeofanceLat':Number(path[j].lat()),
+                      'tripGeofenceLng':Number(path[j].lng()),
+                    })
+                  }
+                  self.currentTripDetail.tripGeofence[index].data =list;
+                  list=[];
+                  polylinePath = ''
+                }
              });
             this.polylineInstance.setMap(this.tripDetailMapInstance);
              break;
@@ -304,7 +330,6 @@ export class TripDetailComponent implements OnInit {
       // this.deleteSelectedShape()
       
       const drawingManager = new google.maps.drawing.DrawingManager({
-        drawingMode: google.maps.drawing.OverlayType.MARKER,
         drawingControl: true,
         drawingControlOptions: {
           position: google.maps.ControlPosition.TOP_CENTER,

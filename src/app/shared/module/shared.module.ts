@@ -31,11 +31,10 @@ import { ConfirmationDialog } from '../components/confirmation-dialog/confirmati
 import {MatDialogModule} from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { DatePipe } from '@angular/common';
-
-
+import { IsDisabledPipePipe } from '../pipe/is-disabled-pipe.pipe';
 
 @NgModule({
-  declarations: [SpinnerComponent,MapComponent,DownloadContentComponent,ConfirmationDialog],
+  declarations: [SpinnerComponent,MapComponent,DownloadContentComponent,ConfirmationDialog,IsDisabledPipePipe],
   entryComponents: [ConfirmationDialog],
   imports: [
     RouterModule,
@@ -93,7 +92,8 @@ import { DatePipe } from '@angular/common';
     MatDialogModule,
     ConfirmationDialog,
     MatChipsModule,
-    MatNativeDateModule,   
+    MatNativeDateModule, 
+    IsDisabledPipePipe,  
     ReactiveFormsModule],
     providers: [
       DatePipe,

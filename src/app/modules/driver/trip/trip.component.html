@@ -1,21 +1,23 @@
 <div class="page-header">
-    <h3 class="page-title">
-      All Trip
-    </h3>
-    <nav aria-label="breadcrumb">
-      <ul class="breadcrumb" style="padding: 0;">
-        <li class="breadcrumb-item active" aria-current="page">
-         <button class="btn btn-info button-size" (click)="toggleDialog();resetData()"> + Add New Trip</button>
-        </li>
-      </ul> 
-    </nav>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <div class="table-filter-options row">
-        <div class="col-md-12 col-sm-12 col-md-12">
-          <form class="example-form" style="display: flex;" [formGroup]="tripListForm">
-            <table class="example-full-width" cellspacing="0"><tr>
+  <h3 class="page-title">
+    All Trip
+  </h3>
+  <nav aria-label="breadcrumb">
+    <ul class="breadcrumb" style="padding: 0;">
+      <li class="breadcrumb-item active" aria-current="page">
+        <button class="btn btn-info button-size" (click)="toggleDialog();resetData()"
+          *ngIf="'Trip' | isDisabledPipe : 'Trip insert'"> + Add New Trip</button>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-filter-options row">
+      <div class="col-md-12 col-sm-12 col-md-12">
+        <form class="example-form" style="display: flex;" [formGroup]="tripListForm">
+          <table class="example-full-width" cellspacing="0">
+            <tr>
               <td>
                 <div class="table-search ">
                   <div class="search-icon"><i class="mdi mdi-magnify"></i></div>
@@ -23,217 +25,223 @@
                     <input type="string" placeholder="Search trip name" formControlName="driverTripName">
                   </div>
                 </div>
-            </td>
-            </tr></table>
-              </form>
-        </div>
-      </div>
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter #exporter="matTableExporter">
-        <ng-container matColumnDef="select">
-          <th mat-header-cell *matHeaderCellDef>
-            <mat-checkbox (change)="$event ? masterToggle() : null"
-                          [checked]="selection.hasValue() && isAllSelected()"
-                          [indeterminate]="selection.hasValue() && !isAllSelected()"
-                          [aria-label]="checkboxLabel()">
-            </mat-checkbox>
-          </th>
-          <td mat-cell *matCellDef="let row">
-            <mat-checkbox (click)="$event.stopPropagation()"
-                          (change)="$event ? selection.toggle(row) : null"
-                          [checked]="selection.isSelected(row)"
-                          [aria-label]="checkboxLabel(row)">
-            </mat-checkbox>
-          </td>
-        </ng-container>
-          <ng-container matColumnDef="createDateTime">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Created Date </th>
-            <td mat-cell *matCellDef="let element"> {{element.createDateTime | date:'MM/dd/yyyy'}} </td>
-          </ng-container>
-         <ng-container matColumnDef="startPoint">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Point</th>
-          <td mat-cell *matCellDef="let element" [matTooltip]="element.startPoint">
-            <div class="dotted-line">
-              {{element.startPoint}}
-          </div>  
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="tripName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Trip Name</th>
-          <td mat-cell *matCellDef="let element" [matTooltip]="element.tripName">
-            <div class="dotted-line">
-              {{element.tripName}}
-          </div>  
-          </td>
-        </ng-container>
-         <ng-container matColumnDef="driverName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Driver Name</th>
-          <td mat-cell *matCellDef="let element">
-            <div class="dotted-line">
-              {{element.driver.firstName}} {{element.driver.lastName}}
-          </div>  
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="vehicleNumber">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Vehicle Number</th>
-          <td mat-cell *matCellDef="let element">
-            <div class="dotted-line">
-              {{element.vehicle.vehicleNumber}}
-          </div>  
-          </td>
-        </ng-container>
-          <ng-container matColumnDef="active">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-            <td mat-cell *matCellDef="let element"> 
-              <ng-container *ngIf="element.active">
-              <span class="dot"></span>Active 
-              </ng-container> 
-              <ng-container *ngIf="!element.active">
-                <span class="dot"></span>Inactive 
-                </ng-container> 
-           </td>
-          </ng-container>
-        <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef> Actions </th>
-          <td mat-cell *matCellDef="let row" style="width:20%">
-            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item  title="View Contact" (click)="getCurrentTripDetail(row,exporter)">
-                <mat-icon>remove_red_eye</mat-icon>
-                <span>View</span>
-              </button>
-              <button mat-menu-item (click)="deleteTrip(row)">
-                <mat-icon>delete</mat-icon>
-                  <span>Delete</span>
-              </button>
-            </mat-menu>
-          </td>
-        </ng-container>
-        <ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-              (click)="selection.toggle(row)">
-          </tr>
-        </ng-container>
-      </table>
-      <div *ngIf="isLoading"  class="circle-spinner">
-        <mat-progress-spinner 
-          color="primary" [diameter]="50"
-          mode="indeterminate">
-        </mat-progress-spinner>
-      </div>
-      <tr *ngIf="!dataSource">
-        <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
-          No Records Found!
-        </td>
-      </tr>
-      <ng-container *ngIf="tripList.length>0">
-        <app-download-content [data]="tripList" [exporterInstance]="exporter"></app-download-content>
-     </ng-container> 
-      <mat-paginator  [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false" aria-label="Select page of users"></mat-paginator>
-      <div class="card card-table">
+              </td>
+            </tr>
+          </table>
+        </form>
       </div>
     </div>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matTableExporter
+      #exporter="matTableExporter">
+      <ng-container matColumnDef="createDateTime">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Created Date </th>
+        <td mat-cell *matCellDef="let element"> {{element.createDateTime | date:'MM/dd/yyyy'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="startPoint">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Point</th>
+        <td mat-cell *matCellDef="let element" [matTooltip]="element.startPoint">
+          <div class="dotted-line">
+            {{element.startPoint}}
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="tripName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Trip Name</th>
+        <td mat-cell *matCellDef="let element" [matTooltip]="element.tripName">
+          <div class="dotted-line">
+            {{element.tripName}}
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="driverName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Driver Name</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="dotted-line">
+            {{element.driver.firstName}} {{element.driver.lastName}}
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="vehicleNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Vehicle Number</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="dotted-line">
+            {{element.vehicle.vehicleNumber}}
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="active">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let element">
+          <ng-container *ngIf="element.active">
+            <span class="dot"></span>Active
+          </ng-container>
+          <ng-container *ngIf="!element.active">
+            <span class="dot"></span>Inactive
+          </ng-container>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let row" style="width:20%">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item title="View Contact" (click)="getCurrentTripDetail(row,exporter)"
+              *ngIf="'Trip' | isDisabledPipe : 'Trip update'">
+              <mat-icon>remove_red_eye</mat-icon>
+              <span>View</span>
+            </button>
+            <button mat-menu-item (click)="deleteTrip(row)" *ngIf="'Trip' | isDisabledPipe : 'Trip delete'">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+      <ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)">
+        </tr>
+      </ng-container>
+    </table>
+    <div *ngIf="isLoading" class="circle-spinner">
+      <mat-progress-spinner color="primary" [diameter]="50" mode="indeterminate">
+      </mat-progress-spinner>
+    </div>
+    <tr *ngIf="!dataSource">
+      <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
+        No Records Found!
+      </td>
+    </tr>
+    <ng-container *ngIf="tripList.length>0">
+      <app-download-content [data]="tripList" [exporterInstance]="exporter"></app-download-content>
+    </ng-container>
+    <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" hidePageSize="false"
+      aria-label="Select page of users"></mat-paginator>
+    <div class="card card-table">
+    </div>
   </div>
-  
-  
-  <!-- Add new Vehicle form -->
-  
-  
-  <div class="form-dialog" id="addVehicle"> 
-    <div class="closeDailog" (click)="toggleDialog()"></div>
-    <div class="form-container">
-      <div class="heading">
-        <p><b>Add Trip</b></p>
-        <div class="float-right">
-            <button class="btn btn-outline-info btn-custom" (click)="toggleDialog();resetData()">Close</button>
-          <!-- <button class="btn btn-info button-size" >Save Route</button> -->
+</div>
+
+
+<!-- Add new Vehicle form -->
+
+
+<div class="form-dialog" id="addVehicle">
+  <div class="closeDailog" (click)="toggleDialog()"></div>
+  <div class="form-container">
+    <div class="heading">
+      <p><b>Add Trip</b></p>
+      <div class="float-right">
+        <button class="btn btn-outline-info btn-custom" (click)="toggleDialog();resetData()">Close</button>
+        <!-- <button class="btn btn-info button-size" >Save Route</button> -->
+      </div>
+    </div>
+    <form #f="ngForm">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group row">
+            <label>Trip Name</label>
+            <input type="text" class="form-control" name="tripName" [(ngModel)]="tripAddModel.tripName"
+              #tripName="ngModel" placeholder="Enter Trip Name"
+              [ngClass]="{ 'is-invalid': f.submitted && tripName.invalid }" required />
+            <div *ngIf="f.submitted && tripName.invalid" class="invalid-feedback">
+              <div *ngIf="tripName.errors.required">Trip Name is required</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6" style="margin-top: -9px;">
+          <div class="form-group row">
+            <label style="width: 161px !important">Select Vechicle</label>
+            <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission">
+              <mat-label>Select Vechicle</mat-label>
+              <mat-select name="contactMethod" #vehicleNumber="ngModel" [(ngModel)]="tripAddModel.vehicleNumber"
+                name="vehicle" (ngModelChange)="updateDataViaKey($event,'vehicle')"
+                [ngClass]="{ 'is-invalid': f.submitted && vehicleNumber.invalid }" required>
+                <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)"> 
+                <mat-option *ngFor="let vehicle of vehicleList" [value]="vehicle.vehicleNumber">
+                  {{vehicle.vehicleNumber}}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="f.submitted && vehicleNumber.invalid">
+                <div *ngIf="vehicleNumber.errors.required">Company is required</div>
+              </mat-error>
+            </mat-form-field>
+          </div>
         </div>
       </div>
-      <form  #f="ngForm">
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="form-group row">
-              <label style="width: 161px !important">Select Vechicle</label>
-              <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
-                <mat-label >Select Vechicle</mat-label>
-                <mat-select name="contactMethod" #vehicleNumber="ngModel" [(ngModel)]="tripAddModel.vehicleNumber" name="vehicle" 
-                (ngModelChange)="updateDataViaKey($event,'vehicle')"
-                  [ngClass]="{ 'is-invalid': f.submitted && vehicleNumber.invalid }" required>
-                  <mat-option *ngFor="let vehicle of vehicleList" [value]="vehicle.vehicleNumber">{{vehicle.vehicleNumber}}</mat-option>
-                </mat-select>
-                <mat-error *ngIf="f.submitted && vehicleNumber.invalid">
-                  <div *ngIf="vehicleNumber.errors.required">Company is required</div>
-                </mat-error> 
-              </mat-form-field>
-            </div>
-          </div>
-       <div class="col-sm-6">
-            <div class="form-group row">
-              <label style="width: 161px !important">Select Driver</label>
-              <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission" >
-                <mat-label >Select Driver</mat-label>
-                <mat-select name="driverName" #driverName="ngModel" [(ngModel)]="tripAddModel.driverName" 
+      <div class="row">
+        <div class="col-sm-6" style="margin-top: -7px;">
+          <div class="form-group row">
+            <label style="width: 161px !important">Select Driver</label>
+            <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission">
+              <mat-label>Select Driver</mat-label>
+              <mat-select name="driverName" #driverName="ngModel" [(ngModel)]="tripAddModel.driverName"
                 (ngModelChange)="updateDataViaKey($event,'driver')"
-                  [ngClass]="{ 'is-invalid': f.submitted && driverName.invalid }" required>
-                  <mat-option *ngFor="let driver of driverList" [value]="driver.firstName">{{driver.firstName}} </mat-option>
-                </mat-select>
-                <mat-error *ngIf="f.submitted && driverName.invalid">
-                  <div *ngIf="driverName.errors.required">Driver is required</div>
-                </mat-error> 
-              </mat-form-field>
+                [ngClass]="{ 'is-invalid': f.submitted && driverName.invalid }" required>
+                <mat-option *ngFor="let driver of driverList" [value]="driver.firstName">{{driver.firstName}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="f.submitted && driverName.invalid">
+                <div *ngIf="driverName.errors.required">Driver is required</div>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="col-sm-6" style="margin-top: -3px;">
+          <div class="form-group row">
+            <label>Start Date</label>
+            <input type="datetime-local" class="form-control date-picker-position" name="startDate"
+              [(ngModel)]="tripAddModel.startDate" #startDate="ngModel" placeholder="Enter Start Point"
+              [ngClass]="{ 'is-invalid': f.submitted && startDate.invalid }" required  (change)="getSelectedDate($event)"/>
+            <div *ngIf="f.submitted && startDate.invalid" class="invalid-feedback">
+              <div *ngIf="startDate.errors.required">Start Date is required</div>
             </div>
           </div>
+        </div>
       </div>
       <div class="row">
         <div class="col-sm-6">
-            <div class="form-group row">
-              <label>Start Date</label>
-              <input type="date" class="form-control date-picker-position" name="startDate" [(ngModel)]="tripAddModel.startDate" #startDate="ngModel" 
-              placeholder="Enter Start Point" [ngClass]="{ 'is-invalid': f.submitted && startDate.invalid }" required />
-              <div *ngIf="f.submitted && startDate.invalid" class="invalid-feedback">
-                  <div *ngIf="startDate.errors.required">Start Date is required</div>
-              </div>
-            </div> 
-          </div>
-          <div class="col-sm-6">
-            <div class="form-group row">
-              <label>End Date</label>
-              <input type="date" class="form-control date-picker-position" name="endDate" [(ngModel)]="tripAddModel.endDate" #endDate="ngModel" 
-              placeholder="Enter Start Point" [ngClass]="{ 'is-invalid': f.submitted && endDate.invalid }" required />
-              <div *ngIf="f.submitted && endDate.invalid" class="invalid-feedback">
-                  <div *ngIf="endDate.errors.required">End Date is required</div>
-              </div>
+          <div class="form-group row">
+            <label>End Date</label>
+            <input id="endDateLocal" type="datetime-local" class="form-control date-picker-position" name="endDate"
+              [(ngModel)]="tripAddModel.endDate" #endDate="ngModel" placeholder="Enter Start Point"
+              [ngClass]="{ 'is-invalid': f.submitted && endDate.invalid }" required />
+            <div *ngIf="f.submitted && endDate.invalid" class="invalid-feedback">
+              <div *ngIf="endDate.errors.required">End Date is required</div>
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="form-group row">
-              <label>Start Point</label>
-              <input  id="autocomplete" type="text" (keyup)="fetchLocationViaKey('autocomplete')" class="form-control" name="startPoint" [(ngModel)]="tripAddModel.startPoint" #startPoint="ngModel" 
-              placeholder="Enter Start Point" [ngClass]="{ 'is-invalid': f.submitted && startPoint.invalid }" required />
-              <div *ngIf="f.submitted && startPoint.invalid" class="invalid-feedback">
-                  <div *ngIf="startPoint.errors.required">Start Point is required</div>
-              </div>
-              </div>
+        <div class="col-sm-6">
+          <div class="form-group row">
+            <label>Start Point</label>
+            <input id="autocomplete" type="text" (keyup)="fetchLocationViaKey('autocomplete')" class="form-control"
+              name="startPoint" [(ngModel)]="tripAddModel.startPoint" #startPoint="ngModel"
+              placeholder="Enter Start Point" [ngClass]="{ 'is-invalid': f.submitted && startPoint.invalid }"
+              required />
+            <div *ngIf="f.submitted && startPoint.invalid" class="invalid-feedback">
+              <div *ngIf="startPoint.errors.required">Start Point is required</div>
             </div>
-            <div class="col-sm-5">
-              <div class="form-group row ">
-                <label>Add More Point</label>
-                <input  id="autocomplete2" type="text" (keyup)="fetchLocationViaKey('autocomplete2')" 
-                class="form-control" name="addNewLocation" [(ngModel)]="tripAddModel.addNewLocation" #addNewLocation="ngModel" 
-                placeholder="Enter Start Point" [ngClass]="{ 'is-invalid': f.submitted && addNewLocation.invalid }" required />
-                <div *ngIf="f.submitted && addNewLocation.invalid" class="invalid-feedback">
-                    <div *ngIf="addNewLocation.errors.required">New Location is required</div>
-                </div>
-                <button title="Add Location" class="btn btn-info button-size new_location_input"
-                  [disabled]="tripAddModel.addNewLocation == '' || tripAddModel.addNewLocation == undefiend"
-                (click)="addLocation()"> <span class="icon_wrapper">+</span></button>
-                </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-5">
+          <div class="form-group row ">
+            <label>Add More Point</label>
+            <input id="autocomplete2" type="text" (keyup)="fetchLocationViaKey('autocomplete2')" class="form-control"
+              name="addNewLocation" [(ngModel)]="tripAddModel.addNewLocation" #addNewLocation="ngModel"
+              placeholder="Enter Start Point" [ngClass]="{ 'is-invalid': f.submitted && addNewLocation.invalid }"
+              required />
+            <div *ngIf="f.submitted && addNewLocation.invalid" class="invalid-feedback">
+              <div *ngIf="addNewLocation.errors.required">New Location is required</div>
             </div>
-            <!-- <div class="col-sm-6">
+            <button title="Add Location" class="btn btn-info button-size new_location_input"
+              [disabled]="tripAddModel.addNewLocation == '' || tripAddModel.addNewLocation == undefiend"
+              (click)="addLocation()"> <span class="icon_wrapper">+</span></button>
+          </div>
+        </div>
+        <!-- <div class="col-sm-6">
               <div class="form-group row">
                 <label>End Point</label>
                 <input id="autocomplete1" type="text" (keyup)="fetchLocationViaKey('autocomplete1')" class="form-control" name="endPoint"
@@ -244,39 +252,18 @@
                 </div>
               </div>
             </div> -->
+      </div>
+      <div class="form-group" style="margin-top: 19px;">
+        <div id="googleMap_trip" class="map-wrapper"></div>
+      </div>
+      <div class="form-group form-control-footer">
+        <button class="btn btn-outline-info btn-custom" type="reset"
+          (click)="toggleDialog($event);f.reset()">Cancel</button>&nbsp;&nbsp;
+        <button class="btn  btn-outline-info btn-custom" type="reset" (click)="f.reset();resetData()">Reset</button>
+        <div>
+          <button class="btn btn-info button-size" (click)="addNewTrip(f)">SAVE Trip</button>
         </div>
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="form-group row">
-              <label>Trip Name</label>
-              <input   type="text" class="form-control" name="tripName" [(ngModel)]="tripAddModel.tripName" #tripName="ngModel" 
-              placeholder="Enter Trip Name" [ngClass]="{ 'is-invalid': f.submitted && tripName.invalid }" required />
-              <div *ngIf="f.submitted && tripName.invalid" class="invalid-feedback">
-                  <div *ngIf="tripName.errors.required">Trip Name is required</div>
-              </div>
-              </div>
-            </div>
-          </div>
-          <!-- <div class="row" *ngIf="tripAddModel.tripLatLong.length>0">
-            <div class="col-12 col-md-6">
-              <h6 class="text-muted">Locaion List</h6> 
-              <ul class="list-group">
-                <li class="list-group-item" *ngFor="let location of tripAddModel.tripLatLong">
-                  {{location.address}}<i class="fas fa-times text-info mx-2" (click)="removeSelectedLocation(location)"></i>
-                  </li>
-              </ul>
-            </div>
-          </div> -->
-        <div class="form-group" style="margin-top: 19px;">
-          <div id="googleMap_trip" class="map-wrapper"></div>
-        </div>
-        <div class="form-group form-control-footer">
-          <button class="btn btn-outline-info btn-custom"  (click)="toggleDialog($event);resetData()">Cancel</button>&nbsp;&nbsp;
-          <button class="btn  btn-outline-info btn-custom"   type="reset" (click)="f.reset()">Reset</button>
-          <div>
-            <button class="btn btn-info button-size" (click)="addNewTrip(f)">SAVE Route</button>
-          </div>
-        </div>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
+</div>

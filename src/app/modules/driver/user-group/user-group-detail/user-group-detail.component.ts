@@ -19,6 +19,7 @@ export class UserGroupDetailComponent implements OnInit {
   public isEdit :boolean = false;
   public companyList = [];
   public data = [];
+  public companyCloneList =[];
   public exporterInstance :any;
   selectedPermissionList = [];
   public pokemonControl:FormControl;
@@ -51,6 +52,7 @@ export class UserGroupDetailComponent implements OnInit {
   ngOnInit(): void {
     this.getAllGroupList();
     this.companyList =  JSON.parse(localStorage.getItem('companyList'));
+    this.companyCloneList   = this.companyList;
     if(history.state.data){
       this.currentGroupDetail = history.state.data;
       this.isDefaultData = true
@@ -61,14 +63,6 @@ export class UserGroupDetailComponent implements OnInit {
     }else{
       this.currentGroupDetail = JSON.parse(localStorage.getItem('currentPageData'));
     }
-  }
-
-  ngAfterViewInit(){
-    //this.defaultSelectedValue(this.content);
-   //default show selected checkbox....
-  //  if(this.currentGroupDetail.addPermissions.length>0){
-  //   this.defaultSelectedValue(this.content);
-  // }
   }
 
       /*
@@ -82,6 +76,12 @@ export class UserGroupDetailComponent implements OnInit {
         this.currentGroupDetail.isActive='active';
       }else{
         this.currentGroupDetail.isActive='inActive';
+      }
+
+      //check company name in array...
+      let matchedCompany = this.companyList.find(x=>x.companyName == this.currentGroupDetail.company.companyName);
+      if(matchedCompany){
+        this.currentGroupDetail.company = matchedCompany;
       }
       this.userService.updateData(this.currentGroupDetail ,'updateUserGroupInfo').subscribe((data:any)=>{
         if(data.message){
@@ -133,9 +133,13 @@ export class UserGroupDetailComponent implements OnInit {
           }
         }else{
           let matched =this.selectedPermissionList.find(x=>x.name == event.source.group.label);
+          let permssionIndex = this.selectedPermissionList.findIndex(x=>x.name == event.source.group.label);
           if(matched){
             let index = matched.items.findIndex(x=>x.value == value);
             matched.items.splice(index,1);
+            if(matched.items.length == 0){
+              this.selectedPermissionList.splice(permssionIndex,1);
+            }
           }
     
           let matchedcloneData =this.selectedPermissionCloneList.find(x=>x.name == event.source.group.label);
@@ -217,5 +221,11 @@ export class UserGroupDetailComponent implements OnInit {
           })
         }
       });
+    }
+
+    search(value: string) { 
+      let filter = value.toLowerCase();
+     let list = this.companyCloneList.filter(option => option.companyName.toLowerCase().startsWith(filter));
+      return this.companyList= list;
     }
 }

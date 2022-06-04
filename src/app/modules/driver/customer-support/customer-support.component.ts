@@ -69,7 +69,7 @@ get isActive() {
   ngOnInit() {
     this.vehicleTypeList =  JSON.parse(localStorage.getItem('vehicleTypeList'));
     this.getAllUserList();
-    this.getAllConnectedUserList();
+    //this.getAllConnectedUserList();
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
@@ -134,10 +134,12 @@ get isActive() {
       Summary:getAllCompanyData for get vehicle list
       Return list
     */
+   public companyCloneList =[];
     getAllCompanyData() {
       this.userService.getDataByUrl('company/showAllCompanyData').subscribe((data:any)=>{
         if(data.length>0){
           this.companyList = data;
+          this.companyCloneList =this.companyList;
           this.customerSupportAdd.company=this.companyList[0];
         } else{
           this.companyList= [];
@@ -186,6 +188,17 @@ get isActive() {
       }else{
         let companyData =  this.companyList.find(x=>x.companyName == value);
         this.customerSupportAdd.company = companyData;
+
+        //showSubUserByCompanyId for get userList by companyId
+        if(this.customerSupportAdd.company.id){
+          this.userService.getDataByUrl('subUser/showSubUserByCompanyId/'+this.customerSupportAdd.company.id).subscribe((data:any)=>{
+            if(data.length>0){
+              this.userList = data;
+            }
+          },error=>{
+            this.authService.errorToast(error.message);
+          })
+        }
       }
     }
 
@@ -289,24 +302,10 @@ get isActive() {
     this.userService.resetFilter(this.filterForm);
   }
 
-   /*
-    Author:Kapil Soni
-    Funcion:getAllVehicleList
-    Summary:getAllVehicleList for get vehicle list
-    Return list
-  */
-  getAllConnectedUserList() {
-    this.isLoading = true;
-    this.userService.getDataByUrl('subUser/showAllSubUserData').subscribe((data:any)=>{
-      if(data.length>0){
-        this.userList = data;
-      } else{
-        this.isLoading = false;
-      }
-    },  error => {
-      this.isLoading = false;
-      this.authService.errorToast(error.error.message);
-    })
+  search(value: string) { 
+    let filter = value.toLowerCase();
+   let list = this.companyCloneList.filter(option => option.companyName.toLowerCase().startsWith(filter));
+    return this.companyList= list;
   }
 
   getCurrentVehicleDetail(detail:any,exporter){

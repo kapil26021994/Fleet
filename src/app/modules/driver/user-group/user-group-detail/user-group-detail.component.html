@@ -1,7 +1,7 @@
 
 <div class="navigation">
-    <a  routerLink="/user/group"><span><i class="mdi mdi-keyboard-backspace"></i> Group</span></a>
-    <span routerLink="/user/group"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
+    <a  routerLink="/user/group"><span class="navigation-back"><i class="mdi mdi-keyboard-backspace"></i> Group</span></a>
+    <span routerLink="/user/group" class="navigation-back"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
     <span></span>
 </div>
 <div class="page-header">
@@ -35,6 +35,7 @@
                 <span>:</span>
                 <mat-form-field fxFlex="40" class="field-wrapper app-permission" >
                   <mat-select [disabled]="!isEdit" name="contactMethod"  id="contactMethod"  [(ngModel)]="currentGroupDetail.company.companyName">
+                    <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)"> 
                     <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -44,21 +45,6 @@
               <div class="form-group">
                 <label>App Permission</label>
                 <span>:</span>
-                <!-- <mat-form-field fxFlex="40" class="field-wrapper app-permission">
-                    <mat-select  [(ngModel)]="currentGroupDetail.addPermissions"  [disabled]="!isEdit" placeholder="App Permission" multiple name="permission"> 
-                      <mat-option *ngFor="let permission of permissionList" [value]="permission">{{permission}}</mat-option>
-                    </mat-select>
-                  </mat-form-field> -->
-                  <!-- <mat-form-field appearance="fill" fxFlex="40" class="field-wrapper app-permission">
-                    <mat-label>App Permission</mat-label>
-                    <mat-select  disableOptionCentering multiple [(ngModel)]="modelGroup" multiple #itemSelect="ngModel"  placeholder="Vehicle Type" name="permission">
-                      <mat-optgroup *ngFor="let permission of totalPermissionList" [label]="permission.pageName">
-                        <mat-option *ngFor="let permission_name of permission.addPermissions" [value]="permission_name" (onSelectionChange)="optionSelected($event,permission_name)">
-                          {{permission_name}}
-                        </mat-option>
-                      </mat-optgroup>
-                    </mat-select>
-                  </mat-form-field> -->
                   <mat-form-field fxFlex="40" class="field-wrapper app-permission">
                     <mat-select [(ngModel)]="modelGroup" [disabled]="!isEdit" #itemSelect="ngModel" name="permission"  multiple>
                       <!-- Loop through each group via the groups array -->

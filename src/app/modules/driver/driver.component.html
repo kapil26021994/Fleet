@@ -6,7 +6,7 @@
         <div class="content-wrapper">
           <app-spinner *ngIf="isLoading"></app-spinner>
           <div contentAnimater *ngIf="!isLoading"  class="h-100">
-            <router-outlet></router-outlet>
+            <router-outlet (activate)="onActivate($event)"></router-outlet>
           </div>
         </div>
       </div>

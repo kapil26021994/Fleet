@@ -39,16 +39,17 @@ export class PlacesListComponent implements OnInit {
   public placeMapInstance:any;
   public circleInstance :any;
   public selectedLatLngList =[];
+  public isStartLocation : boolean = false;
+  public markerList = [];
   drwaingTypeList  = ['Polygon','Reactangle','Circle','Polyline']
-
-  toggleDialog(event) {
-    this.resetData();
-    document.getElementById('addPlaceForm').classList.toggle('show-dailog');
-  }
+  public notificationList = ['Inside','Outside','Both'];
+ 
   checked = false;
   indeterminate = false;
   types:any = ["Car", "Truck", "Bus"];
   filteredValues =  {placeName: '',geoFence:[]};
+  public companyList = [];
+  public companyCloneList =[];
 
   public driverForm : any;
   public selectedShape :any;
@@ -74,8 +75,9 @@ get geoFence() {
 
   ngOnInit() {
     this.getAllPlacesList();
+    this.companyList =  JSON.parse(localStorage.getItem('companyList'));  
+    this.companyCloneList = this.companyList;
   }
-
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
@@ -113,11 +115,15 @@ get geoFence() {
       Summary:loadGoogleMap for get load map
       Return list
     */
+
+   
     loadGoogleMap() {
+      
       if(document.getElementById("googleMapPlace") != null){
         this.placeMapInstance = new google.maps.Map(document.getElementById("googleMapPlace"), {
           zoom: 5,
           mapTypeControl: false,
+          gestureHandling: 'greedy',
           streetViewControl: false,
           fullscreenControl: true,
           zoomControlOptions: {
@@ -170,19 +176,23 @@ get geoFence() {
       addNewPlace(form:any){
         this.driverForm = form;
         this.submitted = true;
-        if(form.form.valid){
+        if(form.form.valid && this.placesAddModel.geofence.length>0){
           this.isLoading = true;
           if(this.placesAddModel.isActive){
             this.placesAddModel.isActive='active';
           }else{
             this.placesAddModel.isActive='inActive';
           }
+          let matched = this.companyList.find(x=>x.companyName == <any>this.placesAddModel.company);
+          if(matched){
+            this.placesAddModel.company = matched;
+          }
           this.userService.storeDataToDb(<any>this.placesAddModel,'savePlace').subscribe((data:any)=>{
             if(data.message){
               this.isLoading = false;
               form.resetForm();
                 form.reset();
-  
+              this.isStartLocation = false;
                 //dismiss dlalog and get all list
                 this.toggleDialog('');
                 this.getAllPlacesList();
@@ -202,12 +212,13 @@ get geoFence() {
       Summary:resetData for reset Data
       Return list
     */
-      resetData(){
+      resetData(f){
         this.deleteAllShape();
+        this.resetMarker(null);
         this.deleteSelectedShape();
-        if(this.driverForm){
-          this.driverForm.resetForm();
-          this.driverForm.reset();
+        if(f){
+          f.resetForm();
+          f.reset();
         }
       }
 
@@ -281,9 +292,10 @@ get geoFence() {
         } else {
           isPositionAvailable = true;
         }
+
         const resultValue =
           isPositionAvailable  &&
-          data.placeName.toString().trim().toLowerCase().indexOf(searchString.placeName != null ? searchString.placeName.toLowerCase() : '') !== -1 ||
+          data.placeName.toString().trim().toLowerCase().indexOf(searchString.placeName != null ? searchString.placeName.toLowerCase() : '') !== -1  ||
           data.address.toString().trim().toLowerCase().indexOf(searchString.address != null ? searchString.address.toLowerCase() : '') !== -1;;
         return resultValue;
       };
@@ -292,13 +304,18 @@ get geoFence() {
 
   fetchStartLocation(){
     var self = this;
+    this.isStartLocation =true;
     var  autocomplete = new google.maps.places.Autocomplete((document.getElementById('placeAutocomplete')),{ types: ['geocode'] });
       google.maps.event.addListener(autocomplete, 'place_changed', function() {
-
+        this.isStartLocation =false;
+      
         var place = autocomplete.getPlace();
         self.startLocation = place.geometry.location.lat();
         self.endLocation = place.geometry.location.lng();
           self.placesAddModel.address =autocomplete.getPlace().formatted_address;
+          if(self.markerList.length > 0){
+            self.resetData('');
+          }
           self.drwapMarker();
       });
     }
@@ -314,6 +331,7 @@ get geoFence() {
           map: self.placeMapInstance,  
           title: 'HI!! HI´M HERE!',
         });
+        this.markerList.push(mapMarker);
       self.placeMapInstance.setCenter(position);
     }
 
@@ -337,7 +355,6 @@ get geoFence() {
 
     var selectedDrawLine :any;
     const drawingManager = new google.maps.drawing.DrawingManager({
-      drawingMode: google.maps.drawing.OverlayType.MARKER,
       drawingControl: true,
       drawingControlOptions: {
         position: google.maps.ControlPosition.TOP_CENTER,
@@ -358,81 +375,79 @@ get geoFence() {
     var self = this;
     self.drawingToolInstance=drawingManager;
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event:any) {
-      var newShape = event.overlay;
-      newShape.type = event.type;
-      self.selectedShape= newShape;
-      self.allOverlayList.push(event);
-
-      if(self.allOverlayList.length == 2){
-        self.deleteMarkr(newShape.type);
-      }
-      
-      if (event.type == 'circle') {
-        var bounds = event.overlay.getBounds();
-        let lat  = event.overlay.getCenter().lat();
-        let lng = event.overlay.getCenter().lng();
-        self.assignSelectedDataInArray(event,'Circle',event.overlay.getRadius(),lat,lng);
-      }
-    
-      if(event.type == 'polygon') {
-        const coords = event.overlay.getPath().getArray();
-        for(var i=0;i<coords.length;i++){
-          self.selectedLatLngList.push({ 
-            "lat": coords[i].lat(),
-            "lng": coords[i].lng()
-          })
+        var newShape = event.overlay;
+        newShape.type = event.type;
+        self.selectedShape= newShape;
+        self.allOverlayList.push(event);
+  
+        if(self.allOverlayList.length == 2){
+          self.deleteMarkr(newShape.type);
         }
-        self.placesAddModel.geofence.push({
-          "type":event.type,
-          "radius": '',
-          "data": coords
-        })
-        console.log(this.placesAddModel.geofence)
-      }
-
-      if(event.type == 'polyline') {
-        const coords = event.overlay.getPath().getArray();
-        for(var i=0;i<coords.length;i++){
-          self.selectedLatLngList.push({ 
-            "lat": coords[i].lat(),
-            "lng": coords[i].lng()
-          })
-        }
-        self.placesAddModel.geofence.push({
-          "type":'polyline',
-          "radius": '',
-          "data": self.selectedLatLngList
-        })
-        console.log(this.placesAddModel.geofence)
-      }
-      if(event.type == 'rectangle') {
-        var boundsReact = event.overlay.getBounds();
-        self.selectedLatLngList.push({ 
-          "lat": self.startLocation,
-          "lng": self.endLocation
-        })
-        let bounds = {
-          north: boundsReact.getNorthEast().lat(),
-          south: boundsReact.getNorthEast().lng(),
-          east: boundsReact.getSouthWest().lat(),
-          west: boundsReact.getSouthWest().lng()
-        };
         
-        self.placesAddModel.geofence.push({
-          "type":'rectangle',
-          "radius": '',
-          "data": self.selectedLatLngList,
-          "bounds": [bounds]
-        })
-      }
-
-        // Add an event listener that selects the newly-drawn shape when the user
-      // mouses down on it.
-      var newShape = event.overlay;
-      newShape.type = event.type;
+        if (event.type == 'circle') {
+          var bounds = event.overlay.getBounds();
+          let lat  = event.overlay.getCenter().lat();
+          let lng = event.overlay.getCenter().lng();
+          self.assignSelectedDataInArray(event,'Circle',event.overlay.getRadius(),lat,lng);
+        }
+      
+        if(event.type == 'polygon') {
+          const coords = event.overlay.getPath().getArray();
+          for(var i=0;i<coords.length;i++){
+            self.selectedLatLngList.push({ 
+              "lat": coords[i].lat(),
+              "lng": coords[i].lng()
+            })
+          }
+          self.placesAddModel.geofence.push({
+            "type":event.type,
+            "radius": '',
+            "data": coords
+          })
+        }
+  
+        if(event.type == 'polyline') {
+          const coords = event.overlay.getPath().getArray();
+          for(var i=0;i<coords.length;i++){
+            self.selectedLatLngList.push({ 
+              "lat": coords[i].lat(),
+              "lng": coords[i].lng()
+            })
+          }
+          self.placesAddModel.geofence.push({
+            "type":'polyline',
+            "radius": '',
+            "data": self.selectedLatLngList
+          })
+        }
+        if(event.type == 'rectangle') {
+          var boundsReact = event.overlay.getBounds();
+          self.selectedLatLngList.push({ 
+            "lat": self.startLocation,
+            "lng": self.endLocation
+          })
+          let bounds = {
+            north: boundsReact.getNorthEast().lat(),
+            south: boundsReact.getNorthEast().lng(),
+            east: boundsReact.getSouthWest().lat(),
+            west: boundsReact.getSouthWest().lng()
+          };
+          
+          self.placesAddModel.geofence.push({
+            "type":'rectangle',
+            "radius": '',
+            "data": self.selectedLatLngList,
+            "bounds": [bounds]
+          })
+        }
+  
+          // Add an event listener that selects the newly-drawn shape when the user
+        // mouses down on it.
+        var newShape = event.overlay;
+        newShape.type = event.type;
+     
     });
   }
-
 
    deleteSelectedShape() {
     if (this.selectedShape) {
@@ -478,6 +493,23 @@ get geoFence() {
         this.selectedLatLngList=[];
       }
     });
+  }
+
+  toggleDialog(event) {
+    this.submitted=false;
+    document.getElementById('addPlaceForm').classList.toggle('show-dailog');
+  }
+
+  resetMarker(map) {
+    for (var i = 0; i < this.markerList.length; i++) {
+      this.markerList[i].setMap(map);
+    }
+  }
+
+  search(value: string) { 
+    let filter = value.toLowerCase();
+   let list = this.companyCloneList.filter(option => option.companyName.toLowerCase().startsWith(filter));
+    return this.companyList= list;
   }
 }
 

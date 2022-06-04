@@ -6,5 +6,5 @@ export class EventLogReportModel {
     gradeLocation:string;
     stoppage:string;
     overSpeed:string;
-    type:string = 'site';
+    type:string;
 }       

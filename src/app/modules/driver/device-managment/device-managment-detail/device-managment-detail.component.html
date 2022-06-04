@@ -1,87 +1,110 @@
-
 <div class="navigation">
-    <a  routerLink="/user/device/list"><span><i class="mdi mdi-keyboard-backspace"></i> Device </span></a>
-    <span routerLink="/user/device/list"> <span ><i class="mdi mdi-chevron-right"></i></span> {{currentDeviceDetail.deviceName}} </span>
-    <span></span>
+  <a routerLink="/user/device/list"><span class="navigation-back"><i class="mdi mdi-keyboard-backspace"></i> Device
+    </span></a>
+  <span routerLink="/user/device/list" class="navigation-back"> <span><i class="mdi mdi-chevron-right"></i></span>
+    {{currentDeviceDetail.deviceName}} </span>
+  <span></span>
 </div>
 <div class="page-header">
-    <h3 class="page-title">
-      Details
-    </h3>
-    <nav aria-label="breadcrumb">
-      <ul class="breadcrumb" style="padding: 0;">
-        <li class="breadcrumb-item active" aria-current="page">
-            <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
-         <button class="btn btn-info button-size" (click)="deleteDevice()">Delete</button>
-         <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
-         <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateDriverInfo()">Save</button>
-        </li>
-      </ul> 
-    </nav>
-  </div>
-  
-  <!-- <div class="row">
-    <div class="col-md-12">
-      <div class="card card-table">
-        <div class="media">
-            <img class="mr-3 w-25 rounded-img" src="assets/images/logo.png" alt="sample image">
-            <div class="media-body media-details">
-              <h4 class="mt-0">{{currentDeviceDetail.deviceName}}</h4>
-              <p *ngIf="currentDeviceDetail.active"><span class="active-dot" ></span> Active</p>
-              <p *ngIf="!currentDeviceDetail.active"><span class="active-dot" ></span> Deactive</p>
-            </div>
-            <div class="media-body chart-container">
-              <div>
-              </div>
-            </div>
-          </div>
-      </div>
-    </div>
-  </div> -->
-  
+  <h3 class="page-title">
+    Details
+  </h3>
+  <nav aria-label="breadcrumb">
+    <ul class="breadcrumb" style="padding: 0;">
+      <li class="breadcrumb-item active" aria-current="page">
+        <!--<app-download-content class="export-icon-detail" [data]="data" [exporterInstance]="exporterInstance"></app-download-content>-->
+        <button class="btn btn-info button-size" (click)="deleteDevice()">Delete</button>
+        <button class="btn btn-info button-size" *ngIf="!isEdit" (click)="toggleEditForm($event)">Edit</button>
+        <button class="btn btn-info button-size" *ngIf="isEdit" (click)="updateDriverInfo()">Save</button>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
+  <div class="col-sm-12">
+    <div class="card">
 
-  <div class="row mt-2 edit-profile" [class.disableEdit]="!isEdit">
-    <div class="col-sm-12">
-      <div class="card">
-        
       <form id="contact" action="" method="post">
         <div class="row">
           <div class="col-sm-6">
-            <!-- <div class="form-group">
-              <label>Sr. No</label>
+            <div class="form-group">
+              <label>Select Company</label>
               <span>:</span>
-              <input name="id" readonly [(ngModel)]="currentDeviceDetail.id" [disabled]="!isEdit" class="form-input" type="text" tabindex="1" required autofocus>
-            </div> -->
+              <mat-form-field fxFlex="40" class="field-wrapper app-permission">
+                <mat-select disableOptionCentering [disabled]="!isEdit" name="contactMethod" id="contactMethod"
+                  [(ngModel)]="currentDeviceDetail.company.companyName" (ngModelChange)="getSimListByCompany($event)">
+                  <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)"> 
+                  <mat-option *ngFor="let company of companyList" [value]="company.companyName">{{ company.companyName
+                    }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="form-group">
+              <label>Assign SIM</label>
+              <span>:</span>
+              <mat-form-field fxFlex="40" class="field-wrapper app-permission">
+                <mat-select disableOptionCentering [disabled]="!isEdit" name="assign-group" id="assign-group"
+                  (ngModelChange)="updateSim($event)" [(ngModel)]="selectedSimCard">
+                  <mat-option *ngFor="let assignSim of simCardList" [value]="assignSim.callingNumber">{{
+                    assignSim.callingNumber }}</mat-option>
+                    <mat-option [value]="'No-SIM-card'">No SIM card</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
             <div class="form-group">
               <label>Device Name</label>
               <span>:</span>
-              <input name="deviceName"  [(ngModel)]="currentDeviceDetail.deviceName" [disabled]="!isEdit" class="form-input" type="text" tabindex="1" required autofocus>
+              <input name="deviceName" [(ngModel)]="currentDeviceDetail.deviceName" [disabled]="!isEdit"
+                class="form-input" type="text" tabindex="1" required autofocus>
             </div>
             <div class="form-group">
               <label>Device Type</label>
-              <span>:</span><input name="deviceType"   [(ngModel)]="currentDeviceDetail.deviceType" [disabled]="!isEdit" class="form-input" type="text" tabindex="2" required>
+              <span>:</span>
+                <mat-form-field fxFlex="40" class="field-wrapper app-permission">
+                  <mat-select disableOptionCentering [disabled]="!isEdit"  [(ngModel)]="currentDeviceDetail.deviceType" #deviceType="ngModel"
+                     (ngModelChange)="updateDevice($event)" [ngModelOptions]="{standalone: true}">
+                     <input class="example-input" placeholder="search " (keyup)="search($event.target.value)">
+                    <mat-option *ngFor="let type of deviceTypeList" [value]="type.deviceType">
+                      <span *ngIf="type.deviceType != null">{{type.deviceType}}</span>
+                    </mat-option>
+                </mat-select>
+                </mat-form-field>
             </div>
             <div class="form-group">
-              <label>Stationary Lat</label>
-              <span>:</span><input name="stationaryLat"  [(ngModel)]="currentDeviceDetail.stationaryLat" [disabled]="!isEdit" class="form-input" type="email" tabindex="3" required>
+              <label>Technician Name</label>
+              <span>:</span><input name="stationaryLat" [(ngModel)]="currentDeviceDetail.technicianName" placeholder="Added By Whom"
+                [disabled]="!isEdit" class="form-input" type="email" tabindex="3" required>
             </div>
           </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label>Stationary Long </label>
-                    <span>:</span><input name="stationaryLong" [(ngModel)]="currentDeviceDetail.stationaryLong"  [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
-                  </div>
-                <div class="form-group">
-                    <label>Issue Date</label>
-                    <span>:</span><input name="issueDate" [(ngModel)]="currentDeviceDetail.issueDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
-                  </div>
-              <div class="form-group">
-                <label>Activation Date</label>
-                <span>:</span><input name="activationDate" [(ngModel)]="currentDeviceDetail.activationDate" [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
-              </div>
-              </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>Location </label>
+              <span>:</span><input name="stationaryLong" [(ngModel)]="currentDeviceDetail.location"
+                [disabled]="!isEdit" type="text" class="form-input" tabindex="5" required placeholder="where it is addded">
+            </div>
+            <div class="form-group">
+              <label>Issue Date</label>
+              <span>:</span><input name="issueDate" [(ngModel)]="currentDeviceDetail.issueDate" [disabled]="!isEdit"
+                type="date" class="form-input date-picker-position" tabindex="5" required>
+            </div>
+            <div class="form-group">
+              <label>Activation Date</label>
+              <span>:</span><input name="activationDate" [(ngModel)]="currentDeviceDetail.activationDate"
+                [disabled]="!isEdit" type="date" class="form-input date-picker-position" tabindex="5" required>
+            </div>
+            <div class="form-group">
+              <label>Device IMEI</label>
+              <span>:</span><input name="deviceImei" [(ngModel)]="currentDeviceDetail.deviceImei" [disabled]="!isEdit"
+                class="form-input" type="text" tabindex="2" required>
+            </div>
+            <div class="form-group">
+              <label>Is Active</label>
+              <span>:</span>
+              <input  [(ngModel)]="isEditData" [disabled]="!isEdit" class="form-input checkbox-margin"  type="checkbox" name="isActive"> 
+            </div>
+          </div>
         </div>
       </form>
-      </div>
     </div>
   </div>
+</div>

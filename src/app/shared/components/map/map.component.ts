@@ -5,6 +5,8 @@ import { ChangeDetectorRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import {Router } from '@angular/Router';
 import{AuthenticationService} from 'src/app/core/services/authentication/authentication.service';
+import { TouchSequence } from 'selenium-webdriver';
+import { ThrowStmt } from '@angular/compiler';
 
 declare var google;
 @Component({
@@ -100,8 +102,14 @@ public locationExist: boolean = false;
       })
     }
 
-    setEndDataEvent(value){
-      this.getVehicleLocation(this.selectedVehicleNumber);
+    setEndDataEvent(){
+      this.resetFilters();
+      if(this.defaultMapType != 'Vehicle History'){
+        this.getVehicleLocation(this.selectedVehicleNumber);
+      }else{
+        this.getVehicleHistory();
+      }
+      
     }
     /*
       Author:Kapil Soni
@@ -149,25 +157,35 @@ public locationExist: boolean = false;
       Summary:loadGoogleMap for get load map
       Return list
     */
+   public currentMapId :any;
   loadGoogleMap() {
-    if(document.getElementById("googleMapDashboard") != null){
-      this.currentLocationMap = new google.maps.Map(document.getElementById("googleMapDashboard"), {
-        zoom: 5,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: true,
-        zoomControlOptions: {
-          position: google.maps.ControlPosition.RIGHT_CENTER,
-        },
-        draggable : true,
-        center: new google.maps.LatLng(21.7679, 78.8718),
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      });
-      
-      if(this.defaultMapType == 'Dashboard' && !this.vehicleRoute){
-        this.getAllVehicleList()
-      }
+    //dynamic setmap ID..
+    if(this.defaultMapType == 'Dashboard'){
+      this.currentMapId = 'googleMapDashboard';
+    }else{
+      this.currentMapId = 'locationMapDashboard';
     }
+    setTimeout(() => {
+      if(document.getElementById(this.currentMapId) != null){
+        this.currentLocationMap = new google.maps.Map(document.getElementById(this.currentMapId), {
+          zoom: 5,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: true,
+          gestureHandling: 'greedy',
+          zoomControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_CENTER,
+          },
+          draggable : true,
+          center: new google.maps.LatLng(21.7679, 78.8718),
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+        
+        if(this.defaultMapType == 'Dashboard' && !this.vehicleRoute){
+          this.getAllVehicleList()
+        }
+      }
+    }, 100);
   } 
 
    /*
@@ -183,33 +201,81 @@ public locationExist: boolean = false;
     var i,j ;
 
     for (j = 0; j < this.vehicelLocationList.length; j++) {  
-      this.markersArray.push([
-        this.vehicelLocationList[j].imei,
-        this.vehicelLocationList[j].speed,
-        this.vehicelLocationList[j].dttime,
-        this.vehicelLocationList[j].lat,
-        this.vehicelLocationList[j].lngt,
-        this.vehicelLocationList[j].vname
-      ])
+      let matched = this.markersArray.find(x=>x.id == this.vehicelLocationList[j].id);
+      if(matched == undefined){
+        this.markersArray.push([
+          this.vehicelLocationList[j].imei,
+          this.vehicelLocationList[j].speed,
+          this.vehicelLocationList[j].dttime,
+          this.vehicelLocationList[j].lat,
+          this.vehicelLocationList[j].lngt,
+          this.vehicelLocationList[j].vname,
+          this.vehicelLocationList[j].id,
+          this.vehicelLocationList[j].vehicleStatus
+        ])
+      }
     }
-    
     for (i = 0; i < this.markersArray.length; i++) {  
-         var position = new google.maps.LatLng(this.markersArray[i][3], this.markersArray[i][4]);
-        this.mapMarker = new google.maps.Marker({
-          position: position,
-          strokeColor: '#40710C',
-          map: this.currentLocationMap,  
-          title: 'HI!! HI´M HERE!',
-        });
-        this.mapMarkerList.push(this.mapMarker);
-        if(this.defaultMapType == 'Vehicle History'){
-          this.flightPlanCoordinates.push(this.mapMarker.getPosition());
+      var position = new google.maps.LatLng(this.markersArray[i][3], this.markersArray[i][4]);
+      let startLocation = this.markersArray[0];
+      let endLocation = this.markersArray[this.markersArray.length - 1];
+
+      //if tab is Vehicle History then exeutute...
+      if(this.defaultMapType == 'Vehicle History'){
+        if(this.markersArray[i][6] == startLocation[6]){
+          var icon = 'green';
+          var scale = 14;
+        }else if(this.markersArray[i][6] == endLocation[6]){
+          var icon = 'blue';
+          var scale = 14;
+        }else{
+          var icon = 'red';
+          var scale = 12;
         }
-    
-        const imagePath = "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m";
-        const test = new MarkerClusterer(this.currentLocationMap);
-        this.currentLocationMap.setCenter(position);
-         this.isLoadingData = false;
+      }else {
+        if(this.markersArray[i][7] == 'idle'){
+          var icon = 'yellow';
+        }else if(this.markersArray[i][7] == 'running'){
+          var icon = 'green';
+        }else{
+          var icon = 'red';
+        }
+        var scale = 12;
+      }
+      this.mapMarker = new google.maps.Marker({
+        position: position,
+        strokeColor: '#40710C',
+        map: this.currentLocationMap,  
+        title: 'HI!! HI´M HERE!',
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: scale,
+          fillColor: icon,
+          fillOpacity: 1,
+          strokeColor: 'white', 
+          strokeWeight: 2
+        }
+      });
+      if(this.defaultMapType != 'Dashboard'){
+        this.currentLocationMap.setZoom(12);
+      }else{
+        this.currentLocationMap.setZoom(5);
+      }
+      this.mapMarkerList.push(this.mapMarker);
+      
+      if(this.defaultMapType == 'Vehicle History'){
+        this.flightPlanCoordinates.push(this.mapMarker.getPosition());
+      }
+      this.currentLocationMap.setCenter(position);
+
+      const map = this.currentLocationMap;
+      const markers = this.mapMarkerList;
+
+      if(this.defaultMapType == 'Dashboard'){
+        new MarkerClusterer({ markers, map});
+      }
+
+       this.isLoadingData = false;
        var self =this;
       google.maps.event.addListener(self.mapMarker, 'click', (function(marker, i) {
         return function() {
@@ -237,6 +303,9 @@ public locationExist: boolean = false;
   resetFilters(){
     //this.startDate = null;
     this.vehicelLocationList= [];
+    this.markersArray=[];
+   
+    this.flightPlanCoordinates=[];
     //this.endDate = null;
     this.setMapOnAll(null);
   }
@@ -257,6 +326,8 @@ public locationExist: boolean = false;
             this.isLoadingData = false; 
             this.vehicleList= [];
           }
+        },error=>{
+          this.isLoadingData =false;
         })
       }
 
@@ -271,8 +342,9 @@ public locationExist: boolean = false;
         }else{
           this.startDate = undefined;
           this.endDate = undefined;
-          this.getVehicleLocation('');
+          //this.getVehicleHistory();
         }
+        this.loadGoogleMap();
         this.markersArray=[];
         this.mapMarkerList=[];
       }
@@ -287,7 +359,6 @@ public locationExist: boolean = false;
         this.directionsPolylineInstance ? this.directionsPolylineInstance.setMap(null) : '';
       }
 
-
       
    /*
       Author:Kapil Soni
@@ -299,10 +370,10 @@ public locationExist: boolean = false;
       if(value){  
         this.resetFilters();
        this.selectedVehicleNumber= value.vehicleNumber;
-       this.markersArray=[];
-       this.mapMarkerList=[];
-       this.flightPlanCoordinates=[];
-        this.getVehicleLocation(this.selectedVehicleNumber);
+      //  this.markersArray=[];
+      //  this.mapMarkerList=[];
+      //  this.flightPlanCoordinates=[];
+      //   this.getVehicleLocation(this.selectedVehicleNumber);
       }
     }
 
@@ -318,14 +389,52 @@ public locationExist: boolean = false;
     }
 
       getToday(): string {
-        if(this.startDate || this.endDate){
           const now =new Date();
+          this.startFromStartDate();
           return new Date().toISOString().split('T')[0];
-        }
         // if(this.startDate){
         //   const now =new Date();
         //   let finalDate = new Date(now.setDate(now.getDate() + 10));
         //   return new Date(finalDate).toISOString().split('T')[0];
         // }
    }
+
+   startFromStartDate(){
+      if(this.startDate){
+          const now =new Date(this.startDate);
+          let finalDate = new Date(now.setDate(now.getDate() + 20));
+          return new Date(finalDate).toISOString().split('T')[0];
+        }
+   }
+
+   getSelectedDate(value){
+    const now = new Date(this.startDate).toISOString().slice(0, 16);
+    (<any>document.getElementsByClassName("endDateLocal"))[0].min = now;
+  }
+
+     /*
+      Author:Kapil Soni
+      Funcion:getAllCompanyData
+      Summary:getAllCompanyData for get vehicle list
+      Return list
+    */
+    getVehicleHistory() {
+      this.isLoadingData = true; 
+      const postData :any =   {
+        "vname":this.selectedVehicleNumber,
+        "startdate":this.startDate,
+        "enddate":this.endDate
+      }
+      this.userService.storeDataToDb(postData,'vehicleHistory').subscribe((data:any)=>{
+        if(data.length>0){
+          this.vehicelLocationList = data;
+          this.drwapMarker();
+        } else{
+          this.isLoadingData = false; 
+          this.vehicleList= [];
+        }
+      },error=>{
+        this.isLoadingData =false;
+      })
+    }
 }

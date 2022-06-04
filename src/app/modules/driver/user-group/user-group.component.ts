@@ -21,7 +21,7 @@ import { ConfirmationDialog } from 'src/app/shared/components/confirmation-dialo
 })
 export class UserGroupComponent implements OnInit {
   vehicleAddForm : FormGroup;
-  displayedColumns: any[] = ['select', 'createDateTime','groupName', 'companyName','isActive','action'];
+  displayedColumns: any[] = ['createDateTime','groupName', 'companyName','isActive','action'];
   dataSource: MatTableDataSource<any>;
   selection = new SelectionModel(true, []);
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -34,6 +34,7 @@ export class UserGroupComponent implements OnInit {
   public vehicleForm :any;
   @ViewChild("f", { static: true }) formRef: ElementRef;
 public isLoading = false;
+public companyCloneList =[];
 
   checked = false;
   indeterminate = false;
@@ -144,6 +145,7 @@ get companyName() {
       this.userService.getMulipleAPIDataViaUrl('company/showAllCompanyData','showAllPermissionData','','').subscribe((data:any)=>{
         if(data[1].length > 0 || data[0].length > 0){
           this.companyList = data[1];
+          this.companyCloneList = this.companyList;
           this.permissionList = data[0];
         } else{
           this.companyList= [];
@@ -374,4 +376,10 @@ get companyName() {
     //delete (<any>this.groupAdd).companyName;
     this.groupAdd.addPermissions=this.selectedPermissionList;
   }
+
+   search(value: string) { 
+      let filter = value.toLowerCase();
+     let list = this.companyCloneList.filter(option => option.companyName.toLowerCase().startsWith(filter));
+      return this.companyList= list;
+    }
 }

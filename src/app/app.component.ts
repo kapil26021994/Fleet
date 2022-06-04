@@ -18,15 +18,6 @@ export class AppComponent implements OnInit{
   constructor(private router: Router,public userService:UserService) {
   }
 
-
-
   ngOnInit() {
-    // Scroll to top after route change
-    this.router.events.subscribe((evt) => {
-      if (!(evt instanceof NavigationEnd)) {
-          return;
-      }
-      window.scrollTo(0, 0);
-    });
   }
 }

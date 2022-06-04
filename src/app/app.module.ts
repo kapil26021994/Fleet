@@ -8,6 +8,7 @@ import { ContentAnimateDirective } from './shared/directives/content-animate.dir
 import{LayoutModule} from './core/layout/layout.module';
 import{SharedModule} from './shared/module/shared.module';
 
+
 @NgModule({
   declarations: [
     AppComponent,

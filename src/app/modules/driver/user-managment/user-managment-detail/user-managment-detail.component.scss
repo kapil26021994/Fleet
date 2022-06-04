@@ -6,10 +6,23 @@
 }
 
 .checkbox-margin{
-   margin: 6px 222px 0px -10px !important;
+   margin: 12px 143px 0px -140px !important ;
 }
 
 select.form-control {
     outline: 1px solid #979797 !important;
       color: #000000 !important; 
   }
+
+    .number_wrapper{
+        height: 39px !important;
+        margin-left: -9px !important;
+        top: 1px !important;
+        border-radius: 0 !important;
+    }
+    @media  (min-width: 1500px) and (max-width: 2560px) {
+        .input-label-container{
+          margin-top: 4px !important;
+          margin-left: -49px;
+        }
+      }

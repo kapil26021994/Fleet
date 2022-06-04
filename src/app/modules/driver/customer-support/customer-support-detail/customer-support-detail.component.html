@@ -1,7 +1,7 @@
 
 <div class="navigation">
-    <a  routerLink="/user/customer-support"><span><i class="mdi mdi-keyboard-backspace"></i>Customer Support Management</span></a>
-    <span routerLink="/user/customer-support"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
+    <a  routerLink="/user/customer-support"><span class="navigation-back"><i class="mdi mdi-keyboard-backspace"></i>Customer Support Management</span></a>
+    <span routerLink="/user/customer-support" class="navigation-back"> <span><i class="mdi mdi-chevron-right"></i></span> Details </span>
     <span></span>
 </div>
 <div class="page-header">
@@ -32,6 +32,7 @@
               <mat-form-field fxFlex="40" class="field-wrapper app-permission" >
                 <mat-select disableOptionCentering [disabled]="!isEdit" name="contactMethod"  id="contactMethod" 
                 (ngModelChange)="updateDataViaKey($event,'')"  [(ngModel)]="currentUserDetail.company.companyName">
+                <input class="example-input" placeholder ="search " (keyup)="search($event.target.value)">  
                   <mat-option *ngFor="let company of companyList"  [value]="company.companyName">{{ company.companyName }}</mat-option>
                 </mat-select>
               </mat-form-field>
@@ -43,7 +44,7 @@
                 <span>:</span>
                 <mat-form-field fxFlex="40" class="field-wrapper app-permission"  >
                   <mat-label >Select User</mat-label>
-                  <mat-select disableOptionCentering  name="username" [(ngModel)]="username"   (ngModelChange)="updateDataViaKey($event,'user')">
+                  <mat-select [disabled]="!isEdit" disableOptionCentering  name="username" [(ngModel)]="username"   (ngModelChange)="updateDataViaKey($event,'user')">
                     <mat-option *ngFor="let user of userList" [value]="user.username">{{user.username}}</mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -54,7 +55,7 @@
                 <label>Problem Type</label>
                 <span>:</span>
                 <mat-form-field fxFlex="40" class="field-wrapper app-permission"  >
-                  <mat-select disableOptionCentering name="problemType" [(ngModel)]="currentUserDetail.problemType" name="problemType">
+                  <mat-select [disabled]="!isEdit" disableOptionCentering name="problemType" [(ngModel)]="currentUserDetail.problemType" name="problemType">
                     <mat-option value="basic">Basic</mat-option>
                     <mat-option value="advanced">Advanced</mat-option>
                 </mat-select>
@@ -84,6 +85,13 @@
                   <label>Subject</label>
                   <span>:</span>
                   <input type="text" name="subject"  class="form-control form-control-lg" placeholder="Enter subject" [(ngModel)]="currentUserDetail.subject">                
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Description</label>
+                  <textarea type="text" name="Description" class="form-control form-control-lg" placeholder="Enter Description"
+                    [(ngModel)]="currentUserDetail.description" #description="ngModel"></textarea>
                 </div>
               </div>
         </div>

@@ -26,4 +26,14 @@ export class DriverComponent implements OnInit {
 
   ngOnInit() {
   }
+
+  onActivate(event) {
+    document.body.scrollTop = 0
+    this.router.events.subscribe((evt) => {
+      if (!(evt instanceof NavigationEnd)) {
+          return;
+      }
+      window.scrollTo(0, 0)
+    })
+  }
 }

@@ -15,7 +15,12 @@ import {MatDialog} from '@angular/material/dialog';
 export class EditDriverComponent implements OnInit {
   currentVehicleDetail = new DiverListModel();
   public exporterInstance:any;
+  public isEditData :boolean = false;
   public data = [];
+  public companyList =[];
+  public vehicleList =[];
+  public vehicleCloneList =[];
+  public companyCloneList =[];
   constructor(
     public userService : UserService,
     public dialog :MatDialog,
@@ -31,9 +36,21 @@ export class EditDriverComponent implements OnInit {
   public isEdit = false;
   
   ngOnInit(): void {
+    this.companyList= this.userService.getCompanyList();
+    this.companyCloneList = this.companyList;
     if(history.state.data){
       this.currentVehicleDetail = history.state.data;
+      if(this.currentVehicleDetail.company){
+        (<any>this.currentVehicleDetail).companyName = this.currentVehicleDetail.company.companyName;
+        this.getVehicleListByCompanyId(this.currentVehicleDetail.company);
+      }
+     
+      if(this.currentVehicleDetail.vehicle){
+        (<any>this.currentVehicleDetail).vehicleNumber = this.currentVehicleDetail.vehicle.vehicleNumber;
+      }
+      
       this.data = [history.state.data];
+      (<any>this.currentVehicleDetail).isActive == 'active' ? this.isEditData = true :this.isEditData = false;
       localStorage.setItem('currentPageData',JSON.stringify(history.state.data))
     }else{
       this.currentVehicleDetail = JSON.parse(localStorage.getItem('currentPageData'));
@@ -51,6 +68,19 @@ export class EditDriverComponent implements OnInit {
     Return list
   */
     updateDriverInfo() {
+      if((<any>this.currentVehicleDetail).companyName){
+        let matched= this.companyList.find(x=>x.companyName == (<any>this.currentVehicleDetail).companyName);
+        if(matched){
+          this.currentVehicleDetail.company = matched;
+        }
+      }
+    
+      if((<any>this.currentVehicleDetail).vehicleNumber){
+        let vehicleMatched= this.vehicleList.find(x=>x.vehicleNumber == (<any>this.currentVehicleDetail).vehicleNumber);
+        if(vehicleMatched){
+          this.currentVehicleDetail.vehicle = vehicleMatched;
+        }
+      }
       this.userService.updateData(this.currentVehicleDetail ,'updateDriverInfo').subscribe((data:any)=>{
         if(data.message){
           this.toggleEditForm();
@@ -88,9 +118,44 @@ export class EditDriverComponent implements OnInit {
                 this.router.navigate(['/user/driver']);
               }
             }, error => {
-              this.authService.errorToast(error.error.message);
+              this.authService.errorToast(error.error.error);
             })
           }
       });
+    }
+
+    getVehicleListByCompanyId(value){
+      var companyId :any;
+      if(value.id){
+        companyId = value.id;
+      }else{
+        let matched = this.companyList.find(x=>x.companyName == value);
+        if(matched){
+          companyId =  matched.id;
+        }
+      }
+      if(companyId){
+        this.userService.getDataByUrl('showVehicleByCompanyId/'+companyId).subscribe((data:any)=>{
+          if(data.length>0){
+            this.vehicleList = data;
+            this.vehicleCloneList = this.vehicleList;
+          }else{
+            this.authService.errorToast('Vehicle Not Found');
+            this.vehicleList =[];
+          }
+         }, error => {
+          this.authService.errorToast(error.error.error);
+        })
+      }
+    }
+
+    search(value: string, key) {
+      if (key == 'company') {
+        const companyList = this.companyCloneList.filter(item => item.companyName.toLowerCase().search(value.toLowerCase()) > -1);
+        return this.companyList = companyList;
+      } else {
+        const vehicleList = this.vehicleCloneList.filter(item => item.vehicleNumber.toLowerCase().search(value.toLowerCase()) > -1);
+        return this.vehicleList = vehicleList;
+      }
     }
 }

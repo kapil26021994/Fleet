@@ -122,6 +122,7 @@ export class TripListComponent implements OnInit {
     var mapProp= {
       center: new google.maps.LatLng(21.7679, 78.8718),
       zoom:5,
+      gestureHandling: 'greedy'
     };
     this.currentRouteMapInstance = new google.maps.Map(document.getElementById("googleMap"),mapProp);
     this.updateDrwaingType();
@@ -243,9 +244,27 @@ export class TripListComponent implements OnInit {
           if(pageId == 'autocomplete'){
             self.startPointLocation=autocomplete.getPlace().formatted_address;
             self.tripAddModel.startPoint =self.startPointLocation;
+
+            //startPointLocation exist or not...
+            if(self.startPointLocation == undefined){
+              self.startPointLocation=autocomplete.getPlace().formatted_address;
+            }else{
+              self.startPointLocation = '';
+              self.resetData();
+              self.startPointLocation=autocomplete.getPlace().formatted_address;
+            }
           } else if(pageId  == 'autocomplete1'){
             var place = autocomplete.getPlace();
-            self.endPointLocation=autocomplete.getPlace().formatted_address;
+            
+            //startPointLocation exist or not...
+            if(self.endPointLocation == undefined){
+              self.endPointLocation=autocomplete.getPlace().formatted_address;
+            }else{
+              self.endPointLocation = '';
+              self.resetData();
+              self.endPointLocation=autocomplete.getPlace().formatted_address;
+            }
+
             self.tripAddModel.endpoint =self.endPointLocation;
           } else{
             var place = autocomplete.getPlace();
@@ -284,7 +303,6 @@ export class TripListComponent implements OnInit {
           var request = {
             origin:self.startPointLocation, 
             destination:self.endPointLocation,
-            waypoints: self.dynamicallyWaypoints,
             optimizeWaypoints: true,
             travelMode: google.maps.DirectionsTravelMode.DRIVING
           };
@@ -380,7 +398,6 @@ export class TripListComponent implements OnInit {
     this.deleteAllShape();
     this.deleteSelectedShape();
     const drawingManager = new google.maps.drawing.DrawingManager({
-      drawingMode: google.maps.drawing.OverlayType.MARKER,
       drawingControl: true,
       drawingControlOptions: {
         position: google.maps.ControlPosition.TOP_CENTER,
@@ -391,10 +408,9 @@ export class TripListComponent implements OnInit {
         ],
       },
       circleOptions: {
-        fillColor: "#ffff00",
-        fillOpacity: 3,
-        strokeWeight: 5,
-        zIndex: 1,
+        fillColor: "#FF0000",
+        fillOpacity: 0.2,
+        strokeWeight: 0.2
       },
     });
     drawingManager.setMap(this.currentRouteMapInstance);
@@ -423,26 +439,39 @@ export class TripListComponent implements OnInit {
         self.selectedLatLngList =[];
       }
       if(event.type == 'polygon') {
-        const coords = event.overlay.getPath().getArray();
+        var coords = event.overlay.getPath().getArray();
         for(var i=0;i<coords.length;i++){
-          self.selectedLatLngList.push({ 
+          let list=[];
+          list.push({ 
             "lat": coords[i].lat(),
             "lng": coords[i].lng()
           })
+          console.log(list);
         }
-        self.tripAddModel.routeGeofence.push({
-          "type":event.type,
-          "radius": '',
-          "data": self.selectedLatLngList
-        })
+          for(var i=0;i<coords.length;i++){
+            let matched =self.selectedLatLngList.find(x=>x.lat == coords[i].lat() && x.lng == coords[i].lng());
+            if(matched == undefined){
+              self.selectedLatLngList.push({ 
+                "lat": coords[i].lat(),
+                "lng": coords[i].lng()
+              })
+            }
+            console.log(self.selectedLatLngList);
+          }
+          self.tripAddModel.routeGeofence.push({
+            "type":event.type,
+            "radius": '',
+            "data": self.selectedLatLngList
+          })
+          coords =[];
+          self.selectedLatLngList =[];
       }
-
       if(event.type == 'polyline') {
-        const coords = event.overlay.getPath().getArray();
-        for(var i=0;i<coords.length;i++){
+        var polylineCoords = event.overlay.getPath().getArray();
+        for(var i=0;i<polylineCoords.length;i++){
           self.selectedLatLngList.push({ 
-            "lat": coords[i].lat(),
-            "lng": coords[i].lng()
+            "lat": polylineCoords[i].lat(),
+            "lng": polylineCoords[i].lng()
           })
         }
         self.tripAddModel.routeGeofence.push({
@@ -450,6 +479,8 @@ export class TripListComponent implements OnInit {
           "radius": '',
           "data": self.selectedLatLngList
         })
+        self.selectedLatLngList=[];
+        polylineCoords =[];
       }
     });
   }

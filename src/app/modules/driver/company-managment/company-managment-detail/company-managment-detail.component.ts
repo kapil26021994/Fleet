@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ViewChild,ElementRef } from '@angular/core';
 import{UserService} from 'src/app/core/services/user/user.service'
 import{CompanyManagmentListModel} from 'src/app/core/models/driver/company-managment-list.model';
 import { Router } from '@angular/router';
@@ -14,7 +14,7 @@ declare var google;
   styleUrls: ['./company-managment-detail.component.scss']
 })
 export class CompanyManagmentDetailComponent implements OnInit {
-  public currentUserDetail =  new CompanyManagmentListModel();
+  public currentUserDetail :any =   new CompanyManagmentListModel();
   public permissionList = ["Add","Edit","Delete"];
   public isEdit :boolean = false;
   public companyList = [];
@@ -22,6 +22,8 @@ export class CompanyManagmentDetailComponent implements OnInit {
   public data = [];
   public exporterInstance :any;
   public isEditData:boolean = false;
+  public submitted = false;
+  @ViewChild('f', { static: true }) formRefrence: ElementRef;
 
   constructor(
       public userService:UserService,
@@ -53,23 +55,56 @@ export class CompanyManagmentDetailComponent implements OnInit {
     Summary:updateDriverInfo for update driver info
     Return list
   */
-    updateGroupInfo() {
-      if(this.isEditData){
-        this.currentUserDetail.isActive='active';
-      }else{
-        this.currentUserDetail.isActive='inActive';
-      }
-      this.userService.updateData(this.currentUserDetail ,'company/updateCompanyInfo').subscribe((data:any)=>{
-        if(data.message){
-          this.toggleEditForm();
-          this.authService.successToast(data.message);
-          this.router.navigate(['/user/company/']);
-        } else{
-          this.authService.errorToast(data.message);
+ public isInvalidCompany : boolean = false;
+ public isInvalidEmail : boolean = false;
+ public isInvalidGstNumber : boolean = false;
+    updateGroupInfo(form) {
+      this.submitted = true;
+        if(this.currentUserDetail.companyName == '' || this.currentUserDetail.companyName == undefined){
+            this.isInvalidCompany = true;
+        }else{
+          this.isInvalidCompany = false;
         }
-      },  error => {
-        this.authService.errorToast(error.error.message);
-      })
+        if(this.currentUserDetail.companyEmail == '' || this.currentUserDetail.companyEmail == undefined){
+            this.isInvalidEmail = true;
+        }else{
+            this.isInvalidEmail = false;
+        }
+        if(this.currentUserDetail.gstNumber == '' || this.currentUserDetail.gstNumber == undefined){
+          this.isInvalidGstNumber = true;
+      }else{
+          this.isInvalidGstNumber = false;
+      }
+        if(this.isEditData){
+          this.currentUserDetail.isActive='active';
+        }else{
+          this.currentUserDetail.isActive='inActive';
+        }
+        if(!this.isInvalidCompany && !this.isInvalidEmail && !this.isInvalidGstNumber){
+          this.userService.updateData(this.currentUserDetail ,'company/updateCompanyInfo').subscribe((data:any)=>{
+            if(data.message){
+              this.toggleEditForm();
+              this.authService.successToast(data.message);
+              this.router.navigate(['/user/company/']);
+            } else{
+              this.authService.errorToast(data.message);
+            }
+          },  error => {
+            this.authService.errorToast(error.error.message);
+          })
+        }
+    }
+
+    removeValidation(){
+      if(this.currentUserDetail.companyName){
+        this.isInvalidCompany = false
+      }
+      if(this.currentUserDetail.companyEmail){
+          this.isInvalidEmail = false;
+      }
+      if(this.currentUserDetail.gstNumber){
+        this.isInvalidGstNumber = false;
+      }
     }
 
 
@@ -80,6 +115,7 @@ export class CompanyManagmentDetailComponent implements OnInit {
         const place = autocomplete.getPlace().address_components;
         self.currentUserDetail.state= place[2].short_name;
         self.currentUserDetail.country = place[3].long_name;
+        self.currentUserDetail.city = autocomplete.getPlace().formatted_address;
       });
     }
 
@@ -89,7 +125,7 @@ export class CompanyManagmentDetailComponent implements OnInit {
       Summary:deleteVehicle for get delete vehicle
       Return list
     */
-    deleteCompany(value){
+    deleteCompany(){
       const dialogRef = this.dialog.open(ConfirmationDialog, {
         panelClass: 'custom-dialog-container',
         data: {

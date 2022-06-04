@@ -8,4 +8,9 @@ export class DeviceManagmentListModel {
     activationDate: string;
     createDateTime: string;
     updateDateTime: string;
+    company:any;
+    isActive:any;
+    assignSim:any;
+    technicianName:string;
+    location:string;
 }

@@ -64,8 +64,11 @@ mat-error{
 }
 
 
-.input-label-container{
-  margin-left: -38px !important;
-  width: 79% !important;
-}
 
+@media  (min-width: 1500px) and (max-width: 2560px) {
+  .input-label-container{
+    margin-top: -52px !important;
+    margin-left: 127px  !important;
+    width: 84% !important;
+  }
+ }

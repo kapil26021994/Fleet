@@ -1,7 +1,7 @@
 
-<div class="navigation">
-    <a routerLink="/user/trip"><span><i class="mdi mdi-keyboard-backspace"></i> Trip</span></a>&nbsp;
-    <span routerLink="/user/trip">Detail <span><i class="mdi mdi-chevron-right"></i></span> </span>
+<div class="navigation"> 
+    <a routerLink="/user/trip"><span class="navigation-back"><i class="mdi mdi-keyboard-backspace"></i> Trip</span></a>&nbsp;
+    <span routerLink="/user/trip" class="navigation-back">Detail <span><i class="mdi mdi-chevron-right"></i></span> </span>
     
     <span></span>
 </div>
@@ -57,13 +57,13 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label>Start Date</label>
-                  <span>:</span><input name="createDateTime" [(ngModel)]="currentTripDetail.startDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
+                  <span>:</span><input name="createDateTime" [(ngModel)]="currentTripDetail.startDate"  [disabled]="!isEdit" type="datetime-local" class="form-input date-picker-position"  tabindex="5" required>
                 </div>
               </div>
               <div class="col-sm-6">
               <div class="form-group">
                 <label>End Date</label>
-                <span>:</span><input name="updateDateTime" [(ngModel)]="currentTripDetail.endDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
+                <span>:</span><input name="updateDateTime" [(ngModel)]="currentTripDetail.endDate"  [disabled]="!isEdit" type="datetime-local"  class="form-input date-picker-position"  tabindex="5" required>
               </div>
               </div>
             </div>

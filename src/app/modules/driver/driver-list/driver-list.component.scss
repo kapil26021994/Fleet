@@ -40,6 +40,21 @@ select.form-control {
 }
 
 .input-label-container {
-  margin-left: -40px !important;
-  width: 77% !important;
+  margin-left: -33px;
+  width: 78%;
+}
+
+@media  (min-width: 1500px) and (max-width: 2560px) {
+  .input-label-container{
+    margin-top: -5px !important;
+    margin-left: -32px;
+    width: 84%;
+  }
+}
+
+.field-wrapper {
+  margin: -8px 0px 0px 0px !important;
+  width: 99% !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
 }

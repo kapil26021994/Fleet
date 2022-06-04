@@ -1,7 +1,7 @@
 
 <div class="navigation">
-    <a routerLink="/user/driver/list"><span><i class="mdi mdi-keyboard-backspace"></i> Driver</span></a>
-    <span  routerLink="/user/driver/list"> <span><i class="mdi mdi-chevron-right"></i></span> {{currentVehicleDetail.firstName}} - {{currentVehicleDetail.lastName}} </span>
+    <a routerLink="/user/driver/list"><span class="navigation-back"><i class="mdi mdi-keyboard-backspace"></i> Driver</span></a>
+    <span  routerLink="/user/driver/list" class="navigation-back"> <span><i class="mdi mdi-chevron-right"></i></span> {{currentVehicleDetail.firstName}} - {{currentVehicleDetail.lastName}} </span>
     
     <span></span>
 </div>
@@ -49,6 +49,28 @@
         <div class="row">
           <div class="col-sm-6">
             <div class="form-group">
+              <label>Select Company</label>
+              <mat-form-field class="field-wrapper app-permission">
+                <mat-label>Select Company</mat-label>
+                <mat-select [disabled]="!isEdit" disableOptionCentering name="contactMethod" id="contactMethod"
+                  [(ngModel)]="currentVehicleDetail.companyName" #companyName="ngModel" (ngModelChange)="getVehicleListByCompanyId($event)">
+                  <input class="example-input" placeholder="search " (keyup)="search($event.target.value,'company')">
+                  <mat-option *ngFor="let company of companyList" [value]="company.companyName">{{ company.companyName }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="form-group">
+              <label>Select Vechicle</label>
+                <mat-form-field class="field-wrapper app-permission" >
+                  <mat-label >Select Vehicle</mat-label>
+                  <mat-select [disabled]="!isEdit" disableOptionCentering name="contactMethod" #vehicleNumber="ngModel" [(ngModel)]="currentVehicleDetail.vehicleNumber" name="vehicle" >
+                    <input class="example-input" placeholder="search " (keyup)="search($event.target.value,'')">
+                    <mat-option *ngFor="let vehicle of vehicleList" [value]="vehicle.vehicleNumber">{{vehicle.vehicleNumber}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="form-group">
               <label>First Name</label>
               <span>:</span>
               <input name="firstName"  [(ngModel)]="currentVehicleDetail.firstName" [disabled]="!isEdit" class="form-input" type="text" tabindex="1" required autofocus>
@@ -65,18 +87,27 @@
               <label>Address</label>
               <span>:</span><input name="address"  [(ngModel)]="currentVehicleDetail.address" [disabled]="!isEdit" class="form-input"  type="text" tabindex="4" required>
             </div>
-            <div class="form-group">
-              <label>Phone Number</label>
-              <span>:</span><input name="phoneNumber" [(ngModel)]="currentVehicleDetail.phoneNumber" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
-            </div>
           </div>
-            <div class="col-sm-6">
+            <div class="col-sm-6" style="margin-top: 9px;">
+              <div class="form-group">
+                <label class="col-sm-3 col-form-label" style="margin:-17px 23px 0px -23px"> Number</label><span class="colon-wrapper" style="margin-left: 17px;">:</span>
+                <div class="input-group flex-nowrap input-label-container">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="addon-wrapping">+91</span>
+                </div>
+                <input style="height: 42px;" [disabled]="!isEdit" type="tel" name="phoneNumber" [(ngModel)]="currentVehicleDetail.phoneNumber"
+                  class="form-control form-control-lg number_wrapper" placeholder="Enter Phone Number" maxlength="10">
+                </div>
+              </div>
+              <!-- <div class="form-group">
+                <label>Phone Number</label>
+                <span>:</span><input name="phoneNumber" [(ngModel)]="currentVehicleDetail.phoneNumber" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
+              </div> -->
               <div class="form-group">
                 <label>Licence Number</label>
                 <span>:</span><input name="licenceNumber" [(ngModel)]="currentVehicleDetail.licenceNumber" [disabled]="!isEdit" type="text" class="form-input"  tabindex="5" required>
               </div>
-<!-- 
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label>Vehicle Type</label>
                 <span>:</span>
                 <mat-form-field   fxFlex="40" class="field-wrapper-filter app-permission" >
@@ -98,7 +129,11 @@
                 <label>Joined Date</label>
                 <span>:</span><input name="joinedDate" [(ngModel)]="currentVehicleDetail.joinedDate"  [disabled]="!isEdit" type="date" class="form-input date-picker-position"  tabindex="5" required>
               </div>
-        
+              <div class="form-group">
+                <label>Is Active</label>
+                <span>:</span>
+                <input  [(ngModel)]="isEditData" [disabled]="!isEdit" class="form-input checkbox-margin"  type="checkbox" name="isActive"> 
+              </div>
               </div>
         </div>
       </form>

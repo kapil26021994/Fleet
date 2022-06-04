@@ -34,6 +34,7 @@ export class VehiclelistComponent implements OnInit {
   @ViewChild("f", { static: true }) formRef: ElementRef;
 public isLoading = false;
 public deviceList =[];
+public selectedDeviceType :any;
 
   checked = false;
   indeterminate = false;
@@ -47,6 +48,7 @@ public deviceList =[];
   public currentPageView  :any =[];
 positionFilter = new FormControl();
 public isAddPermission : boolean =   false;
+public selectedGeofenceList :any = []; 
 filteredValues =  {insuranceRenewalDate:'',pucRenewalDate:'',servicingPeriod:'',lastServicingDate:'',companyName: '',vehicleNumber:[],vNumber:'',vType:'', isActive:[],companyDomain: '',vehicleType:[]};
 
  // form group
@@ -92,7 +94,7 @@ get companyName() {
     this.fuelTypeList =  JSON.parse(localStorage.getItem('fuelTypeList'));
     this.getAllVehicleList();
     this.getAllDeviceList();
-  }
+  } 
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
@@ -131,6 +133,7 @@ get companyName() {
     this.userService.getDataByUrl('showAllVehicleData').subscribe((data:any)=>{
       if(data.length>0){
         this.vehicleList = data;
+        (<any>this.vehicleData).isActive = true;
         this.dataSource = new MatTableDataSource(this.vehicleList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -158,10 +161,12 @@ get companyName() {
       Summary:getAllCompanyData for get vehicle list
       Return list
     */
+   public companyCloneList =[];
     getAllCompanyData() {
       this.userService.getDataByUrl('company/showAllCompanyData').subscribe((data:any)=>{
         if(data.length>0){
           this.companyList = data;
+          this.companyCloneList =this.companyList; 
         } else{
           this.companyList= [];
         }
@@ -186,14 +191,16 @@ get companyName() {
         }else{
           this.vehicleData.isActive='inActive';
         }
-
-        let data =  this.deviceList.find(x=>x.deviceType == this.vehicleData.deviceType);
+        let data =  this.deviceList.find(x=>x.deviceName == this.selectedDeviceType);
         if(data){
           this.vehicleData.device = data;
+        } else {
+          this.vehicleData.device = null;
         }
-        
+        delete this.vehicleData.geofence;
         this.userService.storeDataToDb(<any>this.vehicleData,'saveVehicle').subscribe((data:any)=>{
           if(data.message){
+            this.authService.successToast(data.message);
             this.isLoadingData = false;
             form.resetForm();
              form.reset();
@@ -212,10 +219,22 @@ get companyName() {
       }
     }
 
+    public geofenceList = [];
     updateDataViaKey(value,key):void{
       if(value && key == 'company'){
         let data =  this.companyList.find(x=>x.companyName == value);
         this.vehicleData.company = data;
+         
+        //call showGeofenceByCompanyId for get gofenceList
+        if(data.id){
+          this.userService.getDataByUrl('showGeofenceByCompanyId/'+data.id).subscribe((data:any)=>{
+            if(data.length>0){
+              this.geofenceList = data;
+            }else{
+              this.geofenceList = [];
+            }
+          })
+        }
       }
     }
 
@@ -324,7 +343,7 @@ get companyName() {
             let isStatusAvailable = false;
             if (searchString.vehicleType &&  searchString.vehicleType.length) {
               for (const d of searchString.vehicleType) {
-                if (data.vehicleType.trim() === d) {
+                if (data.vehicleType === d) {
                   isPositionAvailable = true;
                 }
               }
@@ -354,12 +373,7 @@ get companyName() {
             const resultValue =
               isPositionAvailable && isVehicleNumberAvailable && isStatusAvailable &&
               (data.company.companyName.toString().trim().toLowerCase().indexOf(searchString.companyName != null ? searchString.companyName.toLowerCase() : '') !== -1 ||
-              data.vehicleNumber.toString().trim().toLowerCase().indexOf(searchString.vNumber != null ? searchString.vNumber.toLowerCase() : '') !== -1 ||
-              data.vehicleType.toString().trim().toLowerCase().indexOf(searchString.vType != null ? searchString.vType.toLowerCase() : '') !== -1 ||
-              data.insuranceRenewalDate.toString().trim().toLowerCase().indexOf(searchString.insuranceRenewalDate != null ? searchString.insuranceRenewalDate.toLowerCase() : '') !== -1 ||
-              data.pucRenewalDate.toString().trim().toLowerCase().indexOf(searchString.pucRenewalDate != null ? searchString.pucRenewalDate.toLowerCase() : '') !== -1 ||
-              data.servicingPeriod.toString().trim().toLowerCase().indexOf(searchString.servicingPeriod != null ? searchString.servicingPeriod.toLowerCase() : '') !== -1 ||
-              data.lastServicingDate.toString().trim().toLowerCase().indexOf(searchString.lastServicingDate != null ? searchString.lastServicingDate.toLowerCase() : '') !== -1);
+              data.vehicleNumber.indexOf(searchString.vNumber != null ? searchString.vNumber.toLowerCase() : '') !== -1)
             return resultValue;
           };
           this.dataSource.filter = JSON.stringify(this.filteredValues);
@@ -387,9 +401,24 @@ get companyName() {
       }
 
 
-    search(value: string) { 
+    search(value: string,key) { 
       let filter = value.toLowerCase();
-     let list = this.vehicleTypeCloneList.filter(option => option.vehicleType.toLowerCase().startsWith(filter));
-      return this.vehicleTypeList= list;
+      if(key != ''){
+        let list = this.vehicleTypeCloneList.filter(option => option.vehicleType.toLowerCase().startsWith(filter));
+        return this.vehicleTypeList= list;
+      }else{
+        let list = this.companyCloneList.filter(option => option.companyName.toLowerCase().startsWith(filter));
+        return this.companyList= list;
+      }
     }
-}
+  
+    selectOrUnSelectGeofence(value){
+      var list =[];
+      value.forEach((data :any)=> {
+        var geofenceObject = {'id':<any>data};
+        list.push(geofenceObject);
+      });
+      this.selectedGeofenceList = list;
+      this.vehicleData.geofencePlace = this.selectedGeofenceList;
+    }
+  }

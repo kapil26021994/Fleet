@@ -22,6 +22,7 @@ export class CustomerSupportDetailComponent implements OnInit {
   public isEditData:boolean = false;
   public exporterInstance :any;
   public username :any;
+  public companyCloneList =[];
 
   constructor(
       public userService:UserService,
@@ -37,8 +38,10 @@ export class CustomerSupportDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.companyList =  JSON.parse(localStorage.getItem('companyList'));
+    this.companyCloneList = this.companyList;
     if(history.state.data){
       this.currentUserDetail = history.state.data;
+      this.updateDataViaKey(this.currentUserDetail.company.companyName,'');
       this.data  = [history.state.data];
       this.userList = history.state.userList;
       this.username = (<any>this.currentUserDetail.user).username;
@@ -75,6 +78,19 @@ export class CustomerSupportDetailComponent implements OnInit {
       }else{
         let companyData =  this.companyList.find(x=>x.companyName == value);
         this.currentUserDetail.company = companyData;
+
+        //get subuser List by company-d
+        if(this.currentUserDetail.company.id){
+          this.userService.getDataByUrl('subUser/showSubUserByCompanyId/'+this.currentUserDetail.company.id).subscribe((data:any)=>{
+            if(data.length>0){
+              this.userList = data;
+            }else{
+              this.userList =[];
+            }
+          },  error => {
+            this.authService.errorToast(error.message);
+          })
+        }
       }
     }
 
@@ -84,7 +100,7 @@ export class CustomerSupportDetailComponent implements OnInit {
       Summary:deleteVehicle for get delete vehicle
       Return list
     */
-    deleteTicket(value){
+    deleteTicket(){
       const dialogRef = this.dialog.open(ConfirmationDialog, {
         panelClass: 'custom-dialog-container',
         data: {
@@ -107,6 +123,12 @@ export class CustomerSupportDetailComponent implements OnInit {
           })
         }
       });
+    }
+
+    search(value: string) { 
+      let filter = value.toLowerCase();
+     let list = this.companyCloneList.filter(option => option.companyName.toLowerCase().startsWith(filter));
+      return this.companyList= list;
     }
 
 }
